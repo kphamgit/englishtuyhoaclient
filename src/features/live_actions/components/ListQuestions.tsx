@@ -22,19 +22,19 @@ export function ListQuestions(props:any) {
             useAxiosFetch<QuizProps>({ url: url, method: 'get' })
 
         useEffect(() => {
-            //console.log(quiz)
+            console.log("xxxxx",quiz)
         },[quiz])
 
     return (
         <>
-            <div className='text-amber-800 text-xl m-2 flex flex-row justify-center'>{params.sub_category_name}</div>
+            <div className='text-textColor bg-bgColor text-xl m-2 flex flex-row justify-center'>NNN {params.sub_category_name}</div>
             <div className='flex flex-col'>
                 { quiz &&
-                    <div className='m-2 text-orange-700 text-lg'>Quiz {quiz.quiz_number}: {quiz.name}, id = {quiz.id}</div>
+                    <div className='m-2 text-textColor bg-bgColor text-lg'>Quiz {quiz.quiz_number}: {quiz.name}, id = {quiz.id}</div>
                 }
                 { quiz &&
                     quiz.questions.map((question, index) => (
-                        <div className='flex flex-row gap-2 mx-4 mt-2 bg-cyan-100' key={index}>
+                        <div className='flex flex-row gap-2 mx-4 mt-2 bg-bgColor1 text-textColor3' key={index}>
                         <div>Question {question.question_number} </div>
                         <div>format: {question.format} </div>
                         <div>Content: {question.content}</div>
