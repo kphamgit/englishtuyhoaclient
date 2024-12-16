@@ -4,10 +4,18 @@ export interface ColumnProps {
 
 export interface QuestionRowProps {
     id: string,
-    question_number: number,
-    format: number,
-    content : string,
-    answer_key : string,
+    question_number?: number,
+    format?: number,
+    content? : string,
+    answer_key? : string,
+    edit_link: string
+    clone_button: string,
+    delete_button: string
+}
+
+export interface CategoryRowProps {
+    id: string,
+    category_number: number,
     edit_link: string
     clone_button: string,
     delete_button: string

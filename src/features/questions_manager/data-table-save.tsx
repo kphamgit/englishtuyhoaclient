@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import QuestionItem from './question-item'
-import { QuestionRowProps } from './types';
+import DataRow from './data-row'
+import { CategoryRowProps, QuestionRowProps } from './types';
 
 import {
   DndContext,
@@ -18,20 +18,25 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { clone_a_row } from '../services/list';
 
 interface ColumnProps { 
     Header: string, accessor: string 
 }
 interface Props {
     columns: ColumnProps[],
-    data: QuestionRowProps[] | undefined,
+    //data: QuestionRowProps[] | undefined,
+    data: any,
     renumber_question: () => void
     //clone_func: (event: React.MouseEvent<HTMLButtonElement>) => void; 
   }
 
- const QuestionList: React.FC<Props> = ({ columns, data, renumber_question}) => {
+ //const DataTable: React.FC<Props> = ({ columns, data, renumber_question}) => {
  
-  const [tableData, setTableData] = useState<QuestionRowProps[]>([])
+  const DataTableSave = (props: { columns: ColumnProps[], data: QuestionRowProps[] | CategoryRowProps[], renumber_question: () => void }) => {
+
+  const [tableData, setTableData] = useState<QuestionRowProps[] | CategoryRowProps[] >([])
+  //const [tableData, setTableData] = useState([])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -41,33 +46,41 @@ interface Props {
   );
 
   useEffect(() => {
-    if (data) {
-        setTableData(data)
+    if (props.data) {
+      console.log("x x x x x x x x data=", props.data)
+        setTableData(props.data)
     }
-},[data])
+},[props.data])
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
         setTableData((items) => {
+         
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over.id);
 
         return arrayMove(items, oldIndex, newIndex);
+          
       });
     }
   }
-  //console.log(userList);
-  const handle_clone = (row: QuestionRowProps) => {
-      console.log("HANDDLLLE", row )
-      const all_new_rows = [...tableData as any, row]
-      setTableData(all_new_rows)
-  }
 
+  const clone_row = (id: string) => {
+    clone_a_row(id, "question")
+    .then((data) => {
+        const all_new_rows = [...tableData as any, data]
+        //console.log("")
+        setTableData(all_new_rows)
+    })
+    .catch(error => {
+        console.log(error)
+    })
+  }
   return (
     <div className='max-w-2xl mx-auto grid gap-2 my-10'>
-      <h2 className='text-2xl font-bold mb-4'>User List</h2>
+      <h2 className='text-2xl text-textColor1 mb-4'>User List</h2>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -79,9 +92,21 @@ interface Props {
           strategy={verticalListSortingStrategy}
         >
             <table>
+            <thead className="bg-gray-200">
+            <tr>
+              {props.columns.map((column) => (
+                <th
+                  key={column.accessor}
+                  className="py-2 px-4 border-b border-gray-200 text-left text-gray-600"
+                >
+                  abd
+                </th>
+              ))}
+            </tr>
+          </thead>
             <tbody>
-          {tableData.map((row, rowIndex:number) => (
-            <QuestionItem key={row.id} id={row.id} row={row} columns={columns} parent_func={handle_clone} />
+          {tableData.map((row) => (
+            <DataRow key={row.id} id={row.id} row={row} columns={props.columns} parent_clone_func={clone_row} />
           ))}
            </tbody>
           </table>
@@ -91,23 +116,7 @@ interface Props {
   );
 };
 
-export default QuestionList;
-
-/*
-  tableData.map((row: any, rowIndex: number) => (
-              <tr key={rowIndex} className="even:bg-gray-50">
-                {columns.map((column: ColumnProps) => (
-                  <td
-                    key={column.accessor}
-                    className="py-2 px-4 border-b border-gray-200 text-gray-800"
-                  >
-                    {display_col(row, column)}
-                  </td>
-                ))}
-            
-              </tr>
-            ))}
-*/
+export default DataTable;
 
 /*
 id: string;

@@ -4,10 +4,10 @@ import { useAxiosFetch } from '../../hooks';
 import { Link, useParams } from 'react-router-dom';
 import { MouseEventHandler, useEffect, useState } from 'react';
 import { cloneQuestion, deleteQuestion } from '../services/list';
-import Table from '../components/Table';
+import Table from '../components/data-table_old';
 import { renumberQuizQuestions } from '../services/list';
-import QuestionList from './question-list';
-import { QuestionRowProps } from './types';
+import DataTable from './data-table';
+import { CategoryRowProps, QuestionRowProps } from './types';
 
 type RadioProps =
   {
@@ -56,7 +56,7 @@ interface QuizProps {
 export function ListQuestions(props:any) {
     
         const [questions, setQuestions] = useState<QuestionProps[] | undefined>([])
-        const [subQuestions, setsubQuestions] = useState<QuestionRowProps[] | undefined>([])
+        const [subQuestions, setsubQuestions] = useState<QuestionRowProps[] | CategoryRowProps[]>([])
     
         const params = useParams<{ categoryId: string, sub_category_name: string, quiz_id: string}>();
         //const url = `/quizzes/${[[params.quiz_id]]}/get_questions`
@@ -77,50 +77,7 @@ export function ListQuestions(props:any) {
 
         const { data: quiz, loading, error } =
             useAxiosFetch<QuizProps>({ url: url, method: 'get' })
-
-        /*
-        const clone_question: MouseEventHandler<HTMLButtonElement> = (event) => {
-            console.log(" CLONING>.....")
-            const el = event.target as HTMLButtonElement
-            cloneQuestion(el.id.split('_')[1])
-            .then(data => {
-                //const new_arr = [...questions, data]
-                setQuestions([...questions as any[], data])
-                // kpham: typescript tips: use "as any[]" like above to avoid error: type ... must have a '[Symbol.iterator]()' method that returns an iterator.
-                // why???
-                //setQuestions(prev => prev?.push(data))
-            })
-            .catch(error => {
-                console.log(error)
-            })
-                //useAxiosFetch({ url: url_clone, method: 'get' })
-            ///api/questions/:id/clone',
-            //console.log("xxxx", url_clone)
-        }
-        */
-
-        /*
-        const delete_question: MouseEventHandler<HTMLButtonElement> = (event) => {
-            const el = event.target as HTMLButtonElement
-            deleteQuestion(el.id.split('_')[1])
-            .then(data => {
-                //console.log("mmmmm mmmmmm data ", data)
-                //const new_arr = [...questions, data]
-                const reduced_questions = questions?.filter(question => question.id != data.id)
-                setQuestions(reduced_questions)
-                // kpham: typescript tips: use "as any[]" like above to avoid error: type ... must have a '[Symbol.iterator]()' method that returns an iterator.
-                // why???
-                //setQuestions(prev => prev?.push(data))
-            })
-            .catch(error => {
-                console.log(error)
-            })
-                //useAxiosFetch({ url: url_clone, method: 'get' })
-            ///api/questions/:id/clone',
-            //console.log("xxxx", url_clone)
-        }
-        */
-
+       
         useEffect(() => {
             const sub_questions = quiz?.questions.map(({ id, question_number, format, content, answer_key }) => ({id, question_number, format, content, answer_key}) )
             //setQuestions(quiz?.questions)
@@ -155,7 +112,7 @@ export function ListQuestions(props:any) {
         }
 
         return (
-            <QuestionList columns={columns1} data={subQuestions} renumber_question={paginate} />
+            <DataTable columns={columns1} data={subQuestions} renumber_question={paginate} />
           );
 }
 /*

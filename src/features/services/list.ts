@@ -1,5 +1,7 @@
 import axios from "axios";
 import { QuestionProps } from "../questions_manager/ListQuestions";
+import { sub } from "framer-motion/client";
+import { QuestionRowProps } from "../questions_manager/types";
 
 type StudentProps = 
 {
@@ -95,6 +97,29 @@ export async function cloneQuestion(id: string): Promise<QuestionProps> {
   //console.log("UUUU in getAClass response.data", response.data)
   return response.data
 
+}
+
+export async function clone_a_row(id: string, type: string): Promise<QuestionRowProps | undefined> {
+  
+  if (type === "question") {
+  const url = `${rootpath}/api/questions/${id}/clone`
+  const response = await axios.get(url)
+  
+  const sub_question: QuestionRowProps = {
+    id: response.data.id,
+    question_number: response.data.question_number, 
+    format: response.data.format,
+    content: response.data.content,
+    answer_key: response.data.answer_key,
+    edit_link: "",
+    clone_button: "",
+    delete_button: ""
+  }
+    return sub_question
+  }
+  else {
+    return undefined
+  }
 }
 export async function deleteQuestion(id: string): Promise<QuestionProps> {
   
