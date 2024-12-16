@@ -99,7 +99,7 @@ interface Props {
                   key={column.accessor}
                   className="py-2 px-4 border-b border-gray-200 text-left text-gray-600"
                 >
-                  abd
+                  {column.Header}
                 </th>
               ))}
             </tr>

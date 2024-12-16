@@ -54,8 +54,7 @@ const delete_row = (id: string) => {
   
 const display_col = (row: any, column: ColumnProps) => {
   
-  return <div>TEST</div>
-  /*
+  
   if (row) {
   if (column.accessor === 'edit_link') {
       return <Link to={row[column.accessor]}>EDIT</Link>
@@ -75,7 +74,7 @@ const display_col = (row: any, column: ColumnProps) => {
 }
 
 else  return null
-*/
+
 }
 
   return (
