@@ -24,7 +24,7 @@ type SubCategory = {
     }[]
 }
 
-export function SubCategoryPageTeacher(props:any) {
+export default function SubCategoryPageTeacher(props:any) {
    
     const params = useParams<{ sub_categoryId: string }>();
     const { data: sub_category, loading: sub_loading, error: sub_error } = useAxiosFetch<SubCategory>({ url: `/sub_categories/${params.sub_categoryId}`, method: 'get' });
@@ -32,6 +32,36 @@ export function SubCategoryPageTeacher(props:any) {
     return (
         <>
         
+            <div className='flex flex-row text-textColor2 justify-center m-1 text-lg'>{sub_category?.name} </div>
+            <div className='grid grid-cols-10'>
+                <div className='col-span-3 grid grid-rows rounded-lg'>
+                    {sub_category?.units.map(unit => (
+                        <div key={unit.id}>
+                        <div className='m-2 text-textColor2 text-md'>{unit.name}</div>
+                        <div className='flex flex-col m-2 text-textColor1 gap-1 rounded-lg p-2'>{unit.quizzes.map(quiz =>
+                             <div key={quiz.id}>
+                                <span className='p-2 text-sm'>{quiz.id}</span>
+                                <span className='text-sm '>Quiz {quiz.quiz_number}: </span>
+                                <Link className='underline text-sm' to={`/categories/${sub_category.categoryId}/sub_categories/${sub_category.name}/list_questions/${quiz.id}`}>{quiz.name}</Link>
+                           </div>
+                        )}</div>
+                        </div>
+                    ))}
+                 
+                </div>
+                <div className='col-span-7'>
+               
+                  
+                </div>
+            </div>
+        </>
+    )
+}
+
+/*
+   return (
+        <>
+            <div className='text-textColor1'>HEEREEEEEE</div>
             <div className='flex flex-row bg-bgColor1 justify-center m-1 text-lg'>{sub_category?.name} </div>
             <div className='grid grid-cols-10'>
                 <div className='col-span-3 grid grid-rows bg-gray-100 rounded-lg'>
@@ -56,4 +86,4 @@ export function SubCategoryPageTeacher(props:any) {
             </div>
         </>
     )
-}
+*/

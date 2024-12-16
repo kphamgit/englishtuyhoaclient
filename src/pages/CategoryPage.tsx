@@ -28,11 +28,7 @@ export default function CategoryPage() {
       <div className='flex flex-row gap-1 text-md mx-0'>
         {category?.sub_categories ? category?.sub_categories.map(sub_cat => (
           <div className='bg-navCatButtonBgActive p-1 text-textColor1  rounded-md hover:bg-navCatButtonBgInHover' key={sub_cat.id} >
-            { user.role?.includes('student') ?
-            <Link to={`sub_categories_student/${sub_cat.id}`} >{sub_cat.name}</Link>
-            :
-            <Link to={`sub_categories_teacher/${sub_cat.id}`} >{sub_cat.name}</Link>
-            }
+            <Link to={`sub_categories_teacher/${sub_cat.id}`} >{sub_cat.name}</Link> 
           </div>
         )) : null
         }

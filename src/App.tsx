@@ -1,23 +1,18 @@
-import {  useEffect, useState } from "react";
-//import { ThemeContext } from "./contexts/theme_context";
-//import { ThemeContextInterface } from "./types";
+import {  useEffect, useState, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Home } from "./home_page/components/Home";
 import { Login } from "./features/auth/components/Login";
 import { Logout } from "./features/auth/components/Logout";
-import SocketContextComponent from "./contexts/socket_context/Component";
-import TtSpeechProvider from "./contexts/azure/AzureTtsContext";
-import { SubCategoryPageStudent } from "./pages/SubCategoryStudent";
-import { SubCategoryPageTeacher } from "./pages/SubCategoryPageTeacher";
-//import { QuizPageVideo } from "./features/quiz_attempt/components/QuizPageVideo";
 import CategoryPage from "./pages/CategoryPage";
-import { ListQuestions } from "./features/live_actions/components/ListQuestions";
-import { QuestionEditor } from "./features/admin";
-import { LiveText } from "./pages/LiveText";
-//import { QuizPageLive } from "./pages/QuizPageLive";
-import MemoryGame from "./pages/MemoryGame";
-import SimplePeer from "./components/SimplePeer";
-//import SocketContext from "./contexts/socket_context/Context";
+import { QuizAttemptsManager } from "./features/components/QuizAttemptsManager";
+import { S3ObjectsManager } from "./features/components/S3ObjectsManager";
+import { ListQuestions } from "./features/questions_manager/ListQuestions";
+
+
+const Home = lazy(() => import("./home_page/components/Home"))
+
+const SubCategoryPageTeacher = lazy(() => import("./pages/SubCategoryPageTeacher"))
+const QuestionEditor = lazy(() => import("./features/questions_manager/QuestionEditor"))
+const SocketContextComponent = lazy(() => import("./contexts/socket_context/Component"))
 
 function getAuthFromSessionStorage() {
     const tokenString = sessionStorage.getItem('auth');
@@ -33,17 +28,6 @@ function App() {
     //const {socket, uid, users, user_uuids} = useContext(SocketContext).SocketState;
     const [auth, setAuth] = useState(getAuthFromSessionStorage());
 
-    useEffect(() => {
-        /*
-        getIds() // fetch ALL game ids, sub_category ids, unit ids, quizzes id
-          .then((response) => {
-            //console.log("NNNNNNNN response.data", response.data)
-            setCategoryIds(response.category_ids)
-            setSubCategoryIds(response.sub_category_ids)
-            setUnitIds(response.unit_ids)
-          })
-          */
-      }, [auth])
     
       const onLogin = (userToken: string) => {
         setAuth(userToken)
@@ -68,28 +52,25 @@ function App() {
     return (
         <>
      <SocketContextComponent>
-      <TtSpeechProvider>
-     
+     <Suspense fallback={<div>Loading...</div>}>
             <BrowserRouter>
               <Routes>
                 <Route path="/logout" element={<Logout onLogout={onLogout} />} />
                 <Route path="/" element={<Home />}>
                   <Route path="/categories/:categoryId" element={<CategoryPage />}>
-                    <Route path="sub_categories_student/:sub_categoryId" element={<SubCategoryPageStudent />} />
+              
                     <Route path="sub_categories_teacher/:sub_categoryId" element={<SubCategoryPageTeacher />} />
                    
-                    <Route path="sub_categories/:sub_category_name/list_questions/:quiz_id" element={<ListQuestions />} />
+                    <Route path="sub_categories/:sub_category_name/list_questions/:quiz_id" element={<ListQuestions />}/>
                     <Route path="sub_categories/:sub_category_name/list_questions/:quiz_id/edit_question/:question_id" element={<QuestionEditor />} />
                   </Route>
-                  <Route path="/live_text" element={<LiveText />} />
-                  <Route path="/simple_peer" element={<SimplePeer />} />
-                
-                  <Route path="/live_game/:game_id/:backcolor" element={<MemoryGame />} />
+                  <Route path="/manage_quiz_attempts" element={<QuizAttemptsManager />} />
+                  <Route path="/manage_s3_objects" element={<S3ObjectsManager />} />
                 </Route>
               </Routes>
             </BrowserRouter>
        
-      </TtSpeechProvider>
+      </Suspense>
       </SocketContextComponent>
          </>
   );

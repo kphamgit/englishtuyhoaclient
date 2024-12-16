@@ -3,11 +3,11 @@ import { SimpleEditor } from './tiptap_editor/SimpleEditor'
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAxiosFetch } from '../../hooks';
-import { QuestionProps } from '../question_attempts';
-import { updateQuestion } from './services/list';
+import { QuestionProps } from './ListQuestions';
+import { updateQuestion } from '../services/list';
 
 
-export function QuestionEditor(props: any) {
+export default function QuestionEditor(props: any) {
 
       const [format, setFormat] = useState<number>()
       const [questionNumber, setQuestionNumber] = useState<number>()
@@ -107,7 +107,7 @@ export function QuestionEditor(props: any) {
                     <button className='bg-red-400 m-3 p-1 text-white' onClick={handleCancel}>Cancel</button>
                 </div>
                 {instruction &&
-                    <div dangerouslySetInnerHTML={{ __html: instruction }}></div>
+                    <div className='text-textColor1' dangerouslySetInnerHTML={{ __html: instruction }}></div>
                 }
             </>
             )
@@ -117,22 +117,21 @@ export function QuestionEditor(props: any) {
 }
 
 /*
- return (
-        <>
-          
-            { question?.instruction ?
-            <SimpleEditor initialContent={question?.instruction} parentFunc={update_instruction}/>
-            :
-            <SimpleEditor initialContent='' parentFunc={update_instruction}/>
-            }
-            <div className='flex flex-row justify-start gap-2'>
-            <button className='bg-green-400 m-3 p-1' onClick={update_question}>Save question</button>
-            <button className='bg-red-400 m-3 p-1 text-white' onClick={handleCancel}>Cancel</button>
-            </div>
-            { instruction &&
-               <div dangerouslySetInnerHTML={{ __html: instruction }}></div>
-            }
-        </>
-    )
+  return (
+            <>
+                <div className='mt-2'>Question: {question?.question_number}</div>
+                 { instruction &&
+                    <SimpleEditor initialContent={instruction} parentFunc={update_instruction} />
+                 }
+           
+                <div className='flex flex-row justify-start gap-2'>
+                    <button className='bg-green-400 m-3 p-1' onClick={update_question}>Save question</button>
+                    <button className='bg-red-400 m-3 p-1 text-white' onClick={handleCancel}>Cancel</button>
+                </div>
+                {instruction &&
+                    <div dangerouslySetInnerHTML={{ __html: instruction }}></div>
+                }
+            </>
+            )
 */
 

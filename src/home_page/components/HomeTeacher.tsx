@@ -11,8 +11,8 @@ export function HomeTeacher(props:any) {
     
     
     return (
-        <div className="mx-10 p-5">
-            <div className="bg-bgColor mx-3">
+        <div>
+            <div className="bg-bgColor">
             <NavigationBar />
        
             <Outlet />

@@ -13,7 +13,7 @@ function getAuthFromSessionStorage() {
 }
 */
 
-export function Home() {
+export default function Home() {
     const user = useAppSelector(state => state.user.value)
     //const [auth, setAuth] = useState(getAuthFromSessionStorage());
     //const {socket, users} = useContext(SocketContext).SocketState;
@@ -24,7 +24,7 @@ export function Home() {
 
 
   return (
-    <div className='m-14'>
+    <div>
  
       {user.role === 'teacher' ?
         <HomeTeacher />

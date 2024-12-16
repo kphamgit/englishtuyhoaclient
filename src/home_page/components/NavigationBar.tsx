@@ -1,11 +1,14 @@
 
 import { useAppSelector } from '../../redux/store';
 import { useAxiosFetch } from '../../hooks';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { ThemeContext } from '../../contexts/theme_context';
 import { ThemeContextInterface } from '../../types';
 import { MdDarkMode } from "react-icons/md";
 import { useContext } from 'react';
+//mport { getQuizAttempts } from '../../features/admin/services/list';
+//import { data } from 'framer-motion/client';
+//import { getS3RecordingObjects } from '../../features/admin/services/list';
 
 type Category = {
     id: number;
@@ -25,11 +28,18 @@ export function NavigationBar(props: any) {
     const user = useAppSelector(state => state.user.value)
     const { data: categories, loading, error } = useAxiosFetch<Category[]>({ url: '/categories', method: 'get' });
     const { darkTheme, toggleTheme } = useContext(ThemeContext) as ThemeContextInterface;
+    const navigate = useNavigate();
+
+
+    const get_quiz_attempts = () => {
+      navigate('manage_quiz_attempts')
+      //navigate("/live_quiz", { state: arg })
+    }
 
     return (
         <>
          <div className='flex flex-row justify-left gap-2 bg-bgColor text-userNavText'>
-          <div>Welcome: {user.user_name}</div>
+          <div>WWWWelcome: {user.user_name}</div>
           <div className= 'px-2 py-1 font-bold text-lg underline rounded-md mx-1'><Link to="/">Home</Link></div>
             <div className='text-md'>
               <Link to="/logout">Log out</Link>
@@ -56,8 +66,24 @@ export function NavigationBar(props: any) {
                   </NavLink>
                 </div>
               ))}
-              
+               <div className='text-textColor1'>
+               <NavLink
+                    to={`/manage_s3_objects`}
+                  >
+                    Manage Objects
+                  </NavLink>
+               </div>
+               <div className='text-textColor1'>
+               <NavLink
+                    to={`/manage_quiz_attempts`}
+                  >
+                    Manage Quiz Attempts
+                  </NavLink>
+               </div>
             </div>
+           
         </>
     )
 }
+
+//manage_s3_objects
