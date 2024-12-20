@@ -1,17 +1,20 @@
-import {  useEffect, useState, lazy, Suspense } from "react";
+import { useState, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Login } from "./features/auth/components/Login";
 import { Logout } from "./features/auth/components/Logout";
-import CategoryPage from "./pages/CategoryPage";
-import { QuizAttemptsManager } from "./features/components/QuizAttemptsManager";
+//import CategoryPage from "./pages/CategoryPage";
+//import { QuizAttemptsManager } from "./features/components/QuizAttemptsManager";
 import { S3ObjectsManager } from "./features/components/S3ObjectsManager";
 import { ListQuestions } from "./features/questions_manager/ListQuestions";
-
+//import QuestionCreator from "./features/questions_manager/QuestionCreator";
 
 const Home = lazy(() => import("./home_page/components/Home"))
 
 const SubCategoryPageTeacher = lazy(() => import("./pages/SubCategoryPageTeacher"))
+const CategoryPage = lazy(() => import("./pages/CategoryPage"))
 const QuestionEditor = lazy(() => import("./features/questions_manager/QuestionEditor"))
+const QuestionCreator = lazy(() => import("./features/questions_manager/QuestionCreator"))
+const QuizAttemptsManager = lazy(() => import("./features/components/QuizAttemptsManager"))
 const SocketContextComponent = lazy(() => import("./contexts/socket_context/Component"))
 
 function getAuthFromSessionStorage() {
@@ -63,6 +66,7 @@ function App() {
                    
                     <Route path="sub_categories/:sub_category_name/list_questions/:quiz_id" element={<ListQuestions />}/>
                     <Route path="sub_categories/:sub_category_name/list_questions/:quiz_id/edit_question/:question_id" element={<QuestionEditor />} />
+                    <Route path="sub_categories/:sub_category_name/list_questions/:quiz_id/create_question/:format" element={<QuestionCreator/>} />
                   </Route>
                   <Route path="/manage_quiz_attempts" element={<QuizAttemptsManager />} />
                   <Route path="/manage_s3_objects" element={<S3ObjectsManager />} />

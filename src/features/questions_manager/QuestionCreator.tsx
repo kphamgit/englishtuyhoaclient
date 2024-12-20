@@ -4,20 +4,27 @@ import { SimpleEditor } from './tiptap_editor/SimpleEditor'
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAxiosFetch } from '../../hooks';
 import { QuestionProps } from './ListQuestions';
-import { updateQuestion } from '../services/list';
+import { createQuestion, updateQuestion } from '../services/list';
 import NewCloze from './NewCloze';
 import { EditButtonSelect } from './EditButtonSelect';
-import EditRadio from './EditRadio';
-import { RadioComponentHandle } from './types';
 import EditWordScramble from './EditWordScramble';
-import { WordScrambleComponentHandle } from './types';
-import { RadioProps } from './types';
+import { RadioComponentHandle, RadioProps } from './types';
+import NewRadio, { NewRadioComponentHandle } from './NewRadio';
 
-export default function QuestionEditor(props: any) {
+import { WordScrambleComponentHandle } from './types';
+import NewWordScramble from './NewWordScramble';
+
+
+interface WordScrambleDirOption {
+    value: string;
+    label: string;
+  }
+
+export default function QuestionCreator() {
 
       const [format, setFormat] = useState<string>()
       const [questionNumber, setQuestionNumber] = useState<number>()
-      const [prompt, setPrompt] = useState<string>('null')
+      const [prompt, setPrompt] = useState<string>('')
       const [audioSrc, setAudioSrc] = useState('')
       const [audioStr, setAudioStr] = useState('')
       const [questionContent, setQuestionContent] = useState('')
@@ -44,15 +51,12 @@ export default function QuestionEditor(props: any) {
       const wordScrambleRef = useRef<WordScrambleComponentHandle>(null)
 
       const navigate = useNavigate();
-      const params = useParams<{categoryId: string, sub_category_name: string, quiz_id: string, question_id: string}>();
+      const params = useParams<{categoryId: string, sub_category_name: string, quiz_id: string, question_id: string, format: string}>();
       //console.log("MMMMNNNNNNN  params", params)
    
       const url = `/questions/${params.question_id}`
       //console.log("url ", url)
-      const { data: question, loading, error } =
-          useAxiosFetch<QuestionProps>({ url: url, method: 'get' })
-          //  const url = `${rootpath}/api/questions/${id}`
-
+/*
     useEffect(() => {
         if (question) {
         //console.log("HEEEHWWWHWWWWwwww.......... question:", question)
@@ -83,6 +87,11 @@ export default function QuestionEditor(props: any) {
         }
        }
     },[question, question?.instruction])
+*/
+
+    useEffect(() => {
+        setFormat(params.format)
+    }, [params.format])
 
     const update_instruction = (editor_content: string) => {
         //console.log("UUUUUUUyyyyyyyUUUUUUU ")
@@ -91,12 +100,13 @@ export default function QuestionEditor(props: any) {
     }
 
     //this function is called when user selects a radio button
-    const set_radio_answer_key = (answer_key: string) => {
+    const set_answer_key = (answer_key: string) => {
         setAnswerKey(answer_key)
     }
 
-    const update_question = () => {
+    const create_question = () => {
         let question_params = {
+            question_number: "1",
             format: format,
             instruction: instruction,
             prompt: prompt,
@@ -105,36 +115,29 @@ export default function QuestionEditor(props: any) {
             content: questionContent,
             answer_key: answerKey,
             score: score,
-            help1: help1
+            help1: help1,
+            quiz_id: params.quiz_id
         }
-        //console.log("NNNN q_params=", question_params)
+
         if (format === "4") {    //add parameters for radio questions
-            console.log("in here...")
             if (radioRef.current) {
-                //console.log("HEEEE")
                 //question_params = radioRef.current.addParams(question_params)
                 const radio_params = radioRef.current.getRadioTexts(question_params)
                 const my_params = {...question_params, radio_params}
-                //console.log("MMMMMM my_params=", my_params)
-                
-                updateQuestion(question?.id, my_params )
+                //console.log("MMMMMM radio_params=", res)
+                createQuestion( my_params )
                 .then(response => {
                     //console.log("SUCCESS updating question")
                     //navigate("/live_quiz", { state: arg })
                     navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_category_name}/list_questions/${params.quiz_id}`)
                  })
-                 
             }
         }
         else if (format === "6") {    //add parameters for radio questions
-            
-                //question_params = radioRef.current.addParams(question_params)
-                //const radio_params = radioRef.current.getRadioTexts(question_params)
-                //const dir = wordScrambleRef.getDirection()
                 if (wordScrambleRef.current) {
                 const my_params = {...question_params,  words_scramble_direction: wordScrambleRef.current.getDirection()}
                 //console.log("MMMMMM radio_params=", res)
-                updateQuestion(question?.id, my_params )
+                createQuestion(my_params )
                 .then(response => {
                     //console.log("SUCCESS updating question")
                     //navigate("/live_quiz", { state: arg })
@@ -144,7 +147,7 @@ export default function QuestionEditor(props: any) {
         }
         else {
             console.log("Update question!!!")
-            updateQuestion(params.question_id, question_params)
+                createQuestion(question_params)
                 .then(response => {
                     //console.log("SUCCESS update")
                     navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_category_name}/list_questions/${params.quiz_id}`)
@@ -160,20 +163,14 @@ export default function QuestionEditor(props: any) {
     //kpham: Javascript lesson: use dynamic key (i.e, format state variable) to index into formatConversion object
         return (
             <>
-                <div className='mx-10 text-textColor1'>Question: {question?.question_number}
-                <span className='mx-2 text-textColor1'>{format && formatConversion[format]} ({format}) </span>
-                </div>
+                <div className='text-textColor1 mx-10'>{format && formatConversion[format]} ({format})</div>
                  { instruction &&
                     <SimpleEditor initialContent={instruction} parentFunc={update_instruction} />
                  }
-           
-                <div className='flex flex-row justify-start gap-2'>
-                    <button className='bg-green-400 m-3 p-1' onClick={update_question}>Save question</button>
+                  <div className='flex flex-row justify-start gap-2'>
+                    <button className='bg-green-400 m-3 p-1' onClick={create_question}>Create question</button>
                     <button className='bg-red-400 m-3 p-1 text-white' onClick={handleCancel}>Cancel</button>
                 </div>
-                {instruction &&
-                    <div className='text-textColor1' dangerouslySetInnerHTML={{ __html: instruction }}></div>
-                }
 
                 <div className='mx-10 text-textColor1 mb-2'>Prompt
                     <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={prompt}
@@ -199,9 +196,22 @@ export default function QuestionEditor(props: any) {
                     <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={answerKey}
                     onChange={e => setAnswerKey(e.target.value)}></input>
                 </div>
+                { (format === "1") && 
+                    <NewCloze question_content={questionContent} set_answer_key={set_answer_key}/>
+                }
+                { (format === "4") && 
+                    <NewRadio set_radio_answer_key={set_answer_key} ref={radioRef}/>
+                }
+                { (format === "6") && 
+                    <NewWordScramble ref={wordScrambleRef}/>
+                }
+            </>
+            )
+}
 
-                { (format === "1") &&  
-                    <NewCloze question_content={questionContent} set_answer_key ={setAnswerKey} />
+/*
+   { (format === "1") &&  
+                    <EditCloze question_content={questionContent} set_answer_key ={setAnswerKey} />
                 }
                 { (format === "3") &&  
                     <EditButtonSelect question_content={questionContent} answer_key={answerKey} set_answer_key ={setAnswerKey} />
@@ -212,7 +222,36 @@ export default function QuestionEditor(props: any) {
                 { (format === "6") && 
                     <EditWordScramble ref = {wordScrambleRef} direction={wordScrambleDirection}/>
                 }
-            </>
-            )
-}
+*/
 
+/*
+            <div className='flex flex-row justify-start gap-2'>
+                    <button className='bg-green-400 m-3 p-1' onClick={create_question}>Create question</button>
+                    <button className='bg-red-400 m-3 p-1 text-white' onClick={handleCancel}>Cancel</button>
+                </div>
+
+                <div className='mx-10 text-textColor1 mb-2'>Prompt
+                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={prompt}
+                    onChange={e => setPrompt(e.target.value)}></input>
+                </div>
+
+                <div className='mx-10 text-textColor1 mb-2'>Audio text
+                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={audioStr}
+                    onChange={e => setAudioStr(e.target.value)}></input>
+                </div>
+
+                <div className='mx-10 text-textColor1 mb-2'>Amazon S3 Audio Source
+                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={audioSrc}
+                    onChange={e => setAudioSrc(e.target.value)}></input>
+                </div>
+
+                <div className='mx-10 text-textColor1 mb-2'>Content
+                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={questionContent}
+                    onChange={e => setQuestionContent(e.target.value)}></input>
+                </div>
+
+                <div className='mx-10 text-textColor1 mb-2'>Answer Key
+                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={answerKey}
+                    onChange={e => setAnswerKey(e.target.value)}></input>
+                </div>
+*/

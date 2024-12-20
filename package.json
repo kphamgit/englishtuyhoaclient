@@ -29,6 +29,7 @@
     "buffer": "^6.0.3",
     "classnames": "^2.5.1",
     "core-js": "^3.38.1",
+    "flowbite-react": "^0.10.2",
     "framer-motion": "^11.11.10",
     "html-react-parser": "^5.1.18",
     "microsoft-cognitiveservices-speech-sdk": "^1.41.0",

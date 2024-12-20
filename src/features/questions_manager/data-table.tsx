@@ -18,18 +18,11 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { clone_a_row } from '../services/list';
+import { clone_a_row, deleteQuestion } from '../services/list';
 
 interface ColumnProps { 
     Header: string, accessor: string 
 }
-interface Props {
-    columns: ColumnProps[],
-    //data: QuestionRowProps[] | undefined,
-    data: any,
-    renumber_question: () => void
-    //clone_func: (event: React.MouseEvent<HTMLButtonElement>) => void; 
-  }
 
  //const DataTable: React.FC<Props> = ({ columns, data, renumber_question}) => {
  
@@ -78,9 +71,54 @@ interface Props {
         console.log(error)
     })
   }
+
+  const delete_row = (id: string) => {
+    //const el = event.target as HTMLButtonElement
+    deleteQuestion(id)
+    .then(data => {
+        //console.log("mmmmm mmmmmm data ", data)
+        //const new_arr = [...questions, data]
+        const reduced_rows = tableData?.filter(row => row.id != id)
+        setTableData(reduced_rows)
+        // kpham: typescript tips: use "as any[]" like above to avoid error: type ... must have a '[Symbol.iterator]()' method that returns an iterator.
+        // why???
+        //setQuestions(prev => prev?.push(data))
+    })
+    .catch(error => {
+        console.log(error)
+    })
+}
+
+  
+        const renumber_rows = () => {
+          if (tableData) {
+            console.log("XXXXX renumber rows, tableData", tableData)
+            //const sorted_arr = tableData.map((item, index) => {
+           //     return { ...item, question_number: index + 1 }
+           // })
+            //console.log("test arr", test_arr)
+            //setTableData(sorted_arr)
+            //renumber_question()
+        }
+          /*
+          if (tableData) {
+              console.log("XXXXX")
+              const sorted_arr = tableData.map((question, index) => {
+                  return { ...question, question_number: index + 1 }
+              })
+              //console.log("test arr", test_arr)
+              setTableData(sorted_arr)
+              //renumber_question()
+          }
+          */
+      }
+      
+
   return (
+    
     <div className='max-w-2xl mx-auto grid gap-2 my-10'>
-      <h2 className='text-2xl text-textColor1 mb-4'>User List</h2>
+      <div><button className='text-textColor1' onClick={renumber_rows}>Renumber rows</button></div>
+      <h2 className='text-2xl text-textColor1 mb-4'>Questions</h2>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -106,7 +144,7 @@ interface Props {
           </thead>
             <tbody>
           {tableData.map((row) => (
-            <DataRow key={row.id} id={row.id} row={row} columns={props.columns} parent_clone_func={clone_row} />
+            <DataRow key={row.id} id={row.id} row={row} columns={props.columns} parent_clone_func={clone_row} parent_delete_func={delete_row} />
           ))}
            </tbody>
           </table>
@@ -127,26 +165,4 @@ id: string;
     edit_link: string;
     clone_button: string;
     delete_button: string;
-*/
-/*
-  return (
-    <div className='max-w-2xl mx-auto grid gap-2 my-10'>
-      <h2 className='text-2xl font-bold mb-4'>User List</h2>
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-        modifiers={[restrictToVerticalAxis]}
-      >
-        <SortableContext
-          items={userList}
-          strategy={verticalListSortingStrategy}
-        >
-          {userList.map((user) => (
-            <UserItem key={user.id} user={user} />
-          ))}
-        </SortableContext>
-      </DndContext>
-    </div>
-  );
 */

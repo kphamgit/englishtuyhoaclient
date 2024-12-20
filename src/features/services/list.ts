@@ -39,12 +39,22 @@ else {
 
 //http://localhost:5001/api/quiz_attempts
 
-export async function updateQuestion(id: string | undefined, body: {instruction: string}) {
+export async function updateQuestion(id: string | undefined, params: any) {
     //console.log(" in updateQuestion id ",id )
     //console.log(" in updateQuestion id ",body )
     const url = `${rootpath}/api/questions/${id}`
-    console.log("HEE url", url)
-    const response = await axios.put(url, body)
+    //console.log("HEE url", url)
+    const response = await axios.put(url, params)
+    return response
+    //return "test"
+  }
+
+  export async function createQuestion(params: any) {
+    //console.log(" in updateQuestion id ",id )
+    //console.log(" in updateQuestion id ",body )
+    const url = `${rootpath}/api/questions`
+    console.log("createQuestion,  url", url)
+    const response = await axios.post(url, params)
     return response
     //return "test"
   }

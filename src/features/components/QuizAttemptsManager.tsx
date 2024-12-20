@@ -12,7 +12,7 @@ type QuizAttemptProps = {
     quizId: number,
 }
 
-export function QuizAttemptsManager(props: any) {
+export default function QuizAttemptsManager(props: any) {
     const [quizAttempts, setQuizAttempts] = useState<QuizAttemptProps[] | undefined>([])
     useEffect(() => {
         getQuizAttempts()
