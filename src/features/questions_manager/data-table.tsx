@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import DataRow from './data-row'
-import { CategoryRowProps, QuestionRowProps } from './types';
+import { DataRowProps } from './types';
 
 import {
   DndContext,
@@ -18,7 +18,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { clone_a_row, deleteQuestion } from '../services/list';
+import { clone_a_row, deleteQuestion, renumberQuestions } from '../services/list';
 
 interface ColumnProps { 
     Header: string, accessor: string 
@@ -26,10 +26,9 @@ interface ColumnProps {
 
  //const DataTable: React.FC<Props> = ({ columns, data, renumber_question}) => {
  
-  const DataTable = (props: { columns: ColumnProps[], data: QuestionRowProps[] | CategoryRowProps[], renumber_question: () => void }) => {
+  const DataTable = (props: { columns: ColumnProps[], data: DataRowProps[] }) => {
 
-  const [tableData, setTableData] = useState<QuestionRowProps[] | CategoryRowProps[] >([])
-  //const [tableData, setTableData] = useState([])
+  const [tableData, setTableData] = useState<DataRowProps[] | undefined >([])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -40,7 +39,7 @@ interface ColumnProps {
 
   useEffect(() => {
     if (props.data) {
-      console.log("x x x x x x x x data=", props.data)
+      //console.log("x x x x x x x x data=", props.data)
         setTableData(props.data)
     }
 },[props.data])
@@ -50,75 +49,77 @@ interface ColumnProps {
 
     if (over && active.id !== over.id) {
         setTableData((items) => {
-         
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-
-        return arrayMove(items, oldIndex, newIndex);
+        if (items) {
+            const oldIndex = items.findIndex((item) => item.id === active.id);
+            const newIndex = items.findIndex((item) => item.id === over.id);
+            return arrayMove(items, oldIndex, newIndex);
+        }
           
       });
     }
   }
 
-  const clone_row = (id: string) => {
-    clone_a_row(id, "question")
-    .then((data) => {
-        const all_new_rows = [...tableData as any, data]
-        //console.log("")
-        setTableData(all_new_rows)
-    })
-    .catch(error => {
-        console.log(error)
-    })
-  }
+    const clone_row = (id: string) => {
+      clone_a_row(id, "question")
+        .then((data) => {  //returns the id and the question number of the newly cloned row
+          //look for row in tableData that has the same question number
+          const cloned_row = tableData?.find(row => row.item_number === data?.item_number)
+          if (tableData) {
+            // add cloned row to table, remember to set its id to that of the newly created row in database
+            const new_table_data = [...tableData, { ...cloned_row, id: data?.id }]
+            if (new_table_data) {
+              setTableData(new_table_data as any)
+              //have to use "as any" here for typescript to work. Don't know why. kpham
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    }
 
   const delete_row = (id: string) => {
     //const el = event.target as HTMLButtonElement
     deleteQuestion(id)
     .then(data => {
-        //console.log("mmmmm mmmmmm data ", data)
-        //const new_arr = [...questions, data]
-        const reduced_rows = tableData?.filter(row => row.id != id)
+        const reduced_rows = tableData?.filter(row => row.id != data.id)
         setTableData(reduced_rows)
         // kpham: typescript tips: use "as any[]" like above to avoid error: type ... must have a '[Symbol.iterator]()' method that returns an iterator.
         // why???
-        //setQuestions(prev => prev?.push(data))
     })
     .catch(error => {
         console.log(error)
     })
 }
 
-  
         const renumber_rows = () => {
           if (tableData) {
-            console.log("XXXXX renumber rows, tableData", tableData)
-            //const sorted_arr = tableData.map((item, index) => {
-           //     return { ...item, question_number: index + 1 }
-           // })
-            //console.log("test arr", test_arr)
-            //setTableData(sorted_arr)
-            //renumber_question()
+            //console.log(" tableData =", tableData)
+            const table_with_sorted_item_numbers = tableData.map((row, index) => {
+                return {...row, item_number: index+1}
+            })
+            //console.log("MMQQQQQQ ids", table_with_sorted_item_numbers)
+            setTableData(table_with_sorted_item_numbers)
+
+            //extract only ids to send to server
+            const ids_table = tableData.map((row) => {
+              return row.id
+            })
+            renumberQuestions(ids_table)
+            .then( response => {
+                //console.log("eeeee", response)
+            })
+            .catch( err =>
+                console.log(err)
+            )
         }
-          /*
-          if (tableData) {
-              console.log("XXXXX")
-              const sorted_arr = tableData.map((question, index) => {
-                  return { ...question, question_number: index + 1 }
-              })
-              //console.log("test arr", test_arr)
-              setTableData(sorted_arr)
-              //renumber_question()
-          }
-          */
       }
       
-
   return (
     
     <div className='max-w-2xl mx-auto grid gap-2 my-10'>
-      <div><button className='text-textColor1' onClick={renumber_rows}>Renumber rows</button></div>
-      <h2 className='text-2xl text-textColor1 mb-4'>Questions</h2>
+      <div><button className='text-textColor1 bg-bgColor2 rounded-lg p-2' onClick={renumber_rows}>Renumber rows</button></div>
+      <h2 className='text-xl text-textColor1 mb-4'>Questions</h2>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -126,7 +127,7 @@ interface ColumnProps {
         modifiers={[restrictToVerticalAxis]}
       >
         <SortableContext
-          items={tableData}
+          items={tableData as any}   //kpham: have to use "as any" here to get rid of typescript error. kpham
           strategy={verticalListSortingStrategy}
         >
             <table>
@@ -143,7 +144,7 @@ interface ColumnProps {
             </tr>
           </thead>
             <tbody>
-          {tableData.map((row) => (
+          {tableData && tableData.map((row) => (
             <DataRow key={row.id} id={row.id} row={row} columns={props.columns} parent_clone_func={clone_row} parent_delete_func={delete_row} />
           ))}
            </tbody>
@@ -155,14 +156,3 @@ interface ColumnProps {
 };
 
 export default DataTable;
-
-/*
-id: string;
-    question_number: number;
-    format: number;
-    content: string;
-    answer_key: string;
-    edit_link: string;
-    clone_button: string;
-    delete_button: string;
-*/

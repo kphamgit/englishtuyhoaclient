@@ -5,9 +5,9 @@ import { Link, useParams } from 'react-router-dom';
 import { MouseEventHandler, useEffect, useState } from 'react';
 import { cloneQuestion, deleteQuestion } from '../services/list';
 //import Table from '../components/data-table_old';
-import { renumberQuizQuestions } from '../services/list';
+//import { renumberQuestions } from '../services/list';
 import DataTable from './data-table';
-import { CategoryRowProps, QuestionRowProps } from './types';
+import { CategoryRowProps, DataRowProps } from './types';
 
 type RadioProps =
   {
@@ -55,7 +55,7 @@ interface QuizProps {
 //{ id: string; question_number: number; format: number; content: string; answer_key: string; }[] | undefined' 
 export function ListQuestions(props:any) {
     
-        const [subQuestions, setsubQuestions] = useState<QuestionRowProps[] | CategoryRowProps[]>([])
+        const [subQuestions, setsubQuestions] = useState<DataRowProps[] | CategoryRowProps[]>([])
         /*
 export interface QuestionRowProps {
     id: string,
@@ -77,9 +77,9 @@ export interface QuestionRowProps {
         "9": "Recording", "10": "Drop Down", "11": "Letter Cloze",
       }
 
-          const columns1 = [
+          const columns = [
             { Header: 'Id', accessor: 'id' },
-            { Header: 'Question Number', accessor: 'question_number' },
+            { Header: 'Item Number', accessor: 'item_number' },
             { Header: 'Format', accessor: 'format' },
             { Header: 'Content', accessor: 'content' },
             { Header: 'Answer Key', accessor: 'answer_key' },
@@ -96,7 +96,7 @@ export interface QuestionRowProps {
             const sub_questions = quiz?.questions.map(({ id, question_number, format, content, answer_key }) => {
               return {
                 id,
-                question_number, 
+                item_number: question_number, 
                 format: formatConversion[format.toString()], //format coming from question is a number. So convert it to a string before indexing into the formatConversion dictionary 
                 content, 
                 answer_key
@@ -158,7 +158,7 @@ export interface QuestionRowProps {
       */
         return (
           <>
-            <DataTable columns={columns1} data={subQuestions} renumber_question={paginate} />
+            <DataTable columns={columns} data={subQuestions} renumber_question={paginate} />
             
             <div className='flex flex-row justify-start'>
               <div>
@@ -202,7 +202,7 @@ New letter cloze question (11)
 
 "/categories/1/sub_categories/First%20Grammar%201/list_questions/134/create_question" 
  return (
-            <QuestionList columns={columns1} data={subQuestions} renumber_question={paginate} />
+            <QuestionList columns={columns} data={subQuestions} renumber_question={paginate} />
           );
 */
 //{`/categories/${params.categoryId}/sub_categories/${params.sub_category_name}/list_questions/${params.quiz_id}/edit_question/${question.id}`}>
@@ -212,7 +212,7 @@ New letter cloze question (11)
               <h1 className="text-lg text-textColor1 font-bold mb-4">Questions Table</h1>
               <button className='text-textColor1' onClick={paginate}>PAGINATE</button>
               { subQuestions &&
-              <Table columns={columns1} data={subQuestions} renumber_question={paginate}  />
+              <Table columns={columns} data={subQuestions} renumber_question={paginate}  />
               }
             </div>
           );

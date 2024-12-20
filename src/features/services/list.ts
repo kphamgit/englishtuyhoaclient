@@ -5,7 +5,6 @@ import { QuestionRowProps } from "../questions_manager/types";
 
 type StudentProps = 
 {
-   
         id: number,
         user_name: string
         full_name: string
@@ -109,23 +108,20 @@ export async function cloneQuestion(id: string): Promise<QuestionProps> {
 
 }
 
-export async function clone_a_row(id: string, type: string): Promise<QuestionRowProps | undefined> {
+interface CloneProps {
+  id: string,
+  item_number: number
+}
+
+
+
+//export async function clone_a_row(id: string, type: string): Promise<QuestionRowProps | undefined> {
+export async function clone_a_row(id: string, type: string): Promise<CloneProps | undefined> {
   
   if (type === "question") {
   const url = `${rootpath}/api/questions/${id}/clone`
   const response = await axios.get(url)
-  
-  const sub_question: QuestionRowProps = {
-    id: response.data.id,
-    question_number: response.data.question_number, 
-    format: response.data.format,
-    content: response.data.content,
-    answer_key: response.data.answer_key,
-    edit_link: "",
-    clone_button: "",
-    delete_button: ""
-  }
-    return sub_question
+    return response.data
   }
   else {
     return undefined
@@ -140,12 +136,12 @@ export async function deleteQuestion(id: string): Promise<QuestionProps> {
 
 }
 
-export async function renumberQuizQuestions(id: string | undefined): Promise<QuestionProps> {
+export async function renumberQuestions(params: any): Promise<string> {
   
-  const url = `${rootpath}/api/quizzes/${id}/renumber_questions`
-  const response = await axios.get(url)
+  const url = `${rootpath}/api/questions/renumber`
+  const response = await axios.post(url, {question_ids: params})
   //console.log("UUUU in getAClass response.data", response.data)
-  return response.data
+  return "response.data"
 
 }
   export async function getAClass(id: string): Promise<ClassProps> {

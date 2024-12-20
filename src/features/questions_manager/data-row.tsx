@@ -1,7 +1,8 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { FC, useEffect, useState } from 'react';
-import { ColumnProps, QuestionRowProps } from './types';
+//import { ColumnProps, QuestionRowProps } from './types';
+import { ColumnProps, DataRowProps } from './types';
 import { cloneQuestion, deleteQuestion } from '../services/list';
 import { QuestionProps } from './ListQuestions';
 import { Link } from 'react-router-dom';
@@ -9,7 +10,7 @@ import { Link } from 'react-router-dom';
 
 interface Props {
   id: string,
-  row: QuestionRowProps,
+  row: DataRowProps,
   columns: ColumnProps[],
   //clone_func: (event: React.MouseEvent<HTMLButtonElement>) => void; 
   parent_clone_func: (id: string) => void;
@@ -18,7 +19,7 @@ interface Props {
 
   const DataRow: React.FC<Props> = ({ id, row, columns, parent_clone_func, parent_delete_func}) => {
     
-  const [myRow, setMyRow] = useState<QuestionRowProps>()
+  const [myRow, setMyRow] = useState<DataRowProps>()
 
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
@@ -34,7 +35,18 @@ interface Props {
       setMyRow(row)
     }
   }, [row])
-  
+  /*
+    const columns = [
+            { Header: 'Id', accessor: 'id' },
+            { Header: 'Item Number', accessor: 'item_number' },
+            { Header: 'Format', accessor: 'format' },
+            { Header: 'Content', accessor: 'content' },
+            { Header: 'Answer Key', accessor: 'answer_key' },
+            { Header: 'Edit', accessor: 'edit_link' },
+            { Header: 'Clone', accessor: 'clone_button' },
+            { Header: 'Delete', accessor: 'delete_button' },
+          ];
+  */
 const display_col = (row: any, column: ColumnProps) => {
   
   

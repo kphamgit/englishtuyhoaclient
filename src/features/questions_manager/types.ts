@@ -2,6 +2,14 @@ export interface ColumnProps {
     Header: string, accessor: string 
 }
 
+export interface DataRowProps {
+    id: string,
+    item_number: number,
+    edit_link: string
+    clone_button: string,
+    delete_button: string
+}
+
 export interface QuestionRowProps {
     id: string,
     question_number?: number,
@@ -29,7 +37,7 @@ export interface RadioComponentProps {
 
 export interface CategoryRowProps {
     id: string,
-    category_number: number,
+    item_number: number,
     edit_link: string
     clone_button: string,
     delete_button: string
