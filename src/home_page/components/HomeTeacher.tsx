@@ -1,7 +1,3 @@
-//import { useContext } from "react";
-//import { ThemeContext } from "../contexts/theme_context";
-//import { ThemeContextInterface } from "../types";
-//import { SendLiveText } from "../features/live_actions/live_text";
 import { NavigationBar } from "./NavigationBar";
 import { Outlet } from "react-router-dom";
 //import SimplePeer from "../components/SimplePeer";

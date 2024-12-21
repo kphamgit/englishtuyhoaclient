@@ -1,17 +1,8 @@
 import {useContext, useEffect} from 'react'
 
 import { useAppSelector } from '../../redux/store'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import SocketContext from '../../contexts/socket_context/Context'
-//import ReactTextareaAutosize from 'react-textarea-autosize'
-//import PeerComponentStudent from './PeerComponentStudent'
-//import { Dictaphone } from './Dictaphone'
-import { NavigationBar } from './NavigationBar'
-//import SimplePeer from '../../components/SimplePeer'
-
-
-//import VoiceRecorder from './VoiceRecorder'
-
 
 export function HomeStudent() {
     const user = useAppSelector(state => state.user.value)
