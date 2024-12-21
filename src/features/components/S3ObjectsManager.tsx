@@ -6,7 +6,7 @@ interface MyProps {
   //setUser: (user: { name: string; email: string } | null) => void;
 }
 
-export function S3ObjectsManager(props: any) {
+export default function S3ObjectsManager(props: any) {
     const [S3Prefixes, setS3Prefixes] = useState<string[] | undefined>([])
     const [targetClass , setTargetClass ] = useState<string>('')
     const [classstudents, setClassStudents] = useState<string[] | undefined>()

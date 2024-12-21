@@ -4,8 +4,8 @@ import { Login } from "./features/auth/components/Login";
 import { Logout } from "./features/auth/components/Logout";
 //import CategoryPage from "./pages/CategoryPage";
 //import { QuizAttemptsManager } from "./features/components/QuizAttemptsManager";
-import { S3ObjectsManager } from "./features/components/S3ObjectsManager";
-import { ListQuestions } from "./features/questions_manager/ListQuestions";
+//import { S3ObjectsManager } from "./features/components/S3ObjectsManager";
+//import { ListQuestions } from "./features/questions_manager/ListQuestions";
 //import QuestionCreator from "./features/questions_manager/QuestionCreator";
 
 const Home = lazy(() => import("./home_page/components/Home"))
@@ -16,6 +16,8 @@ const QuestionEditor = lazy(() => import("./features/questions_manager/QuestionE
 const QuestionCreator = lazy(() => import("./features/questions_manager/QuestionCreator"))
 const QuizAttemptsManager = lazy(() => import("./features/components/QuizAttemptsManager"))
 const SocketContextComponent = lazy(() => import("./contexts/socket_context/Component"))
+const S3ObjectsManager = lazy(() => import("./features/components/S3ObjectsManager"))
+const ListQuestions = lazy(() => import("./features/questions_manager/ListQuestions"))
 
 function getAuthFromSessionStorage() {
     const tokenString = sessionStorage.getItem('auth');

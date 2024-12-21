@@ -7,7 +7,7 @@ import { Outlet } from "react-router-dom";
 //import SimplePeer from "../components/SimplePeer";
 
 
-export function HomeTeacher(props:any) {
+export default function HomeTeacher(props:any) {
     
     
     return (

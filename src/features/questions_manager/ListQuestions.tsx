@@ -53,7 +53,7 @@ interface QuizProps {
 }
 
 //{ id: string; question_number: number; format: number; content: string; answer_key: string; }[] | undefined' 
-export function ListQuestions(props:any) {
+export default function ListQuestions(props:any) {
     
         const [subQuestions, setsubQuestions] = useState<DataRowProps[] | CategoryRowProps[]>([])
         /*
@@ -120,24 +120,6 @@ export interface QuestionRowProps {
             //const names = users.map(({ name }) => name);
         },[quiz, setsubQuestions])
 
-        const paginate = () => {
-          /*
-            renumberQuizQuestions(params.quiz_id)
-            .then(data => {
-                console.log("renumber.....", data)
-                //console.log("mmmmm mmmmmm data ", data)
-                //const new_arr = [...questions, data]
-                //const reduced_questions = questions?.filter(question => question.id != data.id)
-                //setQuestions(reduced_questions)
-                // kpham: typescript tips: use "as any[]" like above to avoid error: type ... must have a '[Symbol.iterator]()' method that returns an iterator.
-                // why???
-                //setQuestions(prev => prev?.push(data))
-            })
-            .catch(error => {
-                console.log(error)
-            })
-            */
-        }
 
         const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
           setNewQuestionFormat(event.target.value);
@@ -158,7 +140,7 @@ export interface QuestionRowProps {
       */
         return (
           <>
-            <DataTable columns={columns} data={subQuestions} renumber_question={paginate} />
+            <DataTable columns={columns} data={subQuestions} />
             
             <div className='flex flex-row justify-start'>
               <div>
