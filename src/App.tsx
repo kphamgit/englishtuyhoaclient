@@ -2,6 +2,7 @@ import { useState, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Login } from "./features/auth/components/Login";
 import { Logout } from "./features/auth/components/Logout";
+import ListQuizzes from "./features/questions_manager/ListQuizzes";
 //import CategoryPage from "./pages/CategoryPage";
 //import { QuizAttemptsManager } from "./features/components/QuizAttemptsManager";
 //import { S3ObjectsManager } from "./features/components/S3ObjectsManager";
@@ -10,8 +11,8 @@ import { Logout } from "./features/auth/components/Logout";
 
 const Home = lazy(() => import("./home_page/components/Home"))
 
-const SubCategoryPageTeacher = lazy(() => import("./pages/SubCategoryPageTeacher"))
-const CategoryPage = lazy(() => import("./pages/CategoryPage"))
+const SubCategoryPageTeacher = lazy(() => import("./home_page/components/SubCategoryPage"))
+const CategoryPage = lazy(() => import("./home_page/components/CategoryPage"))
 const QuestionEditor = lazy(() => import("./features/questions_manager/QuestionEditor"))
 const QuestionCreator = lazy(() => import("./features/questions_manager/QuestionCreator"))
 const QuizAttemptsManager = lazy(() => import("./features/components/QuizAttemptsManager"))
@@ -54,35 +55,36 @@ function App() {
         setAuth(null)
     }
 
-    return (
-        <>
-     <SocketContextComponent>
-     <Suspense fallback={<div>Loading...</div>}>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/logout" element={<Logout onLogout={onLogout} />} />
-                <Route path="/" element={<Home />}>
-                  <Route path="/categories/:categoryId" element={<CategoryPage />}>
-              
-                    <Route path="sub_categories_teacher/:sub_categoryId" element={<SubCategoryPageTeacher />} />
-                   
-                    <Route path="sub_categories/:sub_category_name/list_questions/:quiz_id" element={<ListQuestions />}/>
-                    <Route path="sub_categories/:sub_category_name/list_questions/:quiz_id/edit_question/:question_id" element={<QuestionEditor />} />
-                    <Route path="sub_categories/:sub_category_name/list_questions/:quiz_id/create_question/:format" element={<QuestionCreator/>} />
+  return (
+    <>
+      <SocketContextComponent>
+        <Suspense fallback={<div>Loading...</div>}>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/logout" element={<Logout onLogout={onLogout} />} />
+              <Route path="/" element={<Home />}>
+                <Route path="/categories/:categoryId" element={<CategoryPage />}>
+
+                  <Route path="sub_categories_teacher/:sub_categoryId" element={<SubCategoryPageTeacher />}>
+                    <Route path="quizzes/:unit_id" element={<ListQuizzes />} />
                   </Route>
-                  <Route path="/manage_quiz_attempts" element={<QuizAttemptsManager />} />
-                  <Route path="/manage_s3_objects" element={<S3ObjectsManager />} />
+                  <Route path="sub_categories/:sub_category_name/list_questions/:quiz_id" element={<ListQuestions />} />
+                  <Route path="sub_categories/:sub_category_name/list_questions/:quiz_id/edit_question/:question_id" element={<QuestionEditor />} />
+                  <Route path="sub_categories/:sub_category_name/list_questions/:quiz_id/create_question/:format" element={<QuestionCreator />} />
                 </Route>
-              </Routes>
-            </BrowserRouter>
-       
-      </Suspense>
+                <Route path="/manage_quiz_attempts" element={<QuizAttemptsManager />} />
+                <Route path="/manage_s3_objects" element={<S3ObjectsManager />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+
+        </Suspense>
       </SocketContextComponent>
-         </>
+    </>
   );
   
 }
-
+//http://localhost:5173/categories/1/sub_categories_teacher/6/quizzes/13
 export default App;
 /*
 return (

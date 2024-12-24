@@ -4,11 +4,67 @@ export interface ColumnProps {
 
 export interface DataRowProps {
     id: string,
-    item_number: number,
-    edit_link: string
+    item_number: string,
+    item_name: string,
+    edit_link: string,
+    extra_link?: string,
     clone_button: string,
     delete_button: string
 }
+
+export interface UnitProps {
+    id: string,
+    unit_number: number,
+    name: string,
+    level?: string,
+    content?: string,
+    quizzes?: QuizProps[] | undefined,
+    subCategoryId?: number,
+}
+
+/*
+{
+    "id": 13,
+    "name": "Giới Từ",
+    "unit_number": 1,
+    "level": "beginner,basic,intermediate,advanced",
+    "content": "<p>Unit content</p>",
+    "subCategoryId": 6
+}
+*/
+
+interface QuizProps {
+  id: string;
+  name: string;
+  quiz_number: string;
+  disabled: boolean;
+  video_url: string | undefined;
+  unitId: string;
+  questions: QuestionProps[]
+}
+
+export type QuestionProps = {
+  id: string,
+  question_number: number,
+  format: number,
+  audio_src: string,
+  audio_str : string,
+  video_src : string,
+  instruction : string,
+  prompt : string,
+  content : string,
+  words_scramble_direction : string,
+  answer_key : string,
+  score : number,
+  show_help : boolean,
+  help1 : string,
+  help2 : string,
+  coding : boolean,
+  quizId : number,
+  radio : RadioProps,
+  speech_recognition : boolean
+}
+
 
 export interface QuestionRowProps {
     id: string,

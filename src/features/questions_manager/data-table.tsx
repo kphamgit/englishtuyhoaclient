@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import DataRow from './data-row'
-import { DataRowProps } from './types';
+import { ColumnProps, DataRowProps } from './types';
 
 import {
   DndContext,
@@ -20,13 +20,13 @@ import {
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { clone_a_row, deleteQuestion, renumberQuestions } from '../services/list';
 
-interface ColumnProps { 
-    Header: string, accessor: string 
-}
+//interface ColumnProps { 
+   //// Header: string, accessor: string 
+//}
 
  //const DataTable: React.FC<Props> = ({ columns, data, renumber_question}) => {
  
-  const DataTable = (props: { columns: ColumnProps[], data: DataRowProps[] }) => {
+  const DataTable = (props: { columns: ColumnProps[], data: DataRowProps[] | undefined }) => {
 
   const [tableData, setTableData] = useState<DataRowProps[] | undefined >([])
 
@@ -63,7 +63,7 @@ interface ColumnProps {
       clone_a_row(id, "question")
         .then((data) => {  //returns the id and the question number of the newly cloned row
           //look for row in tableData that has the same question number
-          const cloned_row = tableData?.find(row => row.item_number === data?.item_number)
+          const cloned_row = tableData?.find(row => row.item_number === data?.item_number.toString())
           if (tableData) {
             // add cloned row to table, remember to set its id to that of the newly created row in database
             const new_table_data = [...tableData, { ...cloned_row, id: data?.id }]
@@ -96,7 +96,7 @@ interface ColumnProps {
           if (tableData) {
             //console.log(" tableData =", tableData)
             const table_with_sorted_item_numbers = tableData.map((row, index) => {
-                return {...row, item_number: index+1}
+                return {...row, item_number: (index+1).toString()}
             })
             //console.log("MMQQQQQQ ids", table_with_sorted_item_numbers)
             setTableData(table_with_sorted_item_numbers)
@@ -117,9 +117,9 @@ interface ColumnProps {
       
   return (
     
-    <div className='max-w-2xl mx-auto grid gap-2 my-10'>
+    <div className='w-auto grid-cols-5 gap-2 my-10'>
       <div><button className='text-textColor1 bg-bgColor2 rounded-lg p-2' onClick={renumber_rows}>Renumber rows</button></div>
-      <h2 className='text-xl text-textColor1 mb-4'>Questions</h2>
+     
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}

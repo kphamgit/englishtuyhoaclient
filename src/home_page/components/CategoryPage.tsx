@@ -1,6 +1,6 @@
 import { Link, Outlet, useParams } from 'react-router-dom';
-import { useAxiosFetch } from '../hooks';
-import { useAppSelector } from '../redux/store';
+import { useAxiosFetch } from '../../hooks';
+import { useAppSelector } from '../../redux/store';
 //import { VscTriangleDown } from "react-icons/vsc";
 
 type Category = {

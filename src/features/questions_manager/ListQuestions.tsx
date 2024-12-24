@@ -2,23 +2,12 @@
 import { useAxiosFetch } from '../../hooks';
 //import { QuestionProps } from '../components/Question';
 import { Link, useParams } from 'react-router-dom';
-import { MouseEventHandler, useEffect, useState } from 'react';
-import { cloneQuestion, deleteQuestion } from '../services/list';
+import { useEffect, useState } from 'react';
+//import { cloneQuestion, deleteQuestion } from '../services/list';
 //import Table from '../components/data-table_old';
 //import { renumberQuestions } from '../services/list';
 import DataTable from './data-table';
-import { CategoryRowProps, DataRowProps } from './types';
-
-type RadioProps =
-  {
-    //id: number
-    choice_1_text: string
-    choice_2_text: string
-    choice_3_text: string
-    choice_4_text: string
-   // selected: string
-   // questionId: number
-  }
+import { DataRowProps, QuestionProps } from './types';
 
 interface QuizProps {
     id: string;
@@ -30,44 +19,11 @@ interface QuizProps {
     questions: QuestionProps[]
   }
 
-  export type QuestionProps = {
-    id: string,
-    question_number: number,
-    format: number,
-    audio_src: string,
-    audio_str : string,
-    video_src : string,
-    instruction : string,
-    prompt : string,
-    content : string,
-    words_scramble_direction : string,
-    answer_key : string,
-    score : number,
-    show_help : boolean,
-    help1 : string,
-    help2 : string,
-    coding : boolean,
-    quizId : number,
-    radio : RadioProps,
-    speech_recognition : boolean
-}
-
+  
 //{ id: string; question_number: number; format: number; content: string; answer_key: string; }[] | undefined' 
 export default function ListQuestions(props:any) {
     
-        const [subQuestions, setsubQuestions] = useState<DataRowProps[] | CategoryRowProps[]>([])
-        /*
-export interface QuestionRowProps {
-    id: string,
-    question_number?: number,
-    format?: string,
-    content? : string,
-    answer_key? : string,
-    edit_link: string
-    clone_button: string,
-    delete_button: string
-}
-        */
+        const [subQuestions, setsubQuestions] = useState<DataRowProps[]>([])
         const params = useParams<{ categoryId: string, sub_category_name: string, quiz_id: string}>();
         const [newQuestionFormat, setNewQuestionFormat] = useState('1')
         const url = `/quizzes/${params.quiz_id}/get_questions`
@@ -100,7 +56,6 @@ export interface QuestionRowProps {
                 format: formatConversion[format.toString()], //format coming from question is a number. So convert it to a string before indexing into the formatConversion dictionary 
                 content, 
                 answer_key
-
               }
             })
             //setQuestions(quiz?.questions)
@@ -110,10 +65,6 @@ export interface QuestionRowProps {
                 const edit_link = `/categories/${params.categoryId}/sub_categories/${params.sub_category_name}/list_questions/${params.quiz_id}/edit_question/${sub_question.id}`
                 return {...sub_question, edit_link: edit_link, clone_button: "Clone", delete_button: "Delete" }
             })
-            console.log("MMMMM news", temp)
-            /*
-
-            */
               setsubQuestions(temp)
             }
            
@@ -125,19 +76,6 @@ export interface QuestionRowProps {
           setNewQuestionFormat(event.target.value);
         }
 
-        /*
-        const paginate = () => {
-          if (tableData) {
-              console.log("XXXXX")
-              const sorted_arr = tableData.map((question, index) => {
-                  return { ...question, question_number: index + 1 }
-              })
-              //console.log("test arr", test_arr)
-              setTableData(sorted_arr)
-              renumber_question()
-          }
-      }
-      */
         return (
           <>
             <DataTable columns={columns} data={subQuestions} />
@@ -168,35 +106,5 @@ export interface QuestionRowProps {
             </>
           );
 }
-/*
 
-New cloze question (1)
-New button cloze select question (2)
-New button select question (3)
-New radio question (4)
-New word scramble question (6)
-New speech recognition question (7)
-New words select question (8)
-New recording question (9)
-New dropdown question (10)
-New letter cloze question (11)
-
-
-"/categories/1/sub_categories/First%20Grammar%201/list_questions/134/create_question" 
- return (
-            <QuestionList columns={columns} data={subQuestions} renumber_question={paginate} />
-          );
-*/
-//{`/categories/${params.categoryId}/sub_categories/${params.sub_category_name}/list_questions/${params.quiz_id}/edit_question/${question.id}`}>
-/*
-     return (
-            <div className="container mx-auto p-4">
-              <h1 className="text-lg text-textColor1 font-bold mb-4">Questions Table</h1>
-              <button className='text-textColor1' onClick={paginate}>PAGINATE</button>
-              { subQuestions &&
-              <Table columns={columns} data={subQuestions} renumber_question={paginate}  />
-              }
-            </div>
-          );
-*/
 

@@ -37,6 +37,8 @@ export const useAxiosFetch = <T>(props: {url: string, method: string, body? : {}
     console.log("invalid NODE_ENV ")
   }
 
+  
+
   useEffect(() => {
     const config: AxiosRequestConfig = {
       url: props.url,
@@ -47,6 +49,7 @@ export const useAxiosFetch = <T>(props: {url: string, method: string, body? : {}
     const fetchData = async (): Promise<void> => {
       try {
           const response = await axios(config)
+          console.log("in useAxios fetch response data", response.data)
           setData(response.data)
         } catch (err) {
           if (axios.isAxiosError(err)) {

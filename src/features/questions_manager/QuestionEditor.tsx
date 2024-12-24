@@ -3,7 +3,7 @@ import { SimpleEditor } from './tiptap_editor/SimpleEditor'
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAxiosFetch } from '../../hooks';
-import { QuestionProps } from './ListQuestions';
+import { QuestionProps } from './types';
 import { updateQuestion } from '../services/list';
 import NewCloze from './NewCloze';
 import { EditButtonSelect } from './EditButtonSelect';

@@ -3,8 +3,8 @@ import { CSS } from '@dnd-kit/utilities';
 import { FC, useEffect, useState } from 'react';
 //import { ColumnProps, QuestionRowProps } from './types';
 import { ColumnProps, DataRowProps } from './types';
-import { cloneQuestion, deleteQuestion } from '../services/list';
-import { QuestionProps } from './ListQuestions';
+//import { cloneQuestion, deleteQuestion } from '../services/list';
+//import { QuestionProps } from './ListQuestions';
 import { Link } from 'react-router-dom';
 
 
@@ -35,18 +35,7 @@ interface Props {
       setMyRow(row)
     }
   }, [row])
-  /*
-    const columns = [
-            { Header: 'Id', accessor: 'id' },
-            { Header: 'Item Number', accessor: 'item_number' },
-            { Header: 'Format', accessor: 'format' },
-            { Header: 'Content', accessor: 'content' },
-            { Header: 'Answer Key', accessor: 'answer_key' },
-            { Header: 'Edit', accessor: 'edit_link' },
-            { Header: 'Clone', accessor: 'clone_button' },
-            { Header: 'Delete', accessor: 'delete_button' },
-          ];
-  */
+  
 const display_col = (row: any, column: ColumnProps) => {
   
   
@@ -54,6 +43,13 @@ const display_col = (row: any, column: ColumnProps) => {
   if (column.accessor === 'edit_link') {
       return <Link to={row[column.accessor]}>EDIT</Link>
   }
+  if (column.accessor === 'extra_link') {
+    // extra link is in the form of:  'quizzes/id*name'
+    // split id and name to make link
+    const the_link = row[column.accessor].split('*')[0]
+    const the_label = row[column.accessor].split('*')[1]
+    return <Link to={the_link}>{the_label}</Link>
+}
   if (column.accessor === 'clone_button') {
       const my_id = row["id"]
       return <button onClick={() =>  parent_clone_func(my_id)}>Clone</button>

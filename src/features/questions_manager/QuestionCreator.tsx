@@ -2,28 +2,29 @@ import { useEffect, useRef, useState } from 'react'
 import { SimpleEditor } from './tiptap_editor/SimpleEditor'
 
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAxiosFetch } from '../../hooks';
-import { QuestionProps } from './ListQuestions';
+//import { useAxiosFetch } from '../../hooks';
+//import { QuestionProps } from './types';
 import { createQuestion, updateQuestion } from '../services/list';
 import NewCloze from './NewCloze';
-import { EditButtonSelect } from './EditButtonSelect';
-import EditWordScramble from './EditWordScramble';
+//import { EditButtonSelect } from './EditButtonSelect';
+//import EditWordScramble from './EditWordScramble';
 import { RadioComponentHandle, RadioProps } from './types';
-import NewRadio, { NewRadioComponentHandle } from './NewRadio';
+import NewRadio from './NewRadio';
 
 import { WordScrambleComponentHandle } from './types';
 import NewWordScramble from './NewWordScramble';
 
-
+/*
 interface WordScrambleDirOption {
     value: string;
     label: string;
   }
+*/
 
 export default function QuestionCreator() {
 
       const [format, setFormat] = useState<string>()
-      const [questionNumber, setQuestionNumber] = useState<number>()
+      //const [questionNumber, setQuestionNumber] = useState<number>()
       const [prompt, setPrompt] = useState<string>('')
       const [audioSrc, setAudioSrc] = useState('')
       const [audioStr, setAudioStr] = useState('')
@@ -32,9 +33,9 @@ export default function QuestionCreator() {
       const [score, setScore] = useState<number>()
       const [instruction, setInstruction] = useState<string>('')
       const [help1, setHelp1] = useState(null)
-      const [help2, setHelp2] = useState(null)
-      const [radioContent, setRadioContent] = useState<RadioProps | undefined>()
-      const [wordScrambleDirection, setwordScrambleDirection] = useState<string>('');
+      //const [help2, setHelp2] = useState(null)
+      //const [radioContent, setRadioContent] = useState<RadioProps | undefined>()
+      //const [wordScrambleDirection, setwordScrambleDirection] = useState<string>('');
 
       //kpham Typescript lesson: learned how to type an object as a dictionary 12/16/2024
       const formatConversion: { [key: string]: string } = {"1": 'Cloze', "2": "Button Cloze Select", "3": 'Button Select', 
@@ -56,39 +57,6 @@ export default function QuestionCreator() {
    
       const url = `/questions/${params.question_id}`
       //console.log("url ", url)
-/*
-    useEffect(() => {
-        if (question) {
-        //console.log("HEEEHWWWHWWWWwwww.......... question:", question)
-        setFormat(question.format.toString())
-        setQuestionNumber(question.question_number)
-        //console.log("here question instrcution", question.instruction)
-        //console.log("here question instrcution LENGTH=", question.instruction.length)
-        if (question.instruction.length > 0) {
-            //console.log("HHHHH setting instruction", question.instruction)
-            setInstruction(question.instruction)
-        }
-        else
-            setInstruction(' ')     // there has to be at least a space. Otherwise SimpleEditor won't show
-
-        setPrompt(question.prompt)
-        setAudioSrc(question.audio_src)
-        setAudioStr(question.audio_str)
-        setQuestionContent(question.content)
-        setAnswerKey(question.answer_key)
-        setScore(question.score)
-        if (question.radio != null) {
-            setRadioContent({...question.radio})
-        }
-        if (question.format === 6) {
-            //console.log("SCRAMMMMMMMMM direction =", response.data.direction)
-            //setDirection(question.words_scramble_direction)
-            setwordScrambleDirection(question.words_scramble_direction)
-        }
-       }
-    },[question, question?.instruction])
-*/
-
     useEffect(() => {
         setFormat(params.format)
     }, [params.format])
@@ -208,50 +176,3 @@ export default function QuestionCreator() {
             </>
             )
 }
-
-/*
-   { (format === "1") &&  
-                    <EditCloze question_content={questionContent} set_answer_key ={setAnswerKey} />
-                }
-                { (format === "3") &&  
-                    <EditButtonSelect question_content={questionContent} answer_key={answerKey} set_answer_key ={setAnswerKey} />
-                }
-                { (format === "4" && radioContent) && 
-                    <EditRadio radio_data = {radioContent} answer_key ={answerKey} set_radio_answer_key={set_radio_answer_key} ref={radioRef}/>
-                }
-                { (format === "6") && 
-                    <EditWordScramble ref = {wordScrambleRef} direction={wordScrambleDirection}/>
-                }
-*/
-
-/*
-            <div className='flex flex-row justify-start gap-2'>
-                    <button className='bg-green-400 m-3 p-1' onClick={create_question}>Create question</button>
-                    <button className='bg-red-400 m-3 p-1 text-white' onClick={handleCancel}>Cancel</button>
-                </div>
-
-                <div className='mx-10 text-textColor1 mb-2'>Prompt
-                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={prompt}
-                    onChange={e => setPrompt(e.target.value)}></input>
-                </div>
-
-                <div className='mx-10 text-textColor1 mb-2'>Audio text
-                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={audioStr}
-                    onChange={e => setAudioStr(e.target.value)}></input>
-                </div>
-
-                <div className='mx-10 text-textColor1 mb-2'>Amazon S3 Audio Source
-                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={audioSrc}
-                    onChange={e => setAudioSrc(e.target.value)}></input>
-                </div>
-
-                <div className='mx-10 text-textColor1 mb-2'>Content
-                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={questionContent}
-                    onChange={e => setQuestionContent(e.target.value)}></input>
-                </div>
-
-                <div className='mx-10 text-textColor1 mb-2'>Answer Key
-                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={answerKey}
-                    onChange={e => setAnswerKey(e.target.value)}></input>
-                </div>
-*/
