@@ -24,10 +24,12 @@ export default function Home() {
 
 
   return (
-    <div>
+    <div className='bg-bgColor1 h-screen'>
  
       {user.role === 'teacher' ?
+      
         <HomeTeacher />
+     
         :
         <div>NOT ALLOWED</div>
       }

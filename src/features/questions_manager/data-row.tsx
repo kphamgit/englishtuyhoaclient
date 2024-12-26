@@ -73,12 +73,12 @@ else  return null
       ref={setNodeRef}
       style={style}
      
-      className='bg-blue-200 p-4 rounded shadow-md '
+      className=' p-4 rounded shadow-md '
     >
        {columns.map((column: ColumnProps) => (
                   <td
                     key={column.accessor}
-                    className="py-3 px-4 border-b border-gray-200 text-gray-800 mb-3"
+                    className="py-3 px-4 border-b border-gray-200 bg-bgColor0 text-textColor2 mb-3"
                   >{ (column.accessor === 'id') ?
                       <button  {...attributes}  {...listeners} className='cursor-move'>{id}</button>
                     :

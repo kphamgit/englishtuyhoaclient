@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 //import { renumberQuestions } from '../services/list';
 import DataTable from './data-table';
 import { DataRowProps, QuestionProps, UnitProps } from './types';
+import { Outlet, useParams } from 'react-router-dom';
 
 interface QuizProps {
     id: string;
@@ -23,9 +24,13 @@ interface QuizProps {
 export default function ListQuizzes(props:any) {
     
         const [data, setData] = useState<DataRowProps[]| undefined>([])
-        //const params = useParams<{ categoryId: string, sub_category_name: string, quiz_id: string}>();
+        const params = useParams<{ categoryId: string, sub_categoryId: string, unit_id: string}>();
         //const [newQuestionFormat, setNewQuestionFormat] = useState('1')
-        const url = `units/13`
+        /*
+ <Route path="sub_categories/:sub_categoryId" element={<SubCategoryPageTeacher />}>
+                    <Route path="quizzes/:unit_id" element={<ListQuizzes />} />
+        */
+        const url = `units/${params.unit_id}`
 
           const columns = [
             { Header: 'Id', accessor: 'id' },
@@ -47,20 +52,7 @@ export default function ListQuizzes(props:any) {
             useEffect(() => {
               console.log("here")
               if (unit) {
-                console.log("mmmmnnnn cccccc ", unit.quizzes)
-                /*
-[
-    {
-        "id": 62,
-        "name": "Giới từ",
-        "quiz_number": 1,
-        "disabled": false,
-        "video_url": null,
-        "unitId": 13
-    },
-    // extra_link: `quizzes/${quiz.id}*questions`,
-]
-                */
+                //console.log("mmmmnnnn cccccc ", unit.quizzes)
                 const quiz_rows: DataRowProps[] | undefined = unit.quizzes?.map((quiz) => {
                     return {
                           id: quiz.id.toString(), 
@@ -69,75 +61,21 @@ export default function ListQuizzes(props:any) {
                           edit_link: "", 
                           delete_button: "",
                           clone_button: "",
-                          extra_link: `questions/${quiz.id}*questions`,
+                          extra_link: `questions/${quiz.id}*Questions`,
                           }
                 })
                 console.log(" quiz rows =", quiz_rows)
                 setData(quiz_rows)
-               /*
-[
-    {
-        "id": 62,
-        "item_number": 1,
-        "item_name": "Giới từ",
-        "edit_link": "",
-        "clone_button": "",
-        "delete_button": "",
-        "extra_link": "extra link"
-    },
-]
-               */
-                
-/*
-export interface DataRowProps {
-    id: string,
-    item_number: number,
-    item_name: string,
-    edit_link: string,
-    extra_link?: string,
-    clone_button: string,
-    delete_button: string
-}
-
-*/
               }
           },[unit])
 
-            /*
-        useEffect(() => {
-            const sub_questions = quiz?.questions.map(({ id, question_number, format, content, answer_key }) => {
-              return {
-                id,
-                item_number: question_number, 
-                format: formatConversion[format.toString()], //format coming from question is a number. So convert it to a string before indexing into the formatConversion dictionary 
-                content, 
-                answer_key
-              }
-            })
-            //setQuestions(quiz?.questions)
-           // const newss= [...subQuestions, edit_link: "test"]
-            if (sub_questions) {
-            const temp = sub_questions.map((sub_question) => {
-                const edit_link = `/categories/${params.categoryId}/sub_categories/${params.sub_category_name}/list_questions/${params.quiz_id}/edit_question/${sub_question.id}`
-                return {...sub_question, edit_link: edit_link, clone_button: "Clone", delete_button: "Delete" }
-            })
-              setsubQuestions(temp)
-            }
-           
-            //const names = users.map(({ name }) => name);
-        },[quiz, setsubQuestions])
-        */
-
-       // const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        //  setNewQuestionFormat(event.target.value);
-       // }
-
         return (
           <>
-           
-            QUIX...
-            <DataTable columns={columns} data={data} />
-            
+           <div className='flex flex-row justify-center text-xl bg-bgColor1 text-textColor2'>Quizzes</div>
+            <div className='flex flex-row  bg-bgColor1 justify-start'>
+            <div><DataTable columns={columns} data={data} /></div>
+        
+            </div>
             </>
           );
 }

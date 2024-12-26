@@ -6,8 +6,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        bgColor: 'var(--bgColor)',
-        textColor: 'var(--textColor)',
+        bgColor0: 'var(--bgColor0)',
+        textColor0: 'var(--textColor0)',
         bgColor1: 'var(--bgColor1)',
         textColor1: 'var(--textColor1)',
         bgColor2: 'var(--bgColor2)',

@@ -24,21 +24,23 @@ export default function CategoryPage() {
   return (
     <>
     
-    <div className='bg-bgColor p-1.5 rounded-b-md m-6'>
-      <div className='flex flex-row gap-1 text-md mx-0'>
+    <div className='bg-bgColor1 p-3 rounded-b-md m-0'>
+      <div className='flex flex-row gap-1 bg-bgColor1 text-md mx-0'>
         {category?.sub_categories ? category?.sub_categories.map(sub_cat => (
           <div className='bg-navCatButtonBgActive p-1 text-textColor1  rounded-md hover:bg-navCatButtonBgInHover' key={sub_cat.id} >
-            <Link to={`sub_categories_teacher/${sub_cat.id}`} >{sub_cat.name}</Link> 
+            <Link to={`sub_categories/${sub_cat.id}`} >{sub_cat.name}</Link> 
           </div>
         )) : null
         }
       </div>
       </div>
+      <div className='bg-bgColor3'>
       <Outlet />
+      </div>
     </>
   );
 }
-
+// <Route path="sub_categories/:sub_categoryId/list_units" element={<ListUnits />} />
 /*
  return (
     <>
@@ -50,7 +52,7 @@ export default function CategoryPage() {
             { user.role?.includes('student') ?
             <Link to={`sub_categories_student/${sub_cat.id}`} >{sub_cat.name}</Link>
             :
-            <Link to={`sub_categories_teacher/${sub_cat.id}`} >{sub_cat.name}</Link>
+            <Link to={`sub_categories/${sub_cat.id}`} >{sub_cat.name}</Link>
             }
           </div>
         )) : null

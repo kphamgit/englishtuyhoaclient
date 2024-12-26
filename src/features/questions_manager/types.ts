@@ -9,9 +9,12 @@ export interface DataRowProps {
     edit_link: string,
     extra_link?: string,
     clone_button: string,
-    delete_button: string
+    delete_button: string,
+    format?: string; 
+    content?: string; 
+    answer_key?: string;
 }
-
+//format: string; content: string; answer_key: string;
 export interface UnitProps {
     id: string,
     unit_number: number,

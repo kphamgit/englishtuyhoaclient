@@ -1,4 +1,4 @@
-import {  useState } from "react";
+import {  forwardRef, useImperativeHandle, useState } from "react";
 
 // => Tiptap packages
 import { useEditor, EditorContent, Editor } from "@tiptap/react";
@@ -21,12 +21,17 @@ import { MenuBar } from "./MenuBar";
 
 interface MyProps {
   initialContent: string | undefined;
-  parentFunc: (text: string) => void
 }
 
+export interface EditorRef {
+  get_content: () => string | undefined;
+ 
+}
 
-export function SimpleEditor(props: MyProps) {
- // export const SimpleEditor: React.FC<SimpleEditorProps> = (fn: setContent) => {
+//export function SimpleEditor(props: MyProps) {
+
+export const SimpleEditor = forwardRef<EditorRef, MyProps>((props, ref) => {
+
 
   // Highlight,
   const editor = useEditor({
@@ -54,10 +59,21 @@ export function SimpleEditor(props: MyProps) {
     return null;
   }
 
-  const get_content = () => {
-    console.log(editor.getHTML())
-    props.parentFunc(editor.getHTML())
+  useImperativeHandle(ref, () => ({
+    get_content() {
+      return editor.getHTML();
+    }
+  }))
+
+  /*
+  useImperativeHandle(ref, () => ({
+  const get_content() {
+    //console.log(editor.getHTML())
+    return editor.getHTML()
+    //props.parentFunc(editor.getHTML())
   }
+  }
+  */
   const addImage = () => {
     const url = window.prompt('Enter the image URL')
 
@@ -71,12 +87,11 @@ export function SimpleEditor(props: MyProps) {
     <div>
         <MenuBar editor={editor} />
       <EditorContent editor={editor} className={mystyles.content} />
-      <button className='bg-amber-400 p-1 m-1 rounded-md' onClick={get_content}>GET CONTENT</button>
- 
+     
     </div>
     </Container>
   );
-}
+});
 
 const Container = styled.div`
 

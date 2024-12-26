@@ -63,15 +63,31 @@ import { clone_a_row, deleteQuestion, renumberQuestions } from '../services/list
       clone_a_row(id, "question")
         .then((data) => {  //returns the id and the question number of the newly cloned row
           //look for row in tableData that has the same question number
-          const cloned_row = tableData?.find(row => row.item_number === data?.item_number.toString())
+          console.log("cloning...data row", data)
+          /*
+{
+    "id": 5036,
+    "item_number": 1
+}
+          */
+         if(data) {
           if (tableData) {
+          const cloned_row = tableData?.find(row => row.item_number === data?.item_number.toString())
+          if (cloned_row) {
+            //console.log("cloned row", {...cloned_row, id: data.id})
             // add cloned row to table, remember to set its id to that of the newly created row in database
-            const new_table_data = [...tableData, { ...cloned_row, id: data?.id }]
+            const new_table_data = [...tableData, { ...cloned_row, id: data.id }]
+            //console.log("MMMMM new_table_data", new_table_data)
             if (new_table_data) {
-              setTableData(new_table_data as any)
+              //new_table_data.sort((a, b) => a.item_number.localeCompare(b.item_number));
+              new_table_data.sort((a, b) => Number(a.item_number) - Number(b.item_number));
+              console.log(" after sort new_table_data", new_table_data)
+              setTableData(new_table_data as DataRowProps[])
               //have to use "as any" here for typescript to work. Don't know why. kpham
             }
           }
+          }
+        }
         })
         .catch(error => {
           console.log(error)
@@ -117,8 +133,8 @@ import { clone_a_row, deleteQuestion, renumberQuestions } from '../services/list
       
   return (
     
-    <div className='w-auto grid-cols-5 gap-2 my-10'>
-      <div><button className='text-textColor1 bg-bgColor2 rounded-lg p-2' onClick={renumber_rows}>Renumber rows</button></div>
+    <div className='w-auto grid-cols-5 gap-2 my-10 '>
+      <div><button className='text-textColor1 bg-bgColor1 rounded-lg p-2 mb-2' onClick={renumber_rows}>Renumber rows</button></div>
      
       <DndContext
         sensors={sensors}
@@ -131,12 +147,12 @@ import { clone_a_row, deleteQuestion, renumberQuestions } from '../services/list
           strategy={verticalListSortingStrategy}
         >
             <table>
-            <thead className="bg-gray-200">
+            <thead className="bg-bgColor1">
             <tr>
               {props.columns.map((column) => (
                 <th
                   key={column.accessor}
-                  className="py-2 px-4 border-b border-gray-200 text-left text-gray-600"
+                  className="py-2 px-4 border-b border-gray-200 text-left text-textColor3"
                 >
                   {column.Header}
                 </th>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { SimpleEditor } from './tiptap_editor/SimpleEditor'
+import { EditorRef, SimpleEditor } from './tiptap_editor/SimpleEditor'
 
 import { useNavigate, useParams } from 'react-router-dom';
 //import { useAxiosFetch } from '../../hooks';
@@ -24,18 +24,19 @@ interface WordScrambleDirOption {
 export default function QuestionCreator() {
 
       const [format, setFormat] = useState<string>()
-      //const [questionNumber, setQuestionNumber] = useState<number>()
       const [prompt, setPrompt] = useState<string>('')
       const [audioSrc, setAudioSrc] = useState('')
       const [audioStr, setAudioStr] = useState('')
       const [questionContent, setQuestionContent] = useState('')
       const [answerKey, setAnswerKey] = useState('')
       const [score, setScore] = useState<number>()
-      const [instruction, setInstruction] = useState<string>('')
+      const [instruction, setInstruction] = useState<string>('instruction')
       const [help1, setHelp1] = useState(null)
       //const [help2, setHelp2] = useState(null)
       //const [radioContent, setRadioContent] = useState<RadioProps | undefined>()
       //const [wordScrambleDirection, setwordScrambleDirection] = useState<string>('');
+
+      const editorRef = useRef<EditorRef>(null)
 
       //kpham Typescript lesson: learned how to type an object as a dictionary 12/16/2024
       const formatConversion: { [key: string]: string } = {"1": 'Cloze', "2": "Button Cloze Select", "3": 'Button Select', 
@@ -52,7 +53,7 @@ export default function QuestionCreator() {
       const wordScrambleRef = useRef<WordScrambleComponentHandle>(null)
 
       const navigate = useNavigate();
-      const params = useParams<{categoryId: string, sub_category_name: string, quiz_id: string, question_id: string, format: string}>();
+      const params = useParams<{categoryId: string, sub_categoryId: string, unit_id: string, quiz_id: string, question_id: string, format: string}>();
       //console.log("MMMMNNNNNNN  params", params)
    
       const url = `/questions/${params.question_id}`
@@ -76,7 +77,7 @@ export default function QuestionCreator() {
         let question_params = {
             question_number: "1",
             format: format,
-            instruction: instruction,
+            instruction: editorRef.current?.get_content(),
             prompt: prompt,
             audio_src: audioSrc,
             audio_str: audioStr,
@@ -97,7 +98,7 @@ export default function QuestionCreator() {
                 .then(response => {
                     //console.log("SUCCESS updating question")
                     //navigate("/live_quiz", { state: arg })
-                    navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_category_name}/list_questions/${params.quiz_id}`)
+                    navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}`)
                  })
             }
         }
@@ -109,59 +110,61 @@ export default function QuestionCreator() {
                 .then(response => {
                     //console.log("SUCCESS updating question")
                     //navigate("/live_quiz", { state: arg })
-                    navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_category_name}/list_questions/${params.quiz_id}`)
+                    navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}`)
                  })
             }
         }
         else {
-            console.log("Update question!!!")
                 createQuestion(question_params)
                 .then(response => {
-                    //console.log("SUCCESS update")
-                    navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_category_name}/list_questions/${params.quiz_id}`)
+                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+                    navigate(url)
+                   // navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}`)
                 })
         }
         
     }
     
     const handleCancel = () => {
-        navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_category_name}/list_questions/${params.quiz_id}`)
+        //navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_category_name}/list_questions/${params.quiz_id}`)
+        const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+        navigate(url)
     }
 
     //kpham: Javascript lesson: use dynamic key (i.e, format state variable) to index into formatConversion object
         return (
-            <>
+            <div className='bg-bgColor0'>
                 <div className='text-textColor1 mx-10'>{format && formatConversion[format]} ({format})</div>
                  { instruction &&
-                    <SimpleEditor initialContent={instruction} parentFunc={update_instruction} />
+                    <SimpleEditor initialContent={instruction} ref={editorRef} />
                  }
                   <div className='flex flex-row justify-start gap-2'>
-                    <button className='bg-green-400 m-3 p-1' onClick={create_question}>Create question</button>
-                    <button className='bg-red-400 m-3 p-1 text-white' onClick={handleCancel}>Cancel</button>
+                    <button className='bg-bgColor3 text-textColor1 m-3 p-1' onClick={create_question}>Create question</button>
+                    <button className='bg-bgColor2 m-3 p-1 text-white' onClick={handleCancel}>Cancel</button>
                 </div>
 
                 <div className='mx-10 text-textColor1 mb-2'>Prompt
-                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={prompt}
+                    <input className='bg-bgColor2 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={prompt}
                     onChange={e => setPrompt(e.target.value)}></input>
                 </div>
 
                 <div className='mx-10 text-textColor1 mb-2'>Audio text
-                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={audioStr}
+                    <input className='bg-bgColor2 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={audioStr}
                     onChange={e => setAudioStr(e.target.value)}></input>
                 </div>
 
                 <div className='mx-10 text-textColor1 mb-2'>Amazon S3 Audio Source
-                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={audioSrc}
+                    <input className='bg-bgColor2 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={audioSrc}
                     onChange={e => setAudioSrc(e.target.value)}></input>
                 </div>
 
                 <div className='mx-10 text-textColor1 mb-2'>Content
-                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={questionContent}
+                    <input className='bg-bgColor2 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={questionContent}
                     onChange={e => setQuestionContent(e.target.value)}></input>
                 </div>
 
                 <div className='mx-10 text-textColor1 mb-2'>Answer Key
-                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={answerKey}
+                    <input className='bg-bgColor2 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={answerKey}
                     onChange={e => setAnswerKey(e.target.value)}></input>
                 </div>
                 { (format === "1") && 
@@ -173,6 +176,6 @@ export default function QuestionCreator() {
                 { (format === "6") && 
                     <NewWordScramble ref={wordScrambleRef}/>
                 }
-            </>
+            </div>
             )
 }

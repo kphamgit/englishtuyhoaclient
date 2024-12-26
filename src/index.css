@@ -23,19 +23,21 @@
   --takeQuizButtonBg: #322d05;
   --takeQuizButtonText: #c9d8e2;
 
+  --bgColor0: #221c1c;
+  --textColor0: #e1c6c6;
+
   --bgColor1: #3d0808;
-  --textColor1: #ffffff;
+  --textColor1: #e5cfcf;
 
   --bgColor2: #600909;
-  --textColor2: #ffffff;
+  --textColor2: #e0cfcf;
 
   --bgColor3: #600909;
-  --textColor3: #e5bcbc;
+  --textColor3: #e4cece;
 }
 
 .theme-light {
-  --bgColor: #dfebea;
-  --textColor: #c7cce3;
+ 
 
   --navCatButtonBgActive: #84e1ed;
   --navCatButtonBgInActive: #5dc2a6;
@@ -48,6 +50,9 @@
 
   --takeQuizButtonBg: #d9d079;
   --takeQuizButtonText: #031c2b;
+
+  --bgColor0: #93d1cc;
+  --textColor0: #21294b;
 
   --bgColor1: #36c492;
   --textColor1: #253f06;

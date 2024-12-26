@@ -19,7 +19,7 @@ export function NewCloze(props: {question_content: string, set_answer_key: (answ
 
     return (
         <>
-        <div className='mx-10 text-white'><span>&nbsp;<button className='bg-green-600' onClick={getAnswerKey}>Gett Answer Key</button></span></div>
+        <div className='mx-10 text-textColor2 pb-10'><span>&nbsp;<button className='bg-bgColor2' onClick={getAnswerKey}>Get Answer Key</button></span></div>
         </>
     )
 }

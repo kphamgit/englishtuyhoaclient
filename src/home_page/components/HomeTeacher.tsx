@@ -7,15 +7,14 @@ export default function HomeTeacher(props:any) {
     
     
     return (
-        <div>
-            <div className="bg-bgColor">
+        
+            <div className="bg-red-200">
             <NavigationBar />
        
+            <div className="mx-14 bg-slate-200">
             <Outlet />
-            <div className={`flex h-screen w-screen items-center justify-center bg-bgColor text-textColor`}>
-        
             </div>
             </div>
-        </div>
+      
     )
 }

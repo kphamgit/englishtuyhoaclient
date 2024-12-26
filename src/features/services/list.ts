@@ -1,5 +1,5 @@
 import axios from "axios";
-import { QuestionProps } from "../questions_manager/ListQuestions";
+import { QuestionProps } from "../questions_manager/types";
 import { sub } from "framer-motion/client";
 import { QuestionRowProps } from "../questions_manager/types";
 
@@ -37,6 +37,16 @@ else {
 }
 
 //http://localhost:5001/api/quiz_attempts
+
+export async function updateUnit(id: string | undefined, params: any) {
+  //console.log(" in updateQuestion id ",id )
+  //console.log(" in updateQuestion id ",body )
+  const url = `${rootpath}/api/units/${id}`
+  //console.log("HEE url", url)
+  const response = await axios.put(url, params)
+  return response
+  //return "test"
+}
 
 export async function updateQuestion(id: string | undefined, params: any) {
     //console.log(" in updateQuestion id ",id )
@@ -112,8 +122,6 @@ interface CloneProps {
   id: string,
   item_number: number
 }
-
-
 
 //export async function clone_a_row(id: string, type: string): Promise<QuestionRowProps | undefined> {
 export async function clone_a_row(id: string, type: string): Promise<CloneProps | undefined> {

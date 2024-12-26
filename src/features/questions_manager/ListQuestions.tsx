@@ -23,8 +23,26 @@ interface QuizProps {
 //{ id: string; question_number: number; format: number; content: string; answer_key: string; }[] | undefined' 
 export default function ListQuestions(props:any) {
     
-        const [subQuestions, setsubQuestions] = useState<DataRowProps[]>([])
-        const params = useParams<{ categoryId: string, sub_category_name: string, quiz_id: string}>();
+        const [subQuestions, setsubQuestions] = useState<DataRowProps[] | undefined >([])
+        const params = useParams<{ categoryId: string, sub_categoryId: string, unit_id: string, quiz_id: string}>();
+ 
+        /*
+categoryId
+: 
+"1"
+quiz_id
+: 
+"77"
+sub_categoryId
+: 
+"7"
+unit_id
+: 
+"17"
+[[Prototype]]
+: 
+O
+        */
         const [newQuestionFormat, setNewQuestionFormat] = useState('1')
         const url = `/quizzes/${params.quiz_id}/get_questions`
 
@@ -47,22 +65,21 @@ export default function ListQuestions(props:any) {
 
         const { data: quiz, loading, error } =
             useAxiosFetch<QuizProps>({ url: url, method: 'get' })
-       
             useEffect(() => {
-            const sub_questions = quiz?.questions.map(({ id, question_number, format, content, answer_key }) => {
+            const sub_questions: DataRowProps[] | undefined = quiz?.questions.map(({ id, question_number, format, content, answer_key }) => {
               return {
-                id,
-                item_number: question_number, 
+                id: id,
+                item_number: question_number.toString(),
+                item_name: "", 
                 format: formatConversion[format.toString()], //format coming from question is a number. So convert it to a string before indexing into the formatConversion dictionary 
-                content, 
-                answer_key
-              }
+                content: content, 
+                answer_key: answer_key
+              } as DataRowProps
             })
-            //setQuestions(quiz?.questions)
-           // const newss= [...subQuestions, edit_link: "test"]
             if (sub_questions) {
-            const temp = sub_questions.map((sub_question) => {
-                const edit_link = `/categories/${params.categoryId}/sub_categories/${params.sub_category_name}/list_questions/${params.quiz_id}/edit_question/${sub_question.id}`
+            const temp: DataRowProps[] = sub_questions.map((sub_question) => {
+           //Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/questions/:quiz_id/edit_question/:question_id
+                 const edit_link = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}/edit_question/${sub_question.id}`
                 return {...sub_question, edit_link: edit_link, clone_button: "Clone", delete_button: "Delete" }
             })
               setsubQuestions(temp)
@@ -76,35 +93,41 @@ export default function ListQuestions(props:any) {
           setNewQuestionFormat(event.target.value);
         }
 
-        return (
-          <>
-            <DataTable columns={columns} data={subQuestions} />
-            
-            <div className='flex flex-row justify-start'>
-              <div>
-            <Link to={`/categories/${params.categoryId}/sub_categories/${params.sub_category_name}/list_questions/${params.quiz_id}/create_question/${newQuestionFormat}`}
-            className='text-textColor1 mx-10'
-            >
-              New Question
-            </Link>
-            </div>
-              <div>
-                <select value={newQuestionFormat} onChange={handleChange}>
-                  <option value="1" >Cloze</option>
-                  <option value="2">Button Cloze Select</option>
-                  <option value="3">Button Select</option>
-                  <option value="4">Radio</option>
-                  <option value="6">Scramble</option>
-                  <option value="7">Speech Recognition</option>
-                  <option value="8">Words Select</option>
-                  <option value="9">Recording</option>
-                  <option value="9">Drop Down</option>
-                  <option value="9">Letter Cloze</option>
-                </select>
-              </div>
-            </div>
-            </>
-          );
+  return (
+    <>
+      <div className='text-textColor1'>{params.unit_id}</div>
+      <div className='text-textColor1 bg-bgColor1 mx-3 p-1 text-lg'>
+        <Link to={`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}`}>
+          Back to quizzes
+        </Link>
+      </div>
+      <DataTable columns={columns} data={subQuestions} />
+
+      <div className='flex flex-row justify-start pb-10'>
+        <div>
+          <Link to={`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}/create_question/${newQuestionFormat}`}
+            className='text-textColor1 mx-10 '
+          >
+            New Question
+          </Link>
+        </div>
+        <div>
+          <select value={newQuestionFormat} onChange={handleChange}>
+            <option value="1" >Cloze</option>
+            <option value="2">Button Cloze Select</option>
+            <option value="3">Button Select</option>
+            <option value="4">Radio</option>
+            <option value="6">Scramble</option>
+            <option value="7">Speech Recognition</option>
+            <option value="8">Words Select</option>
+            <option value="9">Recording</option>
+            <option value="9">Drop Down</option>
+            <option value="9">Letter Cloze</option>
+          </select>
+        </div>
+      </div>
+    </>
+  );
 }
 
 

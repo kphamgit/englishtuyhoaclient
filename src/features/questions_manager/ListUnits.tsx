@@ -11,8 +11,22 @@ import { ColumnProps, DataRowProps, UnitProps } from './types';
 
   
 //{ id: string; question_number: number; format: number; content: string; answer_key: string; }[] | undefined' 
-export default function ListUnits(props:{units: UnitProps[] | undefined }) {
-    
+//export default function ListUnits(props:{units: UnitProps[] | undefined }) {
+  type SubCategoryProps = {
+    categoryId: number,
+    id: number,
+    name: string
+    sub_category_number: number
+    level: string
+    units: UnitProps[] | undefined
+}
+
+  export default function ListUnits(props:any) {
+
+    const params = useParams<{ sub_categoryId: string }>();
+    const { data: sub_category, loading: sub_loading, error: sub_error } = useAxiosFetch<SubCategoryProps>({ url: `/sub_categories/${params.sub_categoryId}`, method: 'get' });
+  
+
         const [data, setData] = useState<DataRowProps[]>([])
         const columns: ColumnProps[] = [
             { Header: 'Id', accessor: 'id', },
@@ -24,29 +38,32 @@ export default function ListUnits(props:{units: UnitProps[] | undefined }) {
         ];
       
         useEffect(() => {
-            if (props.units) {
-              const units_row:DataRowProps[] = props.units.map((unit) => {
+            if (sub_category && sub_category.units) {
+              const units_row:DataRowProps[] = sub_category.units.map((unit) => {
                   return {id: unit.id, 
                         item_number: unit.unit_number.toString(), 
                         item_name: `${unit.name}`, 
-                        edit_link: "", clone_button: "", 
+                        edit_link: `edit_unit/${unit.id}`, 
+                        clone_button: "", 
                         delete_button: "",
-                        extra_link: `quizzes/${unit.id}*quizzes`,
+                        extra_link: `list_quizzes/${unit.id}*Quizzes`,
                         }
               })
               setData(units_row)
             }
-        },[props.units])
+        },[sub_category])
 
-        //const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-         // setNewQuestionFormat(event.target.value);
-        //}  //  <Link to={`/categories/${params.categoryId}/sub
+        //sub_categories/:sub_categoryId/list_quizzes/:unit_id" element={
 
         return (
-          <div className='flex flex-row justify-start bg-red-400'>
+          <div className='bg-bgColor1 text-textColor2 '>
+          <div className='flex flex-row justify-center text-xl'>Units</div>
+          <div className='flex flex-row justify-start'>
             <DataTable columns={columns} data={data} />
             </div>
-          );
+            </div>
+          )
+        
 }
 
 
