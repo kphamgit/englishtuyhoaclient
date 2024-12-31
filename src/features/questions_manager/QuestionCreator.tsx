@@ -53,20 +53,11 @@ export default function QuestionCreator() {
       const wordScrambleRef = useRef<WordScrambleComponentHandle>(null)
 
       const navigate = useNavigate();
-      const params = useParams<{categoryId: string, sub_categoryId: string, unit_id: string, quiz_id: string, question_id: string, format: string}>();
-      //console.log("MMMMNNNNNNN  params", params)
+      const params = useParams<{categoryId: string, sub_categoryId: string, unit_id: string, quiz_id: string, format: string}>();
    
-      const url = `/questions/${params.question_id}`
-      //console.log("url ", url)
     useEffect(() => {
         setFormat(params.format)
     }, [params.format])
-
-    const update_instruction = (editor_content: string) => {
-        //console.log("UUUUUUUyyyyyyyUUUUUUU ")
-        //console.log("XXXX", editor_content)
-        setInstruction(editor_content)
-    }
 
     //this function is called when user selects a radio button
     const set_answer_key = (answer_key: string) => {
@@ -134,6 +125,7 @@ export default function QuestionCreator() {
     //kpham: Javascript lesson: use dynamic key (i.e, format state variable) to index into formatConversion object
         return (
             <div className='bg-bgColor0'>
+                <div className='text-textColor1'>Create question</div>
                 <div className='text-textColor1 mx-10'>{format && formatConversion[format]} ({format})</div>
                  { instruction &&
                     <SimpleEditor initialContent={instruction} ref={editorRef} />

@@ -5,6 +5,9 @@ import { Logout } from "./features/auth/components/Logout";
 import ListQuizzes from "./features/questions_manager/ListQuizzes";
 import UnitEditor from "./features/questions_manager/UnitEditor";
 import ListUnits from "./features/questions_manager/ListUnits";
+import GameCreator from "./features/components/GameCreator";
+import ListGames from "./features/questions_manager/ListGames";
+import GameEditor from "./features/components/GameEditor";
 //import CategoryPage from "./pages/CategoryPage";
 //import { QuizAttemptsManager } from "./features/components/QuizAttemptsManager";
 //import { S3ObjectsManager } from "./features/components/S3ObjectsManager";
@@ -67,16 +70,21 @@ function App() {
                 <Route path="/categories/:categoryId" element={<CategoryPage />}>
                   <Route path="sub_categories/:sub_categoryId" element={<ListUnits />} />
 
+                
                   <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id" element={<ListQuizzes />} />
                   <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/questions/:quiz_id" element={<ListQuestions />} />
 
                   <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/questions/:quiz_id/edit_question/:question_id" element={<QuestionEditor />} />
                   <Route path="sub_categories/:sub_categoryId/edit_unit/:unit_id" element={<UnitEditor />} />
-                  <Route path="sub_categories/:sub_category_name/list_questions/:quiz_id/create_question/:format" element={<QuestionCreator />} />
+                  <Route path="sub_categories/:sub_categoryId/list_questions/:quiz_id/create_question/:format" element={<QuestionCreator />} />
 
                 </Route>
                 <Route path="/manage_quiz_attempts" element={<QuizAttemptsManager />} />
                 <Route path="/manage_s3_objects" element={<S3ObjectsManager />} />
+                <Route path="/new_game" element={<GameCreator />} />
+                <Route path="/list_games" element={<ListGames />} />
+                <Route path="/list_games/edit/:id" element={<GameEditor />} />
+                
               </Route>
             </Routes>
           </BrowserRouter>

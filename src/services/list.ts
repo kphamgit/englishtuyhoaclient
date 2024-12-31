@@ -22,7 +22,6 @@ type ClassProps =
 
     type StudentProps = 
     {
-       
             id: number,
             user_name: string
             full_name: string
@@ -45,7 +44,14 @@ export async function getAClass(id: string): Promise<ClassProps> {
   }
 
   export async function getAGame(id: string | undefined) {
-    const url = `${rootpath}/api/matching_games/${id}` 
+    const url = `${rootpath}/api/match_games/${id}` 
+    const response = await axios.get(url)
+    return response.data
+  
+  }
+
+  export async function getAllGamee() {
+    const url = `${rootpath}/api/match_games` 
     const response = await axios.get(url)
     return response.data
   

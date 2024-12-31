@@ -5,7 +5,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { ThemeContext } from '../../contexts/theme_context';
 import { ThemeContextInterface } from '../../types';
 import { MdDarkMode } from "react-icons/md";
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 //mport { getQuizAttempts } from '../../features/admin/services/list';
 //import { data } from 'framer-motion/client';
 //import { getS3RecordingObjects } from '../../features/admin/services/list';
@@ -66,19 +66,25 @@ export function NavigationBar(props: any) {
                   </NavLink>
                 </div>
               ))}
-               <div className='text-textColor1'>
+               <div className='text-textColor1 bg-bgColor1'>
                <NavLink
                     to={`/manage_s3_objects`}
                   >
                     Manage Objects
                   </NavLink>
                </div>
-               <div className='text-textColor1'>
+               <div className='text-textColor1 bg-bgColor1'>
                <NavLink
                     to={`/manage_quiz_attempts`}
                   >
                     Manage Quiz Attempts
-                  </NavLink>
+                </NavLink>
+         
+                <NavLink
+                    to={`/list_games`}
+                  >
+                    Manage Games
+                </NavLink>
                </div>
             </div>
            

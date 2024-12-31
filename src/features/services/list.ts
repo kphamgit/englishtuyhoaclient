@@ -58,6 +58,20 @@ export async function updateQuestion(id: string | undefined, params: any) {
     //return "test"
   }
 
+  export async function updateGame(id: string | undefined, params: any) {
+    const url = `${rootpath}/api/match_games/${id}`
+    //console.log("HEE url", url)
+    const response = await axios.put(url, params)
+    return response
+  }
+
+  export async function createGame(params: any) {
+    const url = `${rootpath}/api/match_games`
+    //console.log("HEE url", url)
+    const response = await axios.post(url, params)
+    return response
+  }
+
   export async function createQuestion(params: any) {
     //console.log(" in updateQuestion id ",id )
     //console.log(" in updateQuestion id ",body )
@@ -87,7 +101,7 @@ export async function updateQuestion(id: string | undefined, params: any) {
     const url = `${rootpath}/api/s3_utils/list_objects`
     
     const response = await axios.post(url, {prefix: `audios/recordings/${student_name}`})
-    console.log("get getS3RecordingObjects , response data", response.data)
+    //console.log("get getS3RecordingObjects , response data", response.data)
     return response.data
     //return "test"
   }
@@ -140,6 +154,16 @@ export async function deleteQuestion(id: string): Promise<QuestionProps> {
   const url = `${rootpath}/api/questions/${id}`
   const response = await axios.delete(url)
   //console.log("UUUU in getAClass response.data", response.data)
+  return response.data
+
+}
+
+
+export async function deleteAllQuizAttempts(quiz_attempt_ids: string[]): Promise<QuestionProps> {
+  console.log("deleteAllQuizAttempts xxxx",quiz_attempt_ids)
+  const url = `${rootpath}/api/quiz_attempts`
+  const response = await axios.delete(url, {data: { quiz_attempt_ids: quiz_attempt_ids }})
+  
   return response.data
 
 }

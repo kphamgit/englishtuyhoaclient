@@ -15,7 +15,7 @@ export default function S3ObjectsManager(props: any) {
         if (targetClass.length > 0 ) {
             getAClass(targetClass)
             .then((response) => {
-                console.log("users ...", response.users)
+                //console.log("users ...", response.users)
                 if (response.users) {
                   const names = response.users.map(usr => usr.user_name); 
                   setClassStudents(names)
@@ -83,21 +83,26 @@ export default function S3ObjectsManager(props: any) {
 
     return (
         <>
-         <div className='mx-1 '>Class Id:<input className='bg-amber-300 px-2 text-sm rounded-md w-4/12' type="text" value={targetClass}
+         <div className='mx-1 '>Class Id:<input className='bg-bgColor1 text-textColor1 px-2 text-sm rounded-md w-4/12' type="text" value={targetClass}
                 onChange={e => setTargetClass(e.target.value)}
                             /></div>
-            <div className='text-textColor1'>IN s3_Object Manager</div>
+            <div className='text-textColor1 bg-bgColor1'>IN s3_Object Manager</div>
             { classstudents &&
                     classstudents.map((student_name, index) => (
-                    <div key={index} className='text-textColor3'>
-                        <button className='mr-2' onClick={get_recordings}>{student_name}</button>
+                    <div key={index} className='text-textColor3 bg-bgColor1'>
+                        <span>View recordings for:</span><button className='mr-2 bg-bgColor3 p-2' onClick={get_recordings}>{student_name}</button>
                         Delete recordings for: <button className='mx-5 bg-bgColor3 mb-2 p-1 rounded-md' onClick={delete_recordings}>{student_name}</button>
                     </div>
                 ))
             }
             { S3Prefixes &&
                 S3Prefixes.map((prefix, index) => (
-                    <div key={index} className='text-textColor3'>{prefix}</div>
+                    <>
+                    <div key={index} className='text-textColor3 bg-bgColor1'>{prefix}</div>
+                    <audio src={"https://kevinphambucket.s3.us-east-1.amazonaws.com/" + prefix }
+                    controls />
+                    </>
+
                 ))
             }
         </>
