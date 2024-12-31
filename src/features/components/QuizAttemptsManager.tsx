@@ -1,45 +1,56 @@
 import { useEffect, useRef, useState } from 'react'
 import { deleteAllQuizAttempts, getQuizAttempts } from '../services/list'
 
-
-
 type QuizAttemptProps = {
+ 
     id: number,
     completion_status: string,
     score: number,
-    user_name: string,
     questions_exhausted: boolean,
     errorneous_questions: string,
-    quiz_name: string,
-    createdAt: any
-    updatedAt: any
+    createdAt: any,
+    updatedAt: any,
+    "quiz.name": string,
+    "user.user_name": string
 }
 
 export default function QuizAttemptsManager(props: any) {
     const [quizAttempts, setQuizAttempts] = useState<QuizAttemptProps[] | undefined>([])
+    
     const [checkedItems, setCheckedItems] = useState<string[]>([]);
     const checkboxesRef = useRef<HTMLInputElement[] | undefined>([]);
-
-    /*
-    const usFormatter = new Intl.DateTimeFormat('en-US');
-
-    const utcDateString = "2023-06-29T16:45:06.387Z";
-const utcDateWithoutMillis = utcDateString.slice(0,-5) + "Z";
-const utcDate = new Date(utcDateWithoutMillis);
-//(new Date(quiz_at.createdAt.slice(0,-5) + "Z")).toISOString();
-console.log("UTC Date:", utcDate.toISOString())
-*/
-
-//const offsetMinutes = utcDate.getTimezoneOffset();
-
-//console.log('Time Zone Offset (minutes):', offsetMinutes);
-
     
     useEffect(() => {
         getQuizAttempts()
-            .then((data) => {
-                //console.log("..xxxxxxx.", data)
-                setQuizAttempts(data)
+            .then((data) => {            
+                /*
+{
+    "id": 1962,
+    "completion_status": "uncompleted",
+    "score": 0,
+    "questions_exhausted": 0,
+    "errorneous_questions": "1953",
+    "quizId": 101,
+    "userId": 15,
+    "createdAt": "2024-12-31T00:42:09.000Z",
+    "updatedAt": "2024-12-31T00:44:11.000Z",
+    "quiz.id": 101,
+    "quiz.name": "Giới từ chỉ thời gian",
+    "quiz.quiz_number": 2,
+    "quiz.disabled": 0,
+    "quiz.video_url": null,
+    "quiz.unitId": 13,
+    "user.id": 15,
+    "user.user_name": "basic2",
+    "user.full_name": "basic2",
+    "user.role": "student/admin",
+    "user.level": "basic, intermediate, advanced",
+    "user.message": "test",
+    "user.password": "$2b$10$TRTJex3MD9/QALt/Dqi3n.aJUs1VxIG9dr4hpE7qkutHtcv6ZjWHq",
+    "user.classId": 2
+}
+                */
+                  setQuizAttempts(data)
                 }
             )
             .catch(error =>
@@ -48,7 +59,7 @@ console.log("UTC Date:", utcDate.toISOString())
     }, [])
 
     const calculateTimeElapsed = (updatedAt: any, createdAt: any) => {
-        console.log("AAA", updatedAt)
+        //console.log("AAA", updatedAt)
         const updated = new Date(updatedAt)
         const totalSecondsUpdatedAt = updated.getTime()/1000
         //console.log("xxxxxxxx xxxxxxx totalSecondsUpdatedAt=", totalSecondsUpdatedAt )
@@ -144,8 +155,8 @@ console.log("UTC Date:", utcDate.toISOString())
             {quizAttempts &&
                 quizAttempts.map((quiz_att, index) => (
                     <tr key={index}>
-                        <td className='p-2'>{quiz_att.quiz_name}</td>
-                        <td className='p-2'>{quiz_att.user_name}</td>
+                        <td className='p-2'>{quiz_att["quiz.name"]}</td>
+                        <td className='p-2'>{quiz_att["user.user_name"]}</td>
                         <td className='p-2'>{convertTime(quiz_att.createdAt)}</td>
                         <td className='p-2'>{quiz_att.completion_status.toString()}</td>
                         <td className='p-2'>{calculateTimeElapsed(quiz_att.updatedAt, quiz_att.createdAt)}</td>
