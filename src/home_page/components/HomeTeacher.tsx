@@ -8,7 +8,7 @@ export default function HomeTeacher(props:any) {
     
     return (
         
-            <div className="bg-red-200">
+            <div>
             <NavigationBar />
        
             <div className="mx-14 bg-slate-200">

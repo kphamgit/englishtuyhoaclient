@@ -15,7 +15,7 @@ export default function S3ObjectsManager(props: any) {
         if (targetClass.length > 0 ) {
             getAClass(targetClass)
             .then((response) => {
-                //console.log("users ...", response.users)
+                console.log("in S3 ojbect manager, class students ...", response.users)
                 if (response.users) {
                   const names = response.users.map(usr => usr.user_name); 
                   setClassStudents(names)
@@ -83,10 +83,10 @@ export default function S3ObjectsManager(props: any) {
 
     return (
         <>
-         <div className='mx-1 '>Class Id:<input className='bg-bgColor1 text-textColor1 px-2 text-sm rounded-md w-4/12' type="text" value={targetClass}
+         <div className='m-3 p-2 bg-bgColor3 text-textColor2 '>Enter class Id:<input className='bg-bgColor1 text-textColor1 px-2 text-sm rounded-md w-4/12' type="text" value={targetClass}
                 onChange={e => setTargetClass(e.target.value)}
                             /></div>
-            <div className='text-textColor1 bg-bgColor1'>IN s3_Object Manager</div>
+           
             { classstudents &&
                     classstudents.map((student_name, index) => (
                     <div key={index} className='text-textColor3 bg-bgColor1'>

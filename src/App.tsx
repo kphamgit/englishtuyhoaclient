@@ -8,6 +8,7 @@ import ListUnits from "./features/questions_manager/ListUnits";
 import GameCreator from "./features/components/GameCreator";
 import ListGames from "./features/questions_manager/ListGames";
 import GameEditor from "./features/components/GameEditor";
+import FileUpload from "./features/utils/FileUpload";
 //import CategoryPage from "./pages/CategoryPage";
 //import { QuizAttemptsManager } from "./features/components/QuizAttemptsManager";
 //import { S3ObjectsManager } from "./features/components/S3ObjectsManager";
@@ -81,6 +82,7 @@ function App() {
                 </Route>
                 <Route path="/manage_quiz_attempts" element={<QuizAttemptsManager />} />
                 <Route path="/manage_s3_objects" element={<S3ObjectsManager />} />
+                <Route path="/upload_file" element={<FileUpload />} />
                 <Route path="/new_game" element={<GameCreator />} />
                 <Route path="/list_games" element={<ListGames />} />
                 <Route path="/list_games/edit/:id" element={<GameEditor />} />

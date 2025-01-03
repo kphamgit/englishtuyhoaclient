@@ -48,6 +48,73 @@ export async function updateUnit(id: string | undefined, params: any) {
   //return "test"
 }
 
+/*
+try {
+        const response = await axios.post('/api/upload_s3/do_upload_single', newFormData, {
+          headers: {
+            'enctype': 'multipart/form-data',
+          },
+        });
+
+        <form method="post" enctype="multipart/form-data" action="/api/uploads/do_upload_single">
+
+    <p>
+        <input id="s3_file_path" type="text" name="s3_file_path" size="65" value="">
+        <input id="file" type="file" name="file" multiple="">
+    </p>
+
+    <p>
+        <input type="submit">
+    </p>
+</form>
+		
+					form_data.delete('file1')
+                       $.ajax({
+        					enctype: 'multipart/form-data',
+				            url: "/api/uploads/do_upload_single",
+				            data: form_data,
+				            processData: false,
+				            contentType: false,
+				            cache: false,
+				            timeout: 600000,
+                            type: 'POST',
+                            success: function (data) {
+								console.log("good")
+                            },
+                            error: function (error) {
+                            }
+                        })
+        
+
+*/
+
+export async function uploadFile(formData: any) {
+  console.log(" in uploadFile formData= ",formData )
+  //console.log(" in updateQuestion id ",body )
+  const url = `${rootpath}/api/upload_s3/do_upload_single`
+  //console.log("HEE url", url)
+  const response = await axios.post(url, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response
+  //return "test"
+}
+
+/*
+    try {
+        const response = await axios.post('/api/upload_s3/do_upload_single', newFormData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        console.log(response.data); // Handle successful upload
+      } catch (error) {
+        console.error(error); // Handle upload error
+      }
+*/
+
 export async function updateQuestion(id: string | undefined, params: any) {
     //console.log(" in updateQuestion id ",id )
     //console.log(" in updateQuestion id ",body )
@@ -57,6 +124,9 @@ export async function updateQuestion(id: string | undefined, params: any) {
     return response
     //return "test"
   }
+
+ 
+
 
   export async function updateGame(id: string | undefined, params: any) {
     const url = `${rootpath}/api/match_games/${id}`
@@ -88,7 +158,7 @@ export async function updateQuestion(id: string | undefined, params: any) {
     const url = `${rootpath}/api/quiz_attempts`
     
     const response = await axios.get(url)
-    console.log("get Quiz Attempts , response", response)
+    //console.log("get Quiz Attempts , response", response)
     return response.data
     //return "test"
   }
