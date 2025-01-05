@@ -23,15 +23,20 @@ interface QuizProps {
 */
   
 //{ id: string; question_number: number; format: number; content: string; answer_key: string; }[] | undefined' 
-export default function ListGames(props:any) {
+export default function ListUsers(props:any) {
     
         const [data, setData] = useState<DataRowProps[]| undefined>([])
         const [games, setGames] = useState([])
         const params = useParams<{ categoryId: string, sub_categoryId: string, unit_id: string}>();
         //const [newQuestionFormat, setNewQuestionFormat] = useState('1')
         /*
- <Route path="sub_categories/:sub_categoryId" element={<SubCategoryPageTeacher />}>
-                    <Route path="quizzes/:unit_id" element={<ListQuizzes />} />
+ user_name | varchar(255) | YES  |     | NULL    |                |
+| full_name | varchar(255) | YES  |     | NULL    |                |
+| role      | varchar(255) | NO   |     | NULL    |                |
+| level     | varchar(255) | NO   |     | NULL    |                |
+| message   | text         | YES  |     | NULL    |                |
+| password  | varchar(64)  | YES  |     | NULL    |                |
+| classId  
         */
         //const url = `match_games`
 
@@ -75,7 +80,7 @@ export default function ListGames(props:any) {
           <>
            <div className='flex flex-row justify-center text-xl bg-bgColor1 text-textColor2 p-2'>Games</div>
             <div className='flex flex-row  bg-bgColor1 justify-start'>
-            <div><DataTable columns={columns} data={data} data_type="game" /></div>
+            <div><DataTable columns={columns} data={data} data_type="users" /></div>
             <div className='bg-bgColor1 text-textColor1 mb-10'>
             <Link 
                     to={`/new_game`}

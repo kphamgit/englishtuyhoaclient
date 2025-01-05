@@ -101,7 +101,7 @@ O
           Back to quizzes
         </Link>
       </div>
-      <DataTable columns={columns} data={subQuestions} />
+      <DataTable columns={columns} data={subQuestions} data_type="question" />
 
       <div className='flex flex-row justify-start pb-10'>
         <div>

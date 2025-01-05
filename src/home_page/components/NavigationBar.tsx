@@ -67,31 +67,10 @@ export function NavigationBar(props: any) {
                 </div>
               ))}
                <div className='text-textColor1 bg-bgColor1 p-2'>
-               <NavLink
-                    to={`/manage_s3_objects`}
-                  >
-                    Manage Objects
-                  </NavLink>
-               </div>
-               <div className='text-textColor1 bg-bgColor1 p-2'>
-               <NavLink
-                    to={`/manage_quiz_attempts`}
-                  >
-                    Manage Quiz Attempts
-                </NavLink>
-                </div>
-                <div className='text-textColor1 bg-bgColor1 p-2'>
                 <NavLink
-                    to={`/list_games`}
+                    to={`/utils`}
                   >
-                    Manage Games
-                </NavLink>
-               </div>
-               <div className='text-textColor1 bg-bgColor1 p-2'>
-                <NavLink
-                    to={`/upload_file`}
-                  >
-                    File Upload
+                    Utils
                 </NavLink>
                </div>
             </div>

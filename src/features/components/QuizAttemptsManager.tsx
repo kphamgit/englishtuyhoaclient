@@ -138,7 +138,7 @@ export default function QuizAttemptsManager(props: any) {
         <>
             <div className='bg-bgColor1 text-textColor m-5'>
             <button className='bg-bgColor3 text-textColor1 mx-2 p-2' onClick={handleCheckAll}>Check All</button>
-            <button className='bg-bgColor3 text-textColor1 mx-2 p-2' onClick={deleteChecked}>Delete Checked items</button>
+            <button className='bg-bgColor3 text-textColor1 mx-2 p-2' onClick={deleteChecked}>Delete Checked Quiz Attempts</button>
             </div>
             <table className='bg-bgColor1 text-textColor1'>
                 <thead>

@@ -26,7 +26,7 @@ export default function GameEditor(props: any) {
     const navigate = useNavigate()
 
     const handleCancel = () => {
-      const url = `/list_games`
+      const url = `/utils/list_games`
       navigate(url)
     }
 
@@ -76,7 +76,7 @@ export default function GameEditor(props: any) {
       updateGame(params.id, {update_params: game_params})
       .then(response => {
         //console.log("xxxx after update response =  ", response)
-        const url = `/list_games`
+        const url = `/utils/list_games`
         navigate(url)
       })
       .catch(error => {

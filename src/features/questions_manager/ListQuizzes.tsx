@@ -9,6 +9,7 @@ import DataTable from './data-table';
 import { DataRowProps, QuestionProps, UnitProps } from './types';
 import { Outlet, useParams } from 'react-router-dom';
 
+/*
 interface QuizProps {
     id: string;
     name: string;
@@ -18,7 +19,7 @@ interface QuizProps {
     unitId: string;
     questions: QuestionProps[]
   }
-
+*/
   
 //{ id: string; question_number: number; format: number; content: string; answer_key: string; }[] | undefined' 
 export default function ListQuizzes(props:any) {
@@ -73,7 +74,7 @@ export default function ListQuizzes(props:any) {
           <>
            <div className='flex flex-row justify-center text-xl bg-bgColor1 text-textColor2'>Quizzes</div>
             <div className='flex flex-row  bg-bgColor1 justify-start'>
-            <div><DataTable columns={columns} data={data} /></div>
+            <div><DataTable columns={columns} data={data} data_type="quiz" /></div>
         
             </div>
             </>

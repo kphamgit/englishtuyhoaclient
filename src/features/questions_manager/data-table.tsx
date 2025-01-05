@@ -18,7 +18,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { clone_a_row, deleteQuestion, renumberQuestions } from '../services/list';
+import { clone_a_row, deleteTableRow, renumberQuestions } from '../services/list';
 
 //interface ColumnProps { 
    //// Header: string, accessor: string 
@@ -26,8 +26,9 @@ import { clone_a_row, deleteQuestion, renumberQuestions } from '../services/list
 
  //const DataTable: React.FC<Props> = ({ columns, data, renumber_question}) => {
  
-  const DataTable = (props: { columns: ColumnProps[], data: DataRowProps[] | undefined }) => {
+  const DataTable = (props: { columns: ColumnProps[], data: DataRowProps[] | undefined , data_type: string }) => {
 
+  const [dataType, setDataType] = useState('')
   const [tableData, setTableData] = useState<DataRowProps[] | undefined >([])
 
   const sensors = useSensors(
@@ -38,11 +39,17 @@ import { clone_a_row, deleteQuestion, renumberQuestions } from '../services/list
   );
 
   useEffect(() => {
+     //console.log("xxxxxxx x xyyyyyy x x x x x props =", props)
     if (props.data) {
-      //console.log("x x x x x x x x data=", props.data)
+     
         setTableData(props.data)
+       
     }
-},[props.data])
+    if (props.data_type) {
+      console.log("HEEE props.type =", props.data_type)
+      setDataType(props.data_type)
+    }
+},[props])
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -60,7 +67,7 @@ import { clone_a_row, deleteQuestion, renumberQuestions } from '../services/list
   }
 
     const clone_row = (id: string) => {
-      clone_a_row(id, "question")
+      clone_a_row(id, dataType)
         .then((data) => {  //returns the id and the question number of the newly cloned row
           //look for row in tableData that has the same question number
           console.log("cloning...data row", data)
@@ -96,10 +103,15 @@ import { clone_a_row, deleteQuestion, renumberQuestions } from '../services/list
 
   const delete_row = (id: string) => {
     //const el = event.target as HTMLButtonElement
-    deleteQuestion(id)
-    .then(data => {
+    //deleteQuestion(id)
+    deleteTableRow(id, dataType)
+    .then(data => {   //data is ID of row deleted
+     // console.log(" in DataTable delete_row id of row deleted=", data)
+     if (data) {
         const reduced_rows = tableData?.filter(row => row.id != data.id)
         setTableData(reduced_rows)
+     }
+       
         // kpham: typescript tips: use "as any[]" like above to avoid error: type ... must have a '[Symbol.iterator]()' method that returns an iterator.
         // why???
     })

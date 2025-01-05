@@ -163,6 +163,17 @@ export async function updateQuestion(id: string | undefined, params: any) {
     //return "test"
   }
 
+  export async function getOrphanQuestions() {
+    //console.log(" in updateQuestion id ",id )
+    //console.log(" in updateQuestion id ",body )
+    const url = `${rootpath}/api/questions/find_orphans`
+    
+    const response = await axios.get(url)
+    //console.log("get Quiz Attempts , response", response)
+    return response.data
+    //return "test"
+  }
+
   export async function getS3RecordingObjects(student_name: string) {
     //http://localhost:5001/api/s3_utils/list_s3_objects
     //const response = await axios.post(url,{user_answer: user_answer})
@@ -209,25 +220,54 @@ interface CloneProps {
 
 //export async function clone_a_row(id: string, type: string): Promise<QuestionRowProps | undefined> {
 export async function clone_a_row(id: string, type: string): Promise<CloneProps | undefined> {
-  
+  console.log(" clone a row type = ",type)
   if (type === "question") {
   const url = `${rootpath}/api/questions/${id}/clone`
   const response = await axios.get(url)
+    return response.data
+  }
+  else if (type === "quiz") {
+    console.log("EEEEE EEEEE clone quiz id=", id)
+    const url = `${rootpath}/api/quizzes/${id}/clone`
+    const response = await axios.get(url)
     return response.data
   }
   else {
     return undefined
   }
 }
+
+interface MProps {
+  id: number | undefined
+}
+export async function deleteTableRow(id: string, data_type: string): Promise<MProps > {
+  console.log("DElet table row data type =", data_type)
+  //let response: MProps | undefined
+  if (data_type === 'question') {
+    console.log(" here ....")
+    const url = `${rootpath}/api/questions/${id}`
+     const response = await axios.delete(url)
+     return response.data
+  }
+  else if (data_type === 'quiz') {
+    const url = `${rootpath}/api/quizzes/${id}`
+     const response = await axios.delete(url)
+     return response.data
+  }
+  else {
+    return {id: 0}
+  }
+}
+
+/*
 export async function deleteQuestion(id: string): Promise<QuestionProps> {
-  
   const url = `${rootpath}/api/questions/${id}`
   const response = await axios.delete(url)
   //console.log("UUUU in getAClass response.data", response.data)
   return response.data
 
 }
-
+*/
 
 export async function deleteAllQuizAttempts(quiz_attempt_ids: string[]): Promise<QuestionProps> {
   console.log("deleteAllQuizAttempts xxxx",quiz_attempt_ids)
@@ -235,6 +275,13 @@ export async function deleteAllQuizAttempts(quiz_attempt_ids: string[]): Promise
   const response = await axios.delete(url, {data: { quiz_attempt_ids: quiz_attempt_ids }})
   
   return response.data
+
+}
+
+export async function deleteOrphanQuestions(question_ids: string[]): Promise<void> {
+  console.log("deleteOrphanQuestions xxxx",question_ids)
+  const url = `${rootpath}/api/questions`
+  const response = await axios.delete(url, {data: { question_ids: question_ids }})
 
 }
 
