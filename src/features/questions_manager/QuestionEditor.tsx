@@ -121,7 +121,8 @@ export default function QuestionEditor(props: any) {
                 //console.log("MMMMMM my_params=", my_params)
                 updateQuestion(question?.id, my_params )
                 .then(response => {
-                    navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}`)
+                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+                    navigate(url)
                  })
                  
             }
@@ -132,7 +133,8 @@ export default function QuestionEditor(props: any) {
                 //console.log("MMMMMM radio_params=", res)
                 updateQuestion(question?.id, my_params )
                 .then(response => {
-                    navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}`)
+                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+                    navigate(url)
                  })
             }
         }
