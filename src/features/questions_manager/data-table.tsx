@@ -18,7 +18,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { clone_a_row, deleteTableRow, renumberQuestions } from '../services/list';
+import { clone_a_row, deleteTableRow, renumberRows } from '../services/list';
 
 //interface ColumnProps { 
    //// Header: string, accessor: string 
@@ -46,7 +46,7 @@ import { clone_a_row, deleteTableRow, renumberQuestions } from '../services/list
        
     }
     if (props.data_type) {
-      console.log("HEEE props.type =", props.data_type)
+      //console.log("HEEE props.type =", props.data_type)
       setDataType(props.data_type)
     }
 },[props])
@@ -133,7 +133,7 @@ import { clone_a_row, deleteTableRow, renumberQuestions } from '../services/list
             const ids_table = tableData.map((row) => {
               return row.id
             })
-            renumberQuestions(ids_table)
+            renumberRows(ids_table, props.data_type)
             .then( response => {
                 //console.log("eeeee", response)
             })
@@ -145,8 +145,8 @@ import { clone_a_row, deleteTableRow, renumberQuestions } from '../services/list
       
   return (
     
-    <div className='w-auto grid-cols-5 gap-2 my-10 '>
-      <div><button className='text-textColor1 bg-bgColor1 rounded-lg p-2 mb-2' onClick={renumber_rows}>Renumber rows</button></div>
+    <div className='w-auto grid-cols-5 gap-2'>
+      <div><button className='text-textColor1 bg-bgColor3 rounded-lg p-2 m-2' onClick={renumber_rows}>Renumber {props.data_type}s</button></div>
      
       <DndContext
         sensors={sensors}

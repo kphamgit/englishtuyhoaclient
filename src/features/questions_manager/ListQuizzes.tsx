@@ -65,20 +65,22 @@ export default function ListQuizzes(props:any) {
                           extra_link: `questions/${quiz.id}*Questions`,
                           }
                 })
-                console.log(" quiz rows =", quiz_rows)
+                console.log(" in ListQuizzes quiz rows =", quiz_rows)
                 setData(quiz_rows)
               }
           },[unit])
 
-        return (
-          <>
-           <div className='flex flex-row justify-center text-xl bg-bgColor1 text-textColor2'>Quizzes</div>
-            <div className='flex flex-row  bg-bgColor1 justify-start'>
-            <div><DataTable columns={columns} data={data} data_type="quiz" /></div>
-        
-            </div>
-            </>
-          );
+  return (
+    <div>
+      <div className='flex flex-row justify-center text-xl bg-navCatButtonBgActive text-textColor2'>Unit: {unit?.name}</div>
+      <div>
+        <div className='bg-bgColor2 text-textColor2'>Quizzes: </div>
+        <div className='flex flex-row  bg-bgColor1 justify-start'>
+          <div><DataTable columns={columns} data={data} data_type="quiz" /></div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // <DataTable columns={columns} data={data} />

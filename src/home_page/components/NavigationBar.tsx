@@ -5,7 +5,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { ThemeContext } from '../../contexts/theme_context';
 import { ThemeContextInterface } from '../../types';
 import { MdDarkMode } from "react-icons/md";
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 //mport { getQuizAttempts } from '../../features/admin/services/list';
 //import { data } from 'framer-motion/client';
 //import { getS3RecordingObjects } from '../../features/admin/services/list';

@@ -23,7 +23,7 @@ import { ColumnProps, DataRowProps, UnitProps } from './types';
 
   export default function ListUnits(props:any) {
 
-    const params = useParams<{ sub_categoryId: string }>();
+    const params = useParams<{ categoryId: string, sub_categoryId: string }>();
     const { data: sub_category, loading: sub_loading, error: sub_error } = useAxiosFetch<SubCategoryProps>({ url: `/sub_categories/${params.sub_categoryId}`, method: 'get' });
   
 
@@ -57,13 +57,23 @@ import { ColumnProps, DataRowProps, UnitProps } from './types';
 
         return (
           <div className='bg-bgColor1 text-textColor2 '>
-          <div className='flex flex-row justify-center text-xl'>Units</div>
+             <div className='flex flex-row justify-start bg-bgColor3 text-textColor2 text-xl'>Units:</div>
           <div className='flex flex-row justify-start'>
-            <DataTable columns={columns} data={data} />
+            <DataTable columns={columns} data={data} data_type='unit'/>
             </div>
+            <div>
+          <Link to={`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/create_unit`}
+            className='text-textColor1 mx-10 '
+          >
+            New Unit
+          </Link>
+        </div>
             </div>
           )
         
 }
 
+/*
+  
+*/
 

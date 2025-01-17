@@ -48,6 +48,16 @@ export async function updateUnit(id: string | undefined, params: any) {
   //return "test"
 }
 
+export async function createUnit(params: any) {
+  //console.log(" in updateQuestion id ",id )
+  //console.log(" in updateQuestion id ",body )
+  const url = `${rootpath}/api/units`
+  //console.log("HEE url", url)
+  const response = await axios.post(url, params)
+  return response
+  //return "test"
+}
+
 /*
 try {
         const response = await axios.post('/api/upload_s3/do_upload_single', newFormData, {
@@ -238,7 +248,7 @@ export async function clone_a_row(id: string, type: string): Promise<CloneProps 
 }
 
 interface MProps {
-  id: number | undefined
+  id: string | undefined
 }
 export async function deleteTableRow(id: string, data_type: string): Promise<MProps > {
   console.log("DElet table row data type =", data_type)
@@ -254,8 +264,13 @@ export async function deleteTableRow(id: string, data_type: string): Promise<MPr
      const response = await axios.delete(url)
      return response.data
   }
+  else if (data_type === 'units') {
+    const url = `${rootpath}/api/units/${id}`
+     const response = await axios.delete(url)
+     return response.data
+  }
   else {
-    return {id: 0}
+    return {id: '0'}
   }
 }
 
@@ -285,11 +300,24 @@ export async function deleteOrphanQuestions(question_ids: string[]): Promise<voi
 
 }
 
-export async function renumberQuestions(params: any): Promise<string> {
+export async function renumberRows(row_ids: string[], data_type: string): Promise<string> {
   
-  const url = `${rootpath}/api/questions/renumber`
-  const response = await axios.post(url, {question_ids: params})
+  //console.log("xxxxx renumberRows data type =", data_type)
+
+  //console.log("xxxxx renumberRows row ids =", row_ids)
+  
+  let url = ''
+  if (data_type === 'question') {
+     url = `${rootpath}/api/questions/renumber`
+  }
+  else if (data_type === 'quiz') {
+    console.log("xxxxx renumberRows data type =", data_type)
+    url = `${rootpath}/api/quizzes/renumber`
+  }
+
+  const response = await axios.post(url, {row_ids: row_ids})
   //console.log("UUUU in getAClass response.data", response.data)
+  
   return "response.data"
 
 }

@@ -1,7 +1,7 @@
 //import { useAxiosFetch } from '../components/services/useAxiosFetch';
 import { useAxiosFetch } from '../../hooks';
 //import { QuestionProps } from '../components/Question';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 //import { cloneQuestion, deleteQuestion } from '../services/list';
 //import Table from '../components/data-table_old';
@@ -25,24 +25,8 @@ export default function ListQuestions(props:any) {
     
         const [subQuestions, setsubQuestions] = useState<DataRowProps[] | undefined >([])
         const params = useParams<{ categoryId: string, sub_categoryId: string, unit_id: string, quiz_id: string}>();
- 
-        /*
-categoryId
-: 
-"1"
-quiz_id
-: 
-"77"
-sub_categoryId
-: 
-"7"
-unit_id
-: 
-"17"
-[[Prototype]]
-: 
-O
-        */
+        const navigate = useNavigate()
+        
         const [newQuestionFormat, setNewQuestionFormat] = useState('1')
         const url = `/quizzes/${params.quiz_id}/get_questions`
 
@@ -93,15 +77,24 @@ O
           setNewQuestionFormat(event.target.value);
         }
 
+        const goBackToQuizzes = () => {
+            const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}`
+            navigate(url)
+        }
+
   return (
     <>
-      <div className='text-textColor1'>{params.unit_id}</div>
-      <div className='text-textColor1 bg-bgColor1 mx-3 p-1 text-lg'>
-        <Link to={`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}`}>
-          Back to quizzes
-        </Link>
+      <div className='text-textColor1 p-2 flex flex-row justify-center text-xl'>
+        <div className='mr-10'>Quiz: {quiz?.name} </div>
       </div>
+     
+      <div className='flex flex-row justify-start text-textColor1 bg-bgColor1 mx-3 p-1 text-lg'>
+       <button className='text-textColor1 bg-bgColor3 p-2 rounded-md' onClick={goBackToQuizzes}>Back to quizzes</button>
+       <div className='text-lg text-textColor1 bg-bgColor1 mx-3 p-2'>Quiz ID: {quiz?.id}</div>
+      </div>
+      <div className='flex flex-row  bg-bgColor1 justify-start'>
       <DataTable columns={columns} data={subQuestions} data_type="question" />
+      </div>
 
       <div className='flex flex-row justify-start pb-10'>
         <div>
@@ -129,5 +122,10 @@ O
     </>
   );
 }
+/*
+ <Link to={`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}`}>
+          Back to quizzes
+        </Link>
+*/
 
 
