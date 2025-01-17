@@ -84,12 +84,12 @@ export default function ListQuestions(props:any) {
 
   return (
     <>
-      <div className='text-textColor1 p-2 flex flex-row justify-center text-xl'>
+      <div className='text-textColor1 p-2 flex flex-row justify-center text-xl mt-3 mb-3'>
         <div className='mr-10'>Quiz: {quiz?.name} </div>
       </div>
      
       <div className='flex flex-row justify-start text-textColor1 bg-bgColor1 mx-3 p-1 text-lg'>
-       <button className='text-textColor1 bg-bgColor3 p-2 rounded-md' onClick={goBackToQuizzes}>Back to quizzes</button>
+       
        <div className='text-lg text-textColor1 bg-bgColor1 mx-3 p-2'>Quiz ID: {quiz?.id}</div>
       </div>
       <div className='flex flex-row  bg-bgColor1 justify-start'>

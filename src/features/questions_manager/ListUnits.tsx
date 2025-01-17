@@ -36,7 +36,16 @@ import { ColumnProps, DataRowProps, UnitProps } from './types';
             { Header: 'Delete', accessor: 'delete_button'  },
             { Header: 'Extra Link', accessor: 'extra_link' },
         ];
-      
+      /*
+   <Route path="sub_categories/:sub_categoryId/display_unit/unit_id" element={<DisplayUnit />} >
+                    <Route path="questions/:quiz_id" element={<ListQuestions />} />
+                    <Route path="list_quizzes/:unit_id" element={<ListQuizzes />} />
+                  </Route>
+      */
+     /*
+ <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id" element={<ListQuizzes />} />
+     */
+        //extra_link: `list_quizzes/${unit.id}*Quizzes`,
         useEffect(() => {
             if (sub_category && sub_category.units) {
               const units_row:DataRowProps[] = sub_category.units.map((unit) => {
@@ -46,7 +55,7 @@ import { ColumnProps, DataRowProps, UnitProps } from './types';
                         edit_link: `edit_unit/${unit.id}`, 
                         clone_button: "", 
                         delete_button: "",
-                        extra_link: `list_quizzes/${unit.id}*Quizzes`,
+                        extra_link: `display_unit/${unit.id}*Quizzes`,
                         }
               })
               setData(units_row)

@@ -121,7 +121,7 @@ export default function QuestionEditor(props: any) {
                 //console.log("MMMMMM my_params=", my_params)
                 updateQuestion(question?.id, my_params )
                 .then(response => {
-                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
                     navigate(url)
                  })
                  
@@ -133,7 +133,7 @@ export default function QuestionEditor(props: any) {
                 //console.log("MMMMMM radio_params=", res)
                 updateQuestion(question?.id, my_params )
                 .then(response => {
-                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
                     navigate(url)
                  })
             }
@@ -142,7 +142,7 @@ export default function QuestionEditor(props: any) {
            // console.log("Update question!!!")
             updateQuestion(params.question_id, question_params)
                 .then(response => {
-                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
                     //console.log("XXXXX UTL", url)
                     navigate(url)
                 })
@@ -150,8 +150,17 @@ export default function QuestionEditor(props: any) {
         
     }
     
+    /*
+http://localhost:5173/categories/1/sub_categories/7/display_unit/16/questions/191
+
+
+
+http://localhost:5173/categories/1/sub_categories/7/list_quizzes/16/questions/76.  Wrong
+
+    */
+
     const handleCancel = () => {
-        const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+        const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
         //console.log("XXXXX UTL", url)
         navigate(url)
     }

@@ -22,7 +22,7 @@ interface QuizProps {
 */
   
 //{ id: string; question_number: number; format: number; content: string; answer_key: string; }[] | undefined' 
-export default function ListQuizzes(props:any) {
+export default function DisplayUnit(props:any) {
     
         const [data, setData] = useState<DataRowProps[]| undefined>([])
         const params = useParams<{ categoryId: string, sub_categoryId: string, unit_id: string}>();
@@ -51,7 +51,7 @@ export default function ListQuizzes(props:any) {
    // const { data: sub_category, loading: sub_loading, error: sub_error } = useAxiosFetch<SubCategory>({ url: `/sub_categories/${params.sub_categoryId}`, method: 'get' });
   
             useEffect(() => {
-              console.log("here")
+              //console.log("here")
               if (unit) {
                 //console.log("mmmmnnnn cccccc ", unit.quizzes)
                 const quiz_rows: DataRowProps[] | undefined = unit.quizzes?.map((quiz) => {
@@ -65,7 +65,7 @@ export default function ListQuizzes(props:any) {
                           extra_link: `questions/${quiz.id}*Questions`,
                           }
                 })
-                console.log(" in ListQuizzes quiz rows =", quiz_rows)
+                //console.log(" in ListQuizzes quiz rows =", quiz_rows)
                 setData(quiz_rows)
               }
           },[unit])
@@ -83,5 +83,20 @@ export default function ListQuizzes(props:any) {
     </div>
   );
 }
+
+/*
+return (
+    <div>
+      <div className='flex flex-row justify-center text-xl bg-navCatButtonBgActive text-textColor2'>Unit: {unit?.name}</div>
+      <div>
+        <div className='bg-bgColor2 text-textColor2'>Quizzes: </div>
+        <div className='flex flex-row  bg-bgColor1 justify-start'>
+          <div><DataTable columns={columns} data={data} data_type="quiz" /></div>
+        </div>
+      </div>
+      <Outlet />
+    </div>
+  );
+*/
 
 // <DataTable columns={columns} data={data} />

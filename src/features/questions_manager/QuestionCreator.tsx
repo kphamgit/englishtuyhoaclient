@@ -89,7 +89,7 @@ export default function QuestionCreator() {
                 .then(response => {
                     //console.log("SUCCESS updating question")
                     //navigate("/live_quiz", { state: arg })
-                    navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}`)
+                    navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.quiz_id}`)
                  })
             }
         }
@@ -101,14 +101,14 @@ export default function QuestionCreator() {
                 .then(response => {
                     //console.log("SUCCESS updating question")
                     //navigate("/live_quiz", { state: arg })
-                    navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}`)
+                    navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.quiz_id}`)
                  })
             }
         }
         else {
                 createQuestion(question_params)
                 .then(response => {
-                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
                     navigate(url)
                    // navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}`)
                 })
@@ -118,7 +118,7 @@ export default function QuestionCreator() {
     
     const handleCancel = () => {
         //navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_category_name}/list_questions/${params.quiz_id}`)
-        const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+        const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
         navigate(url)
     }
 

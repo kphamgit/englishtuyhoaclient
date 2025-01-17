@@ -12,6 +12,7 @@ import FileUpload from "./features/utils/FileUpload";
 import OrphanQuestionsManager  from "./features/utils/OrphanQuestionsManager";
 import { Utils } from "./features/utils/Utils";
 import NewUnit from "./features/questions_manager/NewUnit";
+import DisplayUnit from "./features/questions_manager/DisplayUnit";
 //import CategoryPage from "./pages/CategoryPage";
 //import { QuizAttemptsManager } from "./features/components/QuizAttemptsManager";
 //import { S3ObjectsManager } from "./features/components/S3ObjectsManager";
@@ -73,6 +74,56 @@ function App() {
               <Route path="/" element={<Home />}>
                 <Route path="/categories/:categoryId" element={<CategoryPage />}>
                   <Route path="sub_categories/:sub_categoryId" element={<ListUnits />} />
+                  <Route path="sub_categories/:sub_categoryId/display_unit/:unit_id" element={<DisplayUnit />} >
+                    <Route path="questions/:quiz_id" element={<ListQuestions />} />
+                    <Route path="list_quizzes/:unit_id" element={<ListQuizzes />} />
+                  </Route>
+
+                  <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/questions/:quiz_id/edit_question/:question_id" element={<QuestionEditor />} />
+                  <Route path="sub_categories/:sub_categoryId/create_unit" element={<NewUnit />} />
+                  <Route path="sub_categories/:sub_categoryId/edit_unit/:unit_id" element={<UnitEditor />} />
+                  <Route path="sub_categories/:sub_categoryId/list_questions/:quiz_id/create_question/:format" element={<QuestionCreator />} />
+                </Route>
+///categories/1/sub_categories/7/display_unit/17" 
+                <Route path="/utils" element={<Utils />} >
+                  <Route path="manage_quiz_attempts" element={<QuizAttemptsManager />} />
+                  <Route path="manage_s3_objects" element={<S3ObjectsManager />} />
+                  <Route path="manage_orphan_questions" element={<OrphanQuestionsManager />} />
+                  <Route path="upload_file" element={<FileUpload />} />
+                  <Route path="list_games" element={<ListGames />} />
+                  <Route path="new_game" element={<GameCreator />} />
+                  <Route path="list_games/edit/:id" element={<GameEditor />} />
+
+                </Route>
+
+
+
+              </Route>
+            </Routes>
+          </BrowserRouter>
+
+        </Suspense>
+      </SocketContextComponent>
+    </>
+  );
+
+}
+//react-router-dom.js?v=ca023ebc:226 No routes matched location "/categories/1/sub_categories/7/list_units/list_quizzes/17" 
+
+//"/categories/1/sub_categories/7/list_quizzes/17/questions/77" 
+
+export default App;
+/*
+return (
+    <>
+      <SocketContextComponent>
+        <Suspense fallback={<div>Loading...</div>}>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/logout" element={<Logout onLogout={onLogout} />} />
+              <Route path="/" element={<Home />}>
+                <Route path="/categories/:categoryId" element={<CategoryPage />}>
+                  <Route path="sub_categories/:sub_categoryId" element={<ListUnits />} />
                   <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id" element={<ListQuizzes />} />
                   <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/questions/:quiz_id" element={<ListQuestions />} />
                   <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/questions/:quiz_id/edit_question/:question_id" element={<QuestionEditor />} />
@@ -103,38 +154,4 @@ function App() {
     </>
   );
 
-}
-//react-router-dom.js?v=ca023ebc:226 No routes matched location "/categories/1/sub_categories/7/list_units/list_quizzes/17" 
-
-//"/categories/1/sub_categories/7/list_quizzes/17/questions/77" 
-
-export default App;
-/*
-return (
-    <>
-      <SocketContextComponent>
-        <Suspense fallback={<div>Loading...</div>}>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/logout" element={<Logout onLogout={onLogout} />} />
-              <Route path="/" element={<Home />}>
-                <Route path="/categories/:categoryId" element={<CategoryPage />}>
-                  <Route path="sub_categories/:sub_categoryId" element={<SubCategoryPageTeacher />}>
-                    <Route path="quizzes/:unit_id" element={<ListQuizzes />} />
-                    <Route path="quizzes/:unit_id/questions/:quiz_id" element={<ListQuestions />} />
-                    <Route path="quizzes/:unit_id/questions/:quiz_id/edit_question/:question_id" element={<QuestionEditor />} />
-                  </Route>
-                  <Route path="sub_categories/:sub_categoryId/edit_unit/:unit_id" element={<UnitEditor />} />
-                  <Route path="sub_categories/:sub_category_name/list_questions/:quiz_id/create_question/:format" element={<QuestionCreator />} />
-                </Route>
-                <Route path="/manage_quiz_attempts" element={<QuizAttemptsManager />} />
-                <Route path="/manage_s3_objects" element={<S3ObjectsManager />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-
-        </Suspense>
-      </SocketContextComponent>
-    </>
-  );
 */
