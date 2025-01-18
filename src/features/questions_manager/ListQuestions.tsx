@@ -47,7 +47,7 @@ export default function ListQuestions(props:any) {
           ];
         
 
-        const { data: quiz, loading, error } =
+        const { data: quiz } =
             useAxiosFetch<QuizProps>({ url: url, method: 'get' })
             useEffect(() => {
             const sub_questions: DataRowProps[] | undefined = quiz?.questions.map(({ id, question_number, format, content, answer_key }) => {
@@ -114,8 +114,8 @@ export default function ListQuestions(props:any) {
             <option value="7">Speech Recognition</option>
             <option value="8">Words Select</option>
             <option value="9">Recording</option>
-            <option value="9">Drop Down</option>
-            <option value="9">Letter Cloze</option>
+            <option value="10">Drop Down</option>
+            <option value="11">Letter Cloze</option>
           </select>
         </div>
       </div>
