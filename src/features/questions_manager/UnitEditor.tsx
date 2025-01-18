@@ -10,7 +10,7 @@ import { useAxiosFetch } from './useAxiosFetch';
 export default function UnitEditor(props: any) {
 
       const [name, setName] = useState<string>('')
-      const [unitNumber, setUnitNumber] = useState<string | undefined>()
+      const [unitNumber, setUnitNumber] = useState<string | undefined>('')
       const [level, setLevel] = useState<string | undefined>('')
       
       const navigate = useNavigate();

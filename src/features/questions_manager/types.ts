@@ -36,14 +36,14 @@ export interface UnitProps {
 }
 */
 
-interface QuizProps {
+export interface QuizProps {
   id: string;
   name: string;
   quiz_number: string;
-  disabled: boolean;
-  video_url: string | undefined;
+  disabled?: boolean;
+  video_url?: string | undefined;
   unitId: string;
-  questions: QuestionProps[]
+  question?: QuestionProps[]
 }
 
 export type QuestionProps = {

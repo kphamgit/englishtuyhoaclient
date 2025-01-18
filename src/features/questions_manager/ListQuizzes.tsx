@@ -49,7 +49,7 @@ export default function ListQuizzes(props:any) {
        
             //  const params = useParams<{ sub_categoryId: string }>();
    // const { data: sub_category, loading: sub_loading, error: sub_error } = useAxiosFetch<SubCategory>({ url: `/sub_categories/${params.sub_categoryId}`, method: 'get' });
-  
+            /*
             useEffect(() => {
               console.log("here")
               if (unit) {
@@ -59,7 +59,7 @@ export default function ListQuizzes(props:any) {
                           id: quiz.id.toString(), 
                           item_number: quiz.quiz_number, 
                           item_name: `${quiz.name}`, 
-                          edit_link: "", 
+                          edit_link: "edit_quiz/${quiz.id}`", 
                           delete_button: "",
                           clone_button: "",
                           extra_link: `questions/${quiz.id}*Questions`,
@@ -69,6 +69,7 @@ export default function ListQuizzes(props:any) {
                 setData(quiz_rows)
               }
           },[unit])
+          */
 
   return (
     <div>
@@ -84,4 +85,20 @@ export default function ListQuizzes(props:any) {
   );
 }
 
-// <DataTable columns={columns} data={data} />
+/*
+  useEffect(() => {
+            if (sub_category && sub_category.units) {
+              const units_row:DataRowProps[] = sub_category.units.map((unit) => {
+                  return {id: unit.id, 
+                        item_number: unit.unit_number.toString(), 
+                        item_name: `${unit.name}`, 
+                        edit_link: `edit_unit/${unit.id}`, 
+                        clone_button: "", 
+                        delete_button: "",
+                        extra_link: `display_unit/${unit.id}*Quizzes`,
+                        }
+              })
+              setData(units_row)
+            }
+        },[sub_category])
+*/

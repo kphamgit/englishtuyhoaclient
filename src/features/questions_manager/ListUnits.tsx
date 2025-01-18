@@ -64,21 +64,23 @@ import { ColumnProps, DataRowProps, UnitProps } from './types';
 
         //sub_categories/:sub_categoryId/list_quizzes/:unit_id" element={
 
-        return (
-          <div className='bg-bgColor1 text-textColor2 '>
-             <div className='flex flex-row justify-start bg-bgColor3 text-textColor2 text-xl'>Units:</div>
-          <div className='flex flex-row justify-start'>
-            <DataTable columns={columns} data={data} data_type='unit'/>
-            </div>
-            <div>
+    return (
+      <>
+      <div className='bg-bgColor2 text-textColor2 p-3'>Units: </div>
+        <div className='grid grid-rows-2 bg-bgColor3 text-textColor2'>
+        <div className='flex flex-row justify-start'>
+          <DataTable columns={columns} data={data} data_type='unit' />
+        </div>
+        <div className='mx-5 mt-3'>
           <Link to={`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/create_unit`}
-            className='text-textColor1 mx-10 '
+            className='bg-bgColor1 text-textColor1 mx-10 p-2 rounded-md'
           >
             New Unit
           </Link>
         </div>
-            </div>
-          )
+       </div>
+       </>
+    )
         
 }
 

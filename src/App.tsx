@@ -13,6 +13,8 @@ import OrphanQuestionsManager  from "./features/utils/OrphanQuestionsManager";
 import { Utils } from "./features/utils/Utils";
 import NewUnit from "./features/questions_manager/NewUnit";
 import DisplayUnit from "./features/questions_manager/DisplayUnit";
+import NewQuiz from "./features/questions_manager/NewQuiz";
+import QuizEditor from "./features/questions_manager/QuizEditor";
 //import CategoryPage from "./pages/CategoryPage";
 //import { QuizAttemptsManager } from "./features/components/QuizAttemptsManager";
 //import { S3ObjectsManager } from "./features/components/S3ObjectsManager";
@@ -64,6 +66,7 @@ function App() {
         setAuth(null)
     }
 
+    //matched location "/categories/6/sub_categories/13/display_unit/37/edit_quiz/146
   return (
     <>
       <SocketContextComponent>
@@ -77,8 +80,10 @@ function App() {
                   <Route path="sub_categories/:sub_categoryId/display_unit/:unit_id" element={<DisplayUnit />} >
                     <Route path="questions/:quiz_id" element={<ListQuestions />} />
                     <Route path="list_quizzes/:unit_id" element={<ListQuizzes />} />
+                    <Route path="create_quiz" element={<NewQuiz />} />
+                   
                   </Route>
-
+                  <Route path="sub_categories/:sub_categoryId/edit_quiz/:quiz_id" element={<QuizEditor />} />
                   <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/questions/:quiz_id/edit_question/:question_id" element={<QuestionEditor />} />
                   <Route path="sub_categories/:sub_categoryId/create_unit" element={<NewUnit />} />
                   <Route path="sub_categories/:sub_categoryId/edit_unit/:unit_id" element={<UnitEditor />} />

@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 //import { renumberQuestions } from '../services/list';
 import DataTable from './data-table';
 import { DataRowProps, QuestionProps, UnitProps } from './types';
-import { Outlet, useParams } from 'react-router-dom';
+import { Link, Outlet, useParams } from 'react-router-dom';
 
 /*
 interface QuizProps {
@@ -49,7 +49,7 @@ export default function DisplayUnit(props:any) {
        
             //  const params = useParams<{ sub_categoryId: string }>();
    // const { data: sub_category, loading: sub_loading, error: sub_error } = useAxiosFetch<SubCategory>({ url: `/sub_categories/${params.sub_categoryId}`, method: 'get' });
-  
+  //sub_categories/:sub_categoryId/edit_quiz/:quiz_id" 
             useEffect(() => {
               //console.log("here")
               if (unit) {
@@ -59,7 +59,7 @@ export default function DisplayUnit(props:any) {
                           id: quiz.id.toString(), 
                           item_number: quiz.quiz_number, 
                           item_name: `${quiz.name}`, 
-                          edit_link: "", 
+                          edit_link: `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/edit_quiz/${quiz.id}`, 
                           delete_button: "",
                           clone_button: "",
                           extra_link: `questions/${quiz.id}*Questions`,
@@ -69,14 +69,22 @@ export default function DisplayUnit(props:any) {
                 setData(quiz_rows)
               }
           },[unit])
-
+//sub_categories/:sub_categoryId/display_unit/:unit_id/create_quiz
   return (
     <div>
       <div className='flex flex-row justify-center text-xl bg-navCatButtonBgActive text-textColor2'>Unit: {unit?.name}</div>
       <div>
         <div className='bg-bgColor2 text-textColor2'>Quizzes: </div>
-        <div className='flex flex-row  bg-bgColor1 justify-start'>
+        <div className='flex flex-col'>
           <div><DataTable columns={columns} data={data} data_type="quiz" /></div>
+          <div className='p-3'>
+            <Link to={`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/create_quiz`}
+              className='text-textColor1 bg-bgColor3 rounded-md p-2'
+            >
+              New Quiz
+            </Link>
+          </div>
+
         </div>
       </div>
       <Outlet />
