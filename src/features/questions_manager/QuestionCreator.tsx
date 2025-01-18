@@ -159,7 +159,7 @@ export default function QuestionCreator() {
                     <input className='bg-bgColor2 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={answerKey}
                     onChange={e => setAnswerKey(e.target.value)}></input>
                 </div>
-                { (format === "1") && 
+                { (format === "1" || format === "2" || format === "10") && 
                     <NewCloze question_content={questionContent} set_answer_key={set_answer_key}/>
                 }
                 { (format === "4") && 
