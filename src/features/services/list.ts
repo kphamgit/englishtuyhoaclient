@@ -240,7 +240,7 @@ export async function deleteQuestion(id: string): Promise<QuestionProps> {
 }
 */
 
-export async function deleteAllQuizAttempts(quiz_attempt_ids: string[]): Promise<QuestionProps> {
+export async function deleteQuizAttempts(quiz_attempt_ids: string[]): Promise<QuestionProps> {
   console.log("deleteAllQuizAttempts xxxx",quiz_attempt_ids)
   const url = `${rootpath}/api/quiz_attempts`
   const response = await axios.delete(url, {data: { quiz_attempt_ids: quiz_attempt_ids }})

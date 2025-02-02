@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { deleteAllQuizAttempts, getQuizAttempts } from '../services/list'
+import { deleteQuizAttempts, getQuizAttempts } from '../services/list'
+import { useAxiosFetch } from '../../hooks'
 
 type QuizAttemptProps = {
  
@@ -15,14 +16,29 @@ type QuizAttemptProps = {
 }
 
 export default function QuizAttemptsManager(props: any) {
+   // const [key, setKey] = useState(0); // Update key to re-render the component
     const [quizAttempts, setQuizAttempts] = useState<QuizAttemptProps[] | undefined>([])
     
     const [checkedItems, setCheckedItems] = useState<string[]>([]);
     const checkboxesRef = useRef<HTMLInputElement[] | undefined>([]);
     
-    useEffect(() => {
-        getQuizAttempts()
-            .then((data) => {            
+    
+     const url = `quiz_attempts`
+  const { data: quiz_attempts, loading, error } =
+        useAxiosFetch<QuizAttemptProps[]>({ url: url, method: 'get' })
+
+useEffect(() => {
+    console.log("in useEffect ")
+    if (quiz_attempts) {
+       // console.log("in useEffect quiz_attempts", quiz_attempts)
+        setQuizAttempts(quiz_attempts)
+        
+    }
+    //else {
+       // setQuizAttempts([])
+   // }
+}, [quiz_attempts])
+
                 /*
 {
     "id": 1962,
@@ -50,13 +66,7 @@ export default function QuizAttemptsManager(props: any) {
     "user.classId": 2
 }
                 */
-                  setQuizAttempts(data)
-                }
-            )
-            .catch(error =>
-                console.log(error)
-            )
-    }, [])
+    
 
     const calculateTimeElapsed = (updatedAt: any, createdAt: any) => {
         //console.log("AAA", updatedAt)
@@ -106,6 +116,18 @@ export default function QuizAttemptsManager(props: any) {
         });
       };
 
+    const handleRefresh = () => {
+        getQuizAttempts()
+            .then((data) => {          
+                console.log("in handleRefresh data=",data)  
+                  setQuizAttempts(data)
+                }
+            )
+            .catch(error =>
+                console.log(error)
+            )
+    }
+
     const handleCheckAll = () => {
         if (checkboxesRef.current) {
             const allValues = checkboxesRef.current
@@ -121,12 +143,20 @@ export default function QuizAttemptsManager(props: any) {
     };
 
     const deleteChecked = () => {
-        console.log("eeex xxxxxxxx", checkedItems)
         
-        deleteAllQuizAttempts(checkedItems)
+        deleteQuizAttempts(checkedItems)
         .then( (data) => {
-            //console.log(data)
             setCheckedItems([]);
+            //setQuizAttempts([])
+            getQuizAttempts()
+            .then((data) => {          
+                //console.log("in handleRefresh data=",data)  
+                  setQuizAttempts(data)
+                }
+            )
+            .catch(error =>
+                console.log(error)
+            )
         })
         .catch(error => {
             console.log(error)
@@ -137,6 +167,7 @@ export default function QuizAttemptsManager(props: any) {
     return (
         <>
             <div className='bg-bgColor1 text-textColor m-5'>
+            <button className='bg-bgColor3 text-textColor1 mx-2 p-2' onClick={handleRefresh}>Refresh</button>
             <button className='bg-bgColor3 text-textColor1 mx-2 p-2' onClick={handleCheckAll}>Check All</button>
             <button className='bg-bgColor3 text-textColor1 mx-2 p-2' onClick={deleteChecked}>Delete Checked Quiz Attempts</button>
             </div>
