@@ -205,7 +205,7 @@ http://localhost:5173/categories/1/sub_categories/7/list_quizzes/16/questions/76
                     onChange={e => setAnswerKey(e.target.value)}></input>
                 </div>
 
-                { (format === "1") &&  
+                { (format === "1" || format === "2" || format === "10") && 
                     <NewCloze question_content={questionContent} set_answer_key ={setAnswerKey} />
                 }
                 { (format === "3") &&  
