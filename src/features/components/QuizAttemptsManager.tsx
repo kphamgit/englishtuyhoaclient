@@ -119,7 +119,7 @@ useEffect(() => {
     const handleRefresh = () => {
         getQuizAttempts()
             .then((data) => {          
-                console.log("in handleRefresh data=",data)  
+                //console.log("in handleRefresh data=",data)  
                   setQuizAttempts(data)
                 }
             )

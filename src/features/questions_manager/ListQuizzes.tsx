@@ -2,9 +2,6 @@
 import { useAxiosFetch } from '../../hooks';
 //import { QuestionProps } from '../components/Question';
 import { useEffect, useState } from 'react';
-//import { cloneQuestion, deleteQuestion } from '../services/list';
-//import Table from '../components/data-table_old';
-//import { renumberQuestions } from '../services/list';
 import DataTable from './data-table';
 import { DataRowProps, QuestionProps, UnitProps } from './types';
 import { Outlet, useParams } from 'react-router-dom';

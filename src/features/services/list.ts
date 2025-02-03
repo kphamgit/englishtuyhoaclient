@@ -257,11 +257,7 @@ export async function deleteOrphanQuestions(question_ids: string[]): Promise<voi
 }
 
 export async function renumberRows(row_ids: string[], data_type: string): Promise<string> {
-  
-  //console.log("xxxxx renumberRows data type =", data_type)
-
-  //console.log("xxxxx renumberRows row ids =", row_ids)
-  
+   
   let url = ''
   if (data_type === 'question') {
      url = `${rootpath}/api/questions/renumber`
@@ -270,7 +266,10 @@ export async function renumberRows(row_ids: string[], data_type: string): Promis
     console.log("xxxxx renumberRows data type =", data_type)
     url = `${rootpath}/api/quizzes/renumber`
   }
-
+  else if (data_type === 'unit') {
+    console.log("xxxxx renumberRows data type =", data_type)
+    url = `${rootpath}/api/units/renumber`
+  }
   const response = await axios.post(url, {row_ids: row_ids})
   //console.log("UUUU in getAClass response.data", response.data)
   
