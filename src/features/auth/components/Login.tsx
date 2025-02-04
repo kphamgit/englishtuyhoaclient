@@ -35,21 +35,21 @@ export function Login(props:any) {
 
             <div className='flex flex-row justify-center'>
                 <div className="flex flex-col m-10">
-                    <div className={`flex h-screen w-screen items-center justify-center bg-bgColor text-textColor`}>
+                    <div className={`flex h-screen w-screen items-center justify-center bg-bgColor2 text-textColor2`}>
                         <div className="rounded-md bg-bgColor1 p-8 text-textColor1">
                             <h1 className="text-2xl mb-2">Login</h1>
-                            <form className="bg-bgColor">
+                            <form>
                                 <label>
                                     <p>User Name</p>
-                                    <input className="bg-bgColor3 text-textColor1 text-sm rounded-lg focus:ring-blue-500 focus:border-textColor2 block w-auto p-2.5"
+                                    <input className="bg-bgColor2 text-textColor2 text-sm rounded-lg focus:ring-blue-500 focus:border-textColor2 block w-auto p-2.5"
                                         type="text" onChange={e => setUserName(e.target.value)} />
                                 </label>
                                 <label>
                                     <p>Password</p>
-                                    <input className="bg-bgColor3 text-textColor1 text-sm rounded-lg focus:ring-blue-500 focus:border-textColor1 block w-auto p-2.5"
+                                    <input className="bg-bgColor2 text-textColor2 text-sm rounded-lg focus:ring-blue-500 focus:border-textColor1 block w-auto p-2.5"
                                         type="text" onChange={e => setPassword(e.target.value)} />
                                 </label>
-                                <button className='bg-amber-800 m-2 p-2 hover:bg-amber-600 rounded-md' onClick={handleSubmit}>Submit</button>
+                                <button className='bg-bgColor3 m-2 p-2 hover:bg-green-700 rounded-md' onClick={handleSubmit}>Submit</button>
                             </form>
                         </div>
                     </div>

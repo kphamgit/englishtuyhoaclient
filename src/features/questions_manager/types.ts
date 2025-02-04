@@ -58,6 +58,7 @@ export type QuestionProps = {
   content : string,
   words_scramble_direction : string,
   answer_key : string,
+  timeout : number,
   score : number,
   show_help : boolean,
   help1 : string,

@@ -29,6 +29,7 @@ export default function QuestionCreator() {
       const [audioStr, setAudioStr] = useState('')
       const [questionContent, setQuestionContent] = useState('')
       const [answerKey, setAnswerKey] = useState('')
+      const [timeLimit, setTimeLimit] = useState('')
       const [score, setScore] = useState<number>()
       const [instruction, setInstruction] = useState<string>('instruction')
       const [help1, setHelp1] = useState(null)
@@ -74,6 +75,7 @@ export default function QuestionCreator() {
             audio_str: audioStr,
             content: questionContent,
             answer_key: answerKey,
+            timeout: timeLimit,
             score: score,
             help1: help1,
             quiz_id: params.quiz_id
@@ -158,6 +160,10 @@ export default function QuestionCreator() {
                 <div className='mx-10 text-textColor1 mb-2'>Answer Key
                     <input className='bg-bgColor2 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={answerKey}
                     onChange={e => setAnswerKey(e.target.value)}></input>
+                </div>
+                <div className='mx-10 text-textColor1 mb-2'>Time Limit
+                    <input className='bg-bgColor2 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={timeLimit}
+                    onChange={e => setTimeLimit(e.target.value)}></input>
                 </div>
                 { (format === "1" || format === "2" || format === "10") && 
                     <NewCloze question_content={questionContent} set_answer_key={set_answer_key}/>

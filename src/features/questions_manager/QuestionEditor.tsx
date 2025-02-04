@@ -12,6 +12,7 @@ import { RadioComponentHandle } from './types';
 import EditWordScramble from './EditWordScramble';
 import { WordScrambleComponentHandle } from './types';
 import { RadioProps } from './types';
+import { time } from 'console';
 
 export default function QuestionEditor(props: any) {
 
@@ -28,6 +29,7 @@ export default function QuestionEditor(props: any) {
       //const [help2, setHelp2] = useState(null)
       const [radioContent, setRadioContent] = useState<RadioProps | undefined>()
       const [wordScrambleDirection, setwordScrambleDirection] = useState<string>('');
+      const [timeLimit, setTimeLimit] = useState('')
 
       //kpham Typescript lesson: learned how to type an object as a dictionary 12/16/2024
       const formatConversion: { [key: string]: string } = {"1": 'Cloze', "2": "Button Cloze Select", "3": 'Button Select', 
@@ -74,6 +76,7 @@ export default function QuestionEditor(props: any) {
         setAudioStr(question.audio_str)
         setQuestionContent(question.content)
         setAnswerKey(question.answer_key)
+        setTimeLimit(question.timeout.toString())
         setScore(question.score)
         if (question.radio != null) {
             setRadioContent({...question.radio})
@@ -106,6 +109,7 @@ export default function QuestionEditor(props: any) {
             audio_str: audioStr,
             content: questionContent,
             answer_key: answerKey,
+            timeout: timeLimit,
             score: score,
             help1: help1
         }
@@ -150,15 +154,6 @@ export default function QuestionEditor(props: any) {
         
     }
     
-    /*
-http://localhost:5173/categories/1/sub_categories/7/display_unit/16/questions/191
-
-
-
-http://localhost:5173/categories/1/sub_categories/7/list_quizzes/16/questions/76.  Wrong
-
-    */
-
     const handleCancel = () => {
         const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
         //console.log("XXXXX UTL", url)
@@ -203,6 +198,10 @@ http://localhost:5173/categories/1/sub_categories/7/list_quizzes/16/questions/76
                 <div className='mx-10 text-textColor1 mb-2'>Answer Key
                     <input className='bg-bgColor2 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={answerKey}
                     onChange={e => setAnswerKey(e.target.value)}></input>
+                </div>
+                <div className='mx-10 text-textColor1 mb-2'>Time Limit
+                    <input className='bg-bgColor2 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={timeLimit}
+                    onChange={e => setTimeLimit(e.target.value)}></input>
                 </div>
 
                 { (format === "1" || format === "2" || format === "10") && 
