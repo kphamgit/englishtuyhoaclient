@@ -16,7 +16,8 @@ export default function NewQuiz(props: any) {
 
       const [name, setName] = useState<string>('')
       const [quizNumber, setQuizNumber] = useState<string | undefined>('')
-  
+      const [videoUrl, setVideoUrl] = useState<string | undefined>('')
+
       const navigate = useNavigate();
       const params = useParams<{categoryId: string, sub_categoryId: string, unit_id: string }>();
         console.log("HUUUUU params =", params)
@@ -67,6 +68,10 @@ const create_quiz = () => {
                 <div className='mx-10 text-textColor1 mb-2'>Quiz Number
                     <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={quizNumber}
                     onChange={e => setQuizNumber(e.target.value)}></input>
+                </div>
+                <div className='mx-10 text-textColor1 mb-2'>Video URL
+                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={videoUrl}
+                    onChange={e => setVideoUrl(e.target.value)}></input>
                 </div>
                 <div className='bg-bgColor1 text-textColor2 mb-2'>Unit ID:  {params.unit_id}</div>
                <div className='flex flex-row justify-start gap-2 mx-14'>

@@ -14,7 +14,7 @@ export const MenuBar = (props: { editor: any }) => {
   
     //className={props.editor.isActive('bold') ? 'is-active' : ''}
     return (
-      <div className='menu-bar'>
+      <div className='menu-bar text-red-400'>
         <button
           onClick={() => props.editor.chain().focus().toggleBold().run()}
           disabled={

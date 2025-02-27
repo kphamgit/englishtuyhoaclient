@@ -14,6 +14,14 @@ export default {
         textColor2: 'var(--textColor2)',
         bgColor3: 'var(--bgColor3)',
         textColor3: 'var(--textColor3)',
+        
+        textColorTipTapMenuBtn: 'var(--textColorTipTapMenuBtn)',
+        textColorTipTapMenuBtnActive: 'var(--textColorTipTapMenuBtnActive)',
+        textColorTipTapMenuBtnHover: 'var(--textColorTipTapMenuBtnHover)',
+        bgColorTipTapMenuBtn: 'var(--bgColorTipTapMenuBtn)',
+        bgColorTipTapMenuBtnActive: 'var(--bgColorTipTapMenuBtnActive)',
+        bgColorTipTapMenuBtnHover: 'var(--bgColorTipTapMenuBtnHover)',
+
         navCatButtonBgActive: 'var(--navCatButtonBgActive)',
         navCatButtonBgInActive: 'var(--navCatButtonBgInActive)',
         navCatButtonBgInHover: 'var(--navCatButtonBgHover)',
@@ -28,3 +36,12 @@ export default {
   plugins: [],
 }
 
+/*
+-textColorTipTapMenuBtn: #e4cece;
+  --textColorTipTapMenuBtnActive: #e4cece;
+  --textColorTipTapMenuBtnHover: #e4cece;
+
+  --bgColorTipTapMenuBtn: #e4cece;
+  --bgColorTipTapMenuBtnActive: #e4cece;
+  --bgColorTipTapMenuBtnHover: #e4cece;
+*/

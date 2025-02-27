@@ -123,7 +123,7 @@ export default function QuestionCreator() {
         const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
         navigate(url)
     }
-
+// <SimpleEditor initialContent={instruction} ref={editorRef} />
     //kpham: Javascript lesson: use dynamic key (i.e, format state variable) to index into formatConversion object
         return (
             <div className='bg-bgColor0'>
@@ -137,32 +137,31 @@ export default function QuestionCreator() {
                     <button className='bg-bgColor2 m-3 p-1 text-white' onClick={handleCancel}>Cancel</button>
                 </div>
 
-                <div className='mx-10 text-textColor1 mb-2'>Prompt
-                    <input className='bg-bgColor2 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={prompt}
-                    onChange={e => setPrompt(e.target.value)}></input>
+                <div className='mx-10 bg-bgColor1 text-textColor1 mb-2'>Prompt1
+                 <textarea className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md mx-1' rows={5} cols={70} value={prompt}
+                    onChange={e => setPrompt(e.target.value)}></textarea>
                 </div>
-
                 <div className='mx-10 text-textColor1 mb-2'>Audio text
-                    <input className='bg-bgColor2 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={audioStr}
+                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={audioStr}
                     onChange={e => setAudioStr(e.target.value)}></input>
                 </div>
 
                 <div className='mx-10 text-textColor1 mb-2'>Amazon S3 Audio Source
-                    <input className='bg-bgColor2 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={audioSrc}
+                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={audioSrc}
                     onChange={e => setAudioSrc(e.target.value)}></input>
                 </div>
 
                 <div className='mx-10 text-textColor1 mb-2'>Content
-                    <input className='bg-bgColor2 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={questionContent}
+                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md  mx-1' size={70} type="text" value={questionContent}
                     onChange={e => setQuestionContent(e.target.value)}></input>
                 </div>
 
                 <div className='mx-10 text-textColor1 mb-2'>Answer Key
-                    <input className='bg-bgColor2 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={answerKey}
+                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={answerKey}
                     onChange={e => setAnswerKey(e.target.value)}></input>
                 </div>
                 <div className='mx-10 text-textColor1 mb-2'>Time Limit
-                    <input className='bg-bgColor2 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={timeLimit}
+                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={timeLimit}
                     onChange={e => setTimeLimit(e.target.value)}></input>
                 </div>
                 { (format === "1" || format === "2" || format === "10") && 

@@ -34,6 +34,14 @@
 
   --bgColor3: #600909;
   --textColor3: #e4cece;
+
+  --textColorTipTapMenuBtn: #e4cece;
+  --textColorTipTapMenuBtnActive: #e4cece;
+  --textColorTipTapMenuBtnHover: #e4cece;
+
+  --bgColorTipTapMenuBtn: #e4cece;
+  --bgColorTipTapMenuBtnActive: #e4cece;
+  --bgColorTipTapMenuBtnHover: #e4cece;
 }
 
 .theme-light {
@@ -55,13 +63,21 @@
   --textColor0: #21294b;
 
   --bgColor1: #36c492;
-  --textColor1: #253f06;
+  --textColor1: #101b02;
 
   --bgColor2: #3d4cb3;
   --textColor2: #9898d2;
 
-  --bgColor3: #600909;
+  --bgColor3: #d7c4c4;
   --textColor3: #350606;
+
+  --textColorTipTapMenuBtn: #053048;
+  --textColorTipTapMenuBtnActive: #e4a3a3;
+  --textColorTipTapMenuBtnHover: #f0e6e6;
+
+  --bgColorTipTapMenuBtn: #c29348;
+  --bgColorTipTapMenuBtnActive: #5872b6;
+  --bgColorTipTapMenuBtnHover: #6b8b9f;
 }
 
 .letter-input {
