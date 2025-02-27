@@ -13,7 +13,7 @@ export const BasicTipTapMenuBar = (props: { editor: any }) => {
       }
     }
   
-    //className={props.editor.isActive('bold') ? 'is-active' : ''}
+    //props.editor.chain().focus().setBackColor(newColor).run();
   return (
     <div className="flex flex-row justify-start">
       <div className="flex flex-row justify-around wrap gap-2 text-textColor2 menu-bar">
@@ -24,6 +24,14 @@ export const BasicTipTapMenuBar = (props: { editor: any }) => {
             value={props.editor.getAttributes('textStyle').color}
             data-testid="setColor"
           />
+        </div>
+        <div>
+        <input
+            type="color"
+            onInput={event => props.editor.chain().focus().setBackColor((event.target as HTMLInputElement).value).run()}
+            value={props.editor.getAttributes('textStyle').backColor}
+            data-testid="setBackColor"
+          /> d
         </div>
 
         <div>  

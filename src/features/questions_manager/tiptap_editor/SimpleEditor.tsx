@@ -14,6 +14,7 @@ import mystyles from "./content-editor.module.css"
 //import { LinkModal } from "./LinkModal";
 import styled from 'styled-components'
 import { BasicTipTapMenuBar } from "./BasicTipTapMenuBar";
+import { BackColor } from "./extensions/backgroundColor";
 
 /*
   <SimpleEditor setContent={setMyContent} />
@@ -38,8 +39,8 @@ export const SimpleEditor = forwardRef<EditorRef, MyProps>((props, ref) => {
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Image,
       Color,
+      BackColor,
       TextStyle,
       ResizableImage,
       TextAlign.configure({

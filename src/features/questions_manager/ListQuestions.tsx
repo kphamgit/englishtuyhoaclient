@@ -92,14 +92,14 @@ export default function ListQuestions(props:any) {
        
        <div className='text-lg text-textColor1 bg-bgColor1 mx-3 p-2'>Quiz ID: {quiz?.id}</div>
       </div>
-      <div className='flex flex-row  bg-bgColor1 justify-start'>
+      <div className='flex flex-row  justify-start'>
       <DataTable columns={columns} data={subQuestions} data_type="question" />
       </div>
 
       <div className='flex flex-row justify-start pb-10'>
         <div>
           <Link to={`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}/create_question/${newQuestionFormat}`}
-            className='text-textColor1 mx-10 '
+            className='text-textColor1 bg-bgColor1 mx-10 my-4 p-1 rounded-md'
           >
             New Question
           </Link>

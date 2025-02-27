@@ -146,7 +146,7 @@ import { clone_a_row, deleteTableRow, renumberRows } from '../services/list';
   return (
     
     <div className='w-auto grid-cols-5 gap-2'>
-      <div><button className='text-textColor1 bg-bgColor3 rounded-lg p-2 m-2' onClick={renumber_rows}>Renumber {props.data_type}s</button></div>
+      <div><button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2' onClick={renumber_rows}>Renumber {props.data_type}s</button></div>
      
       <DndContext
         sensors={sensors}

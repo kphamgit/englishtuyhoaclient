@@ -24,7 +24,7 @@ export default function Home() {
 
 
   return (
-    <div className='bg-bgColor1 h-screen'>
+    <div className='bg-bgColor2 h-screen'>
  
       {user.role === 'teacher' ?
       

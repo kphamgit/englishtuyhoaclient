@@ -78,7 +78,7 @@ else  return null
        {columns.map((column: ColumnProps) => (
                   <td
                     key={column.accessor}
-                    className="py-3 px-4 border-b border-gray-200 bg-bgColor0 text-textColor2 mb-3"
+                    className="py-3 px-4 border-b border-gray-200 bg-bgColor3 text-textColor3 mb-3"
                   >{ (column.accessor === 'id') ?
                       <button  {...attributes}  {...listeners} className='cursor-move'>{id}</button>
                     :

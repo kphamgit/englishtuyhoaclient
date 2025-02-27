@@ -14,7 +14,9 @@ export default {
         textColor2: 'var(--textColor2)',
         bgColor3: 'var(--bgColor3)',
         textColor3: 'var(--textColor3)',
-        
+        bgColor4: 'var(--bgColor4)',
+        textColor4: 'var(--textColor4)',
+
         textColorTipTapMenuBtn: 'var(--textColorTipTapMenuBtn)',
         textColorTipTapMenuBtnActive: 'var(--textColorTipTapMenuBtnActive)',
         textColorTipTapMenuBtnHover: 'var(--textColorTipTapMenuBtnHover)',

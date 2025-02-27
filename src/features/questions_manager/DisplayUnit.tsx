@@ -76,7 +76,7 @@ export default function DisplayUnit(props:any) {
           <div><DataTable columns={columns} data={data} data_type="quiz" /></div>
           <div className='p-3'>
             <Link to={`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/create_quiz`}
-              className='text-textColor1 bg-bgColor3 rounded-md p-2'
+              className='text-textColor1 bg-bgColor1 rounded-md p-2'
             >
               New Quiz
             </Link>

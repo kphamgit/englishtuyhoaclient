@@ -29,19 +29,22 @@
   --bgColor1: #3d0808;
   --textColor1: #e5cfcf;
 
-  --bgColor2: #600909;
+  --bgColor2: #470505;
   --textColor2: #e0cfcf;
 
-  --bgColor3: #600909;
+  --bgColor3: #4c0404;
   --textColor3: #e4cece;
+
+  --bgColor4: #6c0d0d;
+  --textColor4: #e4cece;
 
   --textColorTipTapMenuBtn: #e4cece;
   --textColorTipTapMenuBtnActive: #e4cece;
   --textColorTipTapMenuBtnHover: #e4cece;
 
-  --bgColorTipTapMenuBtn: #e4cece;
-  --bgColorTipTapMenuBtnActive: #e4cece;
-  --bgColorTipTapMenuBtnHover: #e4cece;
+  --bgColorTipTapMenuBtn: #9e1919;
+  --bgColorTipTapMenuBtnActive: #610505;
+  --bgColorTipTapMenuBtnHover: #d47a7a;
 }
 
 .theme-light {
@@ -71,6 +74,9 @@
   --bgColor3: #d7c4c4;
   --textColor3: #350606;
 
+  --bgColor4: #93c9ea;
+  --textColor4: #5f0909;
+  
   --textColorTipTapMenuBtn: #053048;
   --textColorTipTapMenuBtnActive: #e4a3a3;
   --textColorTipTapMenuBtnHover: #f0e6e6;

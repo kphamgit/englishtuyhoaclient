@@ -44,36 +44,12 @@ export default function ListQuizzes(props:any) {
         const { data: unit, loading, error } =
             useAxiosFetch<UnitProps>({ url: url, method: 'get' })
        
-            //  const params = useParams<{ sub_categoryId: string }>();
-   // const { data: sub_category, loading: sub_loading, error: sub_error } = useAxiosFetch<SubCategory>({ url: `/sub_categories/${params.sub_categoryId}`, method: 'get' });
-            /*
-            useEffect(() => {
-              console.log("here")
-              if (unit) {
-                //console.log("mmmmnnnn cccccc ", unit.quizzes)
-                const quiz_rows: DataRowProps[] | undefined = unit.quizzes?.map((quiz) => {
-                    return {
-                          id: quiz.id.toString(), 
-                          item_number: quiz.quiz_number, 
-                          item_name: `${quiz.name}`, 
-                          edit_link: "edit_quiz/${quiz.id}`", 
-                          delete_button: "",
-                          clone_button: "",
-                          extra_link: `questions/${quiz.id}*Questions`,
-                          }
-                })
-                console.log(" in ListQuizzes quiz rows =", quiz_rows)
-                setData(quiz_rows)
-              }
-          },[unit])
-          */
-
   return (
     <div>
       <div className='flex flex-row justify-center text-xl bg-navCatButtonBgActive text-textColor2'>Unit: {unit?.name}</div>
       <div>
-        <div className='bg-bgColor2 text-textColor2'>Quizzes: </div>
-        <div className='flex flex-row  bg-bgColor1 justify-start'>
+        <div className='bg-bgColor2 text-textColor1'>Quizzes: </div>
+        <div className='flex flex-row  bg-bgColor1 text-textColor1 justify-start'>
           <div><DataTable columns={columns} data={data} data_type="quiz" /></div>
         </div>
       </div>
@@ -81,21 +57,3 @@ export default function ListQuizzes(props:any) {
     </div>
   );
 }
-
-/*
-  useEffect(() => {
-            if (sub_category && sub_category.units) {
-              const units_row:DataRowProps[] = sub_category.units.map((unit) => {
-                  return {id: unit.id, 
-                        item_number: unit.unit_number.toString(), 
-                        item_name: `${unit.name}`, 
-                        edit_link: `edit_unit/${unit.id}`, 
-                        clone_button: "", 
-                        delete_button: "",
-                        extra_link: `display_unit/${unit.id}*Quizzes`,
-                        }
-              })
-              setData(units_row)
-            }
-        },[sub_category])
-*/
