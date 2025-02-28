@@ -38,6 +38,9 @@ export default function GameEditor(props: any) {
           setGameNumber(response.game_number)
           setVideoUrl(response.video_url)
           setVideoDuration(response.video_duration)
+          setSourceLanguage(response.source_language)
+          setTargetLanguage(response.target_language)
+          setIsContinuous(response.continuous)
           const target_array = response.target.split('/')
           const match_pairs = response.base.split('/').map((item:string, index: number) => {
               return {source: item, target: target_array[index]}
@@ -50,6 +53,7 @@ export default function GameEditor(props: any) {
     },[params.id])
 
     const handleCheckBoxChange = () => {
+      //console.log("ENTRY handleCheckBoxChange is continuous: ", isContinuous)
       setIsContinuous(!isContinuous);
     };
 
@@ -60,7 +64,7 @@ export default function GameEditor(props: any) {
       const targets = matchPairs.map((pair, index) => (
         pair.target
       ))
-
+      //console.log("...saving game,  isContinuous = ", isContinuous)
       const game_params = { 
         name: name,
         game_number: gameNumber,
@@ -73,6 +77,7 @@ export default function GameEditor(props: any) {
         target_language: targetLanguage,
       };
 
+      //console.log("...saving game,  game_params = ", game_params)
       updateGame(params.id, {update_params: game_params})
       .then(response => {
         //console.log("xxxx after update response =  ", response)
@@ -85,6 +90,7 @@ export default function GameEditor(props: any) {
     }
 
     const handleSourceLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+      //console.log("handleSourceLanguageChange", event.target.value)
       setSourceLanguage(event.target.value);
     }
 

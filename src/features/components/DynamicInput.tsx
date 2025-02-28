@@ -58,6 +58,7 @@ const DynamicInput: React.FC<Props> = ({inputs, parent_func }) => {
     <div className='bg-bgColor3'>
       {inputFields && inputFields.map((input, index) => (
         <div className='bg-bgColor3 text-textColor2' key={index}>
+          <span>{index+1}</span>
           <input className='bg-bgColor1 text-textColor1 mx-3 mb-2' type="text" value={input.source} onChange={(event) => handleChange1(index, event)} />
           <input className='bg-bgColor1 text-textColor3 mx-3 mb-2' type="text" value={input.target} onChange={(event) => handleChange2(index, event)} />
           <button type="button" onClick={() => handleRemove(index)}>Remove</button>
