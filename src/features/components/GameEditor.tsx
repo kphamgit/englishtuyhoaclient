@@ -57,6 +57,18 @@ export default function GameEditor(props: any) {
       setIsContinuous(!isContinuous);
     };
 
+    const handleSwitch = () => {
+      console.log("matchPairs = ", matchPairs)
+      //switch source and target of matchPairs
+      const newMatchPairs = matchPairs.map((pair, index) => (
+        {source: pair.target, target: pair.source}
+      ))
+      setMatchPairs(newMatchPairs)
+      //const newMatchPairs = matchPairs.map((pair, index) => (
+       // {source: pair.target, target: pair.source}
+      //))
+     // setMatchPairs(newMatchPairs)  
+    }
     const handleSave = () => {
       const sources = matchPairs.map((pair, index) => (
         pair.source
@@ -117,29 +129,39 @@ return (
         Continuous
       </label>
     </div>
-    <div>
-      <span className="m-2 bg-bgColor2  p-1 text-textColor2">Source Language</span>
-      <select className="m-2 bg-bgColor2  p-1 text-textColor2" value={sourceLanguage} onChange={handleSourceLanguageChange}>
-        <option value="vn" >VN</option>
-        <option value="en">EN</option>
-      </select>
-    </div>
-    <div>
-      <span className="m-2 bg-bgColor2  p-1 text-textColor2">Target Language</span>
-      <select className="m-2 bg-bgColor2  p-1 text-textColor2" value={targetLanguage} onChange={handleTargetLanguageChange}>
-        <option value="vn" >VN</option>
-        <option value="en">EN</option>
-      </select>
-    </div>
+   
     <div><label>Ending Video URL:</label>
       <input  className="bg-bgColor2 m-3 p-1 text-textColor2" type="text" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} /></div>
     <div><label>Duration for Video (in miliseconds):</label>
       <input className="bg-bgColor2 m-3 p-1 text-textColor2" type="text" value={videoDuration} onChange={(e) => setVideoDuration(e.target.value)} /></div>
     <div>Images are only allowed for TARGET column. Need to insert jpeg tags</div>
-    <DynamicInput  inputs ={matchPairs}/>
-      <button className='bg-bgColor2 m-3 p-1 text-textColor2' onClick={handleCancel}>Cancel</button>
-      <button className='bg-bgColor1 text-textColor1 p-2 rounded-md' type="button" onClick={handleSave}>Save</button>
-      <div className='bg-bgColor2 m-3 p-1 text-textColor2'>nnn {sourceLanguage}</div>
+
+    <div className="w-96 flex flex-row gap-3 justify-around ">
+      <div>
+      <span className="m-2 bg-bgColor2  p-1 text-textColor2">Language</span>
+      <select className="m-2 bg-bgColor2  p-1 text-textColor2" value={sourceLanguage} onChange={handleSourceLanguageChange}>
+        <option value="vn" >VN</option>
+        <option value="en">EN</option>
+      </select>
+      </div>
+      <div>
+      <span className="m-2 bg-bgColor2  p-1 text-textColor2">Language</span>
+      <select className="m-2 bg-bgColor2  p-1 text-textColor2" value={targetLanguage} onChange={handleTargetLanguageChange}>
+        <option value="vn" >VN</option>
+        <option value="en">EN</option>
+      </select>
+      </div>
+    </div>
+    <div id="matchPairs">
+    <DynamicInput inputs ={matchPairs}/>
+    </div>
+   <div>
+   <button className='bg-bgColor4 text-textColor1 p-2 rounded-md' type="button" onClick={handleSwitch}>Switch</button>
+   </div>
+   <div>
+      <button className='bg-bgColor4 m-3 p-1 text-textColor2' onClick={handleCancel}>Cancel</button>
+      <button className='bg-bgColor4 text-textColor1 p-2 rounded-md' type="button" onClick={handleSave}>Save</button>
+    </div>
     </div>
     
 )
