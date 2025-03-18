@@ -44,9 +44,10 @@ export default function ListQuestions(props:any) {
             { Header: 'Edit', accessor: 'edit_link' },
             { Header: 'Clone', accessor: 'clone_button' },
             { Header: 'Delete', accessor: 'delete_button' },
+            { Header: 'Extra Link', accessor: 'extra_link' },
           ];
         
-
+//http://localhost:5173/categories/2/sub_categories/15/display_unit/42/questions/155/take_question/5069
         const { data: quiz } =
             useAxiosFetch<QuizProps>({ url: url, method: 'get' })
             useEffect(() => {
@@ -57,7 +58,9 @@ export default function ListQuestions(props:any) {
                 item_name: "", 
                 format: formatConversion[format.toString()], //format coming from question is a number. So convert it to a string before indexing into the formatConversion dictionary 
                 content: content, 
-                answer_key: answer_key
+                answer_key: answer_key,
+                extra_link: `take_question/${question_number.toString()}*Take (not working)`,
+                data_type: "question",
               } as DataRowProps
             })
             if (sub_questions) {

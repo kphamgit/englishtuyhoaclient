@@ -1,96 +1,101 @@
-//import { useAxiosFetch } from '../components/services/useAxiosFetch';
-import { useAxiosFetch } from '../../hooks';
-//import { QuestionProps } from '../components/Question';
-import { useEffect, useState } from 'react';
-//import { cloneQuestion, deleteQuestion } from '../services/list';
-//import Table from '../components/data-table_old';
-//import { renumberQuestions } from '../services/list';
-import DataTable from './data-table';
-import { DataRowProps, QuestionProps, UnitProps } from './types';
-import { Link, Outlet, useParams } from 'react-router-dom';
-import { getAllGamee } from '../../services/list';
+import { useEffect, useRef, useState } from 'react'
+//import { deleteQuizAttempts, getQuizAttempts } from '../services/list'
+import { useAxiosFetch } from '../../hooks'
+import DataTable from '../questions_manager/data-table';
+import { UserProps } from './types';
 
-/*
-interface QuizProps {
-    id: string;
-    name: string;
-    quiz_number: string;
-    disabled: boolean;
-    video_url: string | undefined;
-    unitId: string;
-    questions: QuestionProps[]
-  }
-*/
-  
-//{ id: string; question_number: number; format: number; content: string; answer_key: string; }[] | undefined' 
-export default function ListUsers(props:any) {
-    
-        const [data, setData] = useState<DataRowProps[]| undefined>([])
-        const [games, setGames] = useState([])
-        const params = useParams<{ categoryId: string, sub_categoryId: string, unit_id: string}>();
-        //const [newQuestionFormat, setNewQuestionFormat] = useState('1')
-        /*
- user_name | varchar(255) | YES  |     | NULL    |                |
-| full_name | varchar(255) | YES  |     | NULL    |                |
-| role      | varchar(255) | NO   |     | NULL    |                |
-| level     | varchar(255) | NO   |     | NULL    |                |
-| message   | text         | YES  |     | NULL    |                |
-| password  | varchar(64)  | YES  |     | NULL    |                |
-| classId  
-        */
-        //const url = `match_games`
 
-          const columns = [
-            { Header: 'Id', accessor: 'id' },
-            { Header: 'Game No.', accessor: 'item_number' },
-            { Header: 'Game Name', accessor: 'item_name' },
-            { Header: 'Edit', accessor: 'edit_link' },
-            { Header: 'Clone', accessor: 'clone_button' },
-            { Header: 'Delete', accessor: 'delete_button' },
-          ];
-      
-          useEffect(() => {
-            getAllGamee()
-                .then((data) => {
-                    //console.log("..xxxxxxx.", data)
-                    if (data) {
-                      //console.log("mmmmnnnn cccccc ", unit.quizzes)
-                      const game_rows: DataRowProps[] | undefined = data?.map((game:any) => {
-                          return {
-                                id: game.id.toString(), 
-                                item_number: game.game_number, 
-                                item_name: `${game.name}`, 
-                                edit_link: `edit/${game.id}`, 
-                                delete_button: "",
-                                clone_button: "",
-                                }
-                      })
-                      //console.log(" games rows =", game_rows)
-                      setData(game_rows)
-                    }
-                    //setGames(data)
-                    }
-                )
-                .catch(error =>
-                    console.log(error)
-                )
-        }, [])
 
-        return (
-          <>
-           <div className='flex flex-row justify-center text-xl bg-bgColor1 text-textColor2 p-2'>Games</div>
-            <div className='flex flex-row  bg-bgColor1 justify-start'>
-            <div><DataTable columns={columns} data={data} data_type="users" /></div>
-            <div className='bg-bgColor1 text-textColor1 mb-10'>
-            <Link 
-                    to={`/new_game`}
-                  >
-                    New Game
-                </Link>
-                </div>
-            </div>
-            </>
-          );
+interface DataRowProps {
+    id: string,
+    item_number: string,
+    item_name: string,
+    edit_link: string,
+    clone_button: string,
+    delete_button: string,
+    extra_link?: string,
+    data_type: string
 }
 
-// <DataTable columns={columns} data={data} />
+export interface ColumnProps { 
+    Header: string, accessor: string 
+}
+
+//format: string; content: string; answer_key: string;
+
+export default function ListUsers(props: any) {
+   // const [key, setKey] = useState(0); // Update key to re-render the component
+    //const [users, setUsers] = useState<UsersProps[] | undefined>([])
+    
+    const [checkedItems, setCheckedItems] = useState<string[]>([]);
+    const checkboxesRef = useRef<HTMLInputElement[] | undefined>([]);
+     const [data, setData] = useState<DataRowProps[]>([])
+    
+     const url = `users`
+  const { data: users, loading, error } =
+        useAxiosFetch<UserProps[]>({ url: url, method: 'get' })
+
+useEffect(() => {
+    //console.log("in useEffect ")
+    if (users) {
+        //console.log("in useEffect users", users)
+            const users_row:DataRowProps[] = users.map((user) => {
+                return {id: user.id.toString(), 
+                                item_number: "1", 
+                                item_name: `${user.user_name}`, 
+                                edit_link: `edit_user/${user.id}`, 
+                                clone_button: "", 
+                                delete_button: "",
+                                extra_link: `display_user/${user.id}*Users`,
+                                data_type: "user"
+                                }
+                })
+            setData(users_row)
+    }
+}, [users])
+
+const columns = [
+    { Header: 'Id', accessor: 'id' },
+    { Header: 'User No.', accessor: 'item_number' },
+    { Header: 'User name', accessor: 'item_name' },
+    { Header: 'Edit', accessor: 'edit_link' },
+    { Header: 'Clone', accessor: 'clone_button' },
+    { Header: 'Delete', accessor: 'delete_button' },
+    { Header: 'Extra Link', accessor: 'extra_link' },
+  ];
+
+    const handleCheckboxChange = (value: string) => {
+        setCheckedItems((prevCheckedItems) => {
+          if (prevCheckedItems.includes(value)) {
+            return prevCheckedItems.filter((item) => item !== value);
+          } else {
+            return [...prevCheckedItems, value];
+          }
+        });
+      };
+
+    const handleCheckAll = () => {
+        if (checkboxesRef.current) {
+            const allValues = checkboxesRef.current
+                .filter((checkbox) => checkbox !== null)
+                .map((checkbox) => checkbox.value);
+
+            if (checkedItems.length === allValues.length) {
+                setCheckedItems([]);
+            } else {
+                setCheckedItems(allValues);
+            }
+        }
+    };
+
+    return (
+        <>
+      <div className='bg-bgColor2 text-textColor2 p-3'>Units: </div>
+        <div className='grid grid-rows-2 bg-bgColor3 text-textColor2'>
+        <div className='flex flex-row justify-start'>
+          <DataTable columns={columns} data={data} data_type='user' />
+        </div>
+       </div>
+       </>
+    )
+}

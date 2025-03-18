@@ -48,6 +48,16 @@ export async function updateUnit(id: string | undefined, params: any) {
   //return "test"
 }
 
+export async function updateUser(id: string | undefined, params: any) {
+  console.log(" in updateUser id ",id )
+  //console.log(" in updateQuestion id ",body )
+  const url = `${rootpath}/api/users/${id}`
+  console.log("in updateUser url", url)
+  const response = await axios.put(url, params)
+  return response
+  //return "test"
+}
+
 export async function createUnit(params: any) {
   //console.log(" in updateQuestion id ",id )
   //console.log(" in updateQuestion id ",body )
@@ -225,6 +235,11 @@ export async function deleteTableRow(id: string, data_type: string): Promise<MPr
      const response = await axios.delete(url)
      return response.data
   }
+  else if (data_type === 'user') {
+    const url = `${rootpath}/api/users/${id}`
+     const response = await axios.delete(url)
+     return response.data
+  }
   else {
     return {id: '0'}
   }
@@ -263,11 +278,11 @@ export async function renumberRows(row_ids: string[], data_type: string): Promis
      url = `${rootpath}/api/questions/renumber`
   }
   else if (data_type === 'quiz') {
-    console.log("xxxxx renumberRows data type =", data_type)
+    //console.log("xxxxx renumberRows data type =", data_type)
     url = `${rootpath}/api/quizzes/renumber`
   }
   else if (data_type === 'unit') {
-    console.log("xxxxx renumberRows data type =", data_type)
+    //console.log("xxxxx renumberRows data type =", data_type)
     url = `${rootpath}/api/units/renumber`
   }
   const response = await axios.post(url, {row_ids: row_ids})

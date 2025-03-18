@@ -39,9 +39,8 @@ import { clone_a_row, deleteTableRow, renumberRows } from '../services/list';
   );
 
   useEffect(() => {
-     //console.log("xxxxxxx x xyyyyyy x x x x x props =", props)
+    
     if (props.data) {
-     
         setTableData(props.data)
        
     }

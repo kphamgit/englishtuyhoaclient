@@ -15,6 +15,9 @@ import NewUnit from "./features/questions_manager/NewUnit";
 import DisplayUnit from "./features/questions_manager/DisplayUnit";
 import NewQuiz from "./features/questions_manager/NewQuiz";
 import QuizEditor from "./features/questions_manager/QuizEditor";
+//import UsersManager from "./features/components/UsersManager";
+import ListUsers from "./features/questions_manager/ListUsers";
+import UserEditor from "./features/questions_manager/UserEditor";
 //import CategoryPage from "./pages/CategoryPage";
 //import { QuizAttemptsManager } from "./features/components/QuizAttemptsManager";
 //import { S3ObjectsManager } from "./features/components/S3ObjectsManager";
@@ -81,16 +84,16 @@ function App() {
                     <Route path="questions/:quiz_id" element={<ListQuestions />} />
                     <Route path="list_quizzes/:unit_id" element={<ListQuizzes />} />
                     <Route path="create_quiz" element={<NewQuiz />} />
-                   
                   </Route>
                   <Route path="sub_categories/:sub_categoryId/edit_quiz/:quiz_id" element={<QuizEditor />} />
                   <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/questions/:quiz_id/edit_question/:question_id" element={<QuestionEditor />} />
+                  <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/questions/:quiz_id/take_question/:question_number" element={<QuestionEditor />} />
                   <Route path="sub_categories/:sub_categoryId/create_unit" element={<NewUnit />} />
                   <Route path="sub_categories/:sub_categoryId/edit_unit/:unit_id" element={<UnitEditor />} />
                   <Route path="sub_categories/:sub_categoryId/list_questions/:quiz_id/create_question/:format" element={<QuestionCreator />} />
                 </Route>
-///categories/1/sub_categories/7/display_unit/17" 
                 <Route path="/utils" element={<Utils />} >
+                  <Route path="manage_users" element={<ListUsers />} />
                   <Route path="manage_quiz_attempts" element={<QuizAttemptsManager />} />
                   <Route path="manage_s3_objects" element={<S3ObjectsManager />} />
                   <Route path="manage_orphan_questions" element={<OrphanQuestionsManager />} />
@@ -98,11 +101,8 @@ function App() {
                   <Route path="list_games" element={<ListGames />} />
                   <Route path="new_game" element={<GameCreator />} />
                   <Route path="list_games/edit/:id" element={<GameEditor />} />
-
+                  <Route path="manage_users/edit_user/:id" element={<UserEditor />} />
                 </Route>
-
-
-
               </Route>
             </Routes>
           </BrowserRouter>
@@ -114,6 +114,9 @@ function App() {
 
 }
 //react-router-dom.js?v=ca023ebc:226 No routes matched location "/categories/1/sub_categories/7/list_units/list_quizzes/17" 
+////http://localhost:5173/categories/2/sub_categories/15/display_unit/42/questions/155/take_question/5069
+
+//http://localhost:5173/categories/2/sub_categories/15/list_quizzes/42/questions/155/edit_question/3602
 
 //"/categories/1/sub_categories/7/list_quizzes/17/questions/77" 
 

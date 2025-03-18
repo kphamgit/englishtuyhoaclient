@@ -19,6 +19,8 @@ interface Props {
 
   const DataRow: React.FC<Props> = ({ id, row, columns, parent_clone_func, parent_delete_func}) => {
     
+    
+    console.log("MMMMM DataRow row=", row)
   const [myRow, setMyRow] = useState<DataRowProps>()
 
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -44,7 +46,7 @@ const display_col = (row: any, column: ColumnProps) => {
       return <Link to={row[column.accessor]}>EDIT</Link>
   }
   if (column.accessor === 'extra_link') {
-    // extra link is in the form of:  'quizzes/id*name'
+    // extra link is in the form of:  'quizzes/id*name', 'questions/id*take'
     // split id and name to make link
     const the_link = row[column.accessor].split('*')[0]
     const the_label = row[column.accessor].split('*')[1]

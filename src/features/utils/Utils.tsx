@@ -37,6 +37,13 @@ export function Utils(props: any) {
             </div>
             <div className='text-textColor1 bg-bgColor1 p-2'>
                 <NavLink
+                    to={`/utils/manage_users`}
+                >
+                    Manage Users
+                </NavLink>
+            </div>
+            <div className='text-textColor1 bg-bgColor1 p-2'>
+                <NavLink
                     to={`/utils/manage_orphan_questions`}
                 >
                     Manage Orphan Questions

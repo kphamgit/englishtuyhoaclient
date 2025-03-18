@@ -56,6 +56,7 @@ import { ColumnProps, DataRowProps, UnitProps } from './types';
                         clone_button: "", 
                         delete_button: "",
                         extra_link: `display_unit/${unit.id}*Quizzes`,
+                        data_type: "unit"
                         }
               })
               setData(units_row)

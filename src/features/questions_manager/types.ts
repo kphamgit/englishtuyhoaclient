@@ -13,6 +13,7 @@ export interface DataRowProps {
     format?: string; 
     content?: string; 
     answer_key?: string;
+    data_type: string;
 }
 //format: string; content: string; answer_key: string;
 export interface UnitProps {
@@ -25,6 +26,27 @@ export interface UnitProps {
     subCategoryId?: number,
 }
 
+/*
+id          | int          | NO   | PRI | NULL    | auto_increment |
+| user_name   | varchar(255) | YES  |     | NULL    |                |
+| full_name   | varchar(255) | YES  |     | NULL    |                |
+| role        | varchar(255) | NO   |     | NULL    |                |
+| level       | varchar(255) | NO   |     | NULL    |                |
+| message     | text         | YES  |     | NULL    |                |
+| password    | varchar(64)  | YES  |     | NULL    |                |
+| classId     | int          | YES  |     | NULL    |                |
+| user_number 
+*/
+
+export type UserProps = {
+  id: number,
+  user_name: string,
+  full_name: string,
+  role: string,
+  level: string,
+  classId: number,
+  message: string,
+}
 /*
 {
     "id": 13,

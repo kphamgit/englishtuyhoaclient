@@ -3,7 +3,7 @@ import { useAxiosFetch } from '../../hooks';
 //import { QuestionProps } from '../components/Question';
 import { useEffect, useState } from 'react';
 import DataTable from './data-table';
-import { DataRowProps, QuestionProps, UnitProps } from './types';
+import { DataRowProps, UnitProps } from './types';
 import { Link, Outlet, useParams } from 'react-router-dom';
 
 /*
@@ -60,6 +60,7 @@ export default function DisplayUnit(props:any) {
                           delete_button: "",
                           clone_button: "",
                           extra_link: `questions/${quiz.id}*Questions`,
+                          data_type: "quiz",
                           }
                 })
                 //console.log(" in ListQuizzes quiz rows =", quiz_rows)
