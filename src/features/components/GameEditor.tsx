@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import DynamicInput from "./DynamicInput";
+import { useEffect, useRef, useState } from "react";
+import DynamicInput, { DynamicInputRefProps } from "./DynamicInput";
 import { useNavigate, useParams } from "react-router-dom";
 import { getAGame } from "../../services/list";
 import { updateGame } from "../services/list";
@@ -22,6 +22,8 @@ export default function GameEditor(props: any) {
     const [isContinuous, setIsContinuous] = useState(false);
 
     const params = useParams<{id: string}>()
+
+    const dynamicInputRef = useRef<DynamicInputRefProps>(null);
 
     const navigate = useNavigate()
 
@@ -58,7 +60,7 @@ export default function GameEditor(props: any) {
     };
 
     const handleSwitch = () => {
-      console.log("matchPairs = ", matchPairs)
+      //console.log("matchPairs = ", matchPairs)
       //switch source and target of matchPairs
       const newMatchPairs = matchPairs.map((pair, index) => (
         {source: pair.target, target: pair.source}
@@ -70,18 +72,19 @@ export default function GameEditor(props: any) {
      // setMatchPairs(newMatchPairs)  
     }
     const handleSave = () => {
-      const sources = matchPairs.map((pair, index) => (
+      const inputs = dynamicInputRef.current?.getData()
+      const sources = inputs?.map((pair, index) => (
         pair.source
       ))
-      const targets = matchPairs.map((pair, index) => (
+      const targets = inputs?.map((pair, index) => (
         pair.target
       ))
       //console.log("...saving game,  isContinuous = ", isContinuous)
       const game_params = { 
         name: name,
         game_number: gameNumber,
-        base: sources.join('/'),
-        target: targets.join('/'),
+        base: sources?.join('/'),
+        target: targets?.join('/'),
         continuous: isContinuous,
         video_url: videoUrl,
         video_duration: videoDuration,
@@ -142,6 +145,7 @@ return (
       <select className="m-2 bg-bgColor2  p-1 text-textColor2" value={sourceLanguage} onChange={handleSourceLanguageChange}>
         <option value="vn" >VN</option>
         <option value="en">EN</option>
+        
       </select>
       </div>
       <div>
@@ -149,11 +153,12 @@ return (
       <select className="m-2 bg-bgColor2  p-1 text-textColor2" value={targetLanguage} onChange={handleTargetLanguageChange}>
         <option value="vn" >VN</option>
         <option value="en">EN</option>
+        <option value="n/a">N/A</option>
       </select>
       </div>
     </div>
     <div id="matchPairs">
-    <DynamicInput inputs ={matchPairs}/>
+    <DynamicInput inputs ={matchPairs} ref={dynamicInputRef}/>
     </div>
    <div>
    <button className='bg-bgColor4 text-textColor1 p-2 rounded-md' type="button" onClick={handleSwitch}>Switch</button>

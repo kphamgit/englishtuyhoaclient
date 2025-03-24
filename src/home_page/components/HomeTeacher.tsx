@@ -1,3 +1,5 @@
+
+import GenericDialog from "../../features/components/GenericDialog";
 import { NavigationBar } from "./NavigationBar";
 import { Outlet } from "react-router-dom";
 //import SimplePeer from "../components/SimplePeer";
@@ -10,8 +12,9 @@ export default function HomeTeacher(props:any) {
         
             <div>
             <NavigationBar />
-       
-            <div className="mx-14 bg-slate-200">
+    
+         
+            <div className="mx-14">
             <Outlet />
             </div>
             </div>

@@ -1,8 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 
 interface InputField {
   source: string;
   target: string;
+}
+
+export interface DynamicInputRefProps {
+   getData: () => InputField[];
 }
 
 interface Props {
@@ -10,17 +14,24 @@ interface Props {
     parent_func?: (arg: InputField[]) => void
   }
 
-const DynamicInput: React.FC<Props> = ({inputs, parent_func }) => {
+const DynamicInput = forwardRef<DynamicInputRefProps, Props>((props, ref) => {
+//const DynamicInput: React.FC<Props> = ({inputs, parent_func }) => {
 
   const [inputFields, setInputFields] = useState<InputField[]>([]);
 
+  useImperativeHandle(ref, () => ({
+    getData() {
+      return inputFields;
+    },
+  }));
+
   useEffect(() => {
-    if (inputs) {
-        setInputFields(inputs)
+    if (props.inputs) {
+        setInputFields(props.inputs)
         //console.log("sub_categories ", inputs)
     }
     
-  },[inputs])
+  },[props.inputs])
 
   const handleChange1 = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
     const newInputFields = [...inputFields];
@@ -28,9 +39,9 @@ const DynamicInput: React.FC<Props> = ({inputs, parent_func }) => {
     
     setInputFields(newInputFields);
    
-    if (parent_func) {
+    if (props.parent_func) {
     
-        parent_func(newInputFields)
+        props.parent_func(newInputFields)
     }
   };
 
@@ -39,8 +50,8 @@ const DynamicInput: React.FC<Props> = ({inputs, parent_func }) => {
     newInputFields[index].target = event.target.value;
     
     setInputFields(newInputFields);
-    if (parent_func)
-    parent_func(newInputFields)
+    if (props.parent_func)
+      props.parent_func(newInputFields)
   };
 
   const handleAdd = () => {
@@ -68,6 +79,6 @@ const DynamicInput: React.FC<Props> = ({inputs, parent_func }) => {
   
     </div>
   );
-};
+});
 
 export default DynamicInput;

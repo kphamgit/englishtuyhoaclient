@@ -101,6 +101,7 @@ return (
       <select className="m-2 bg-bgColor2  p-1 text-textColor2" value={targetLanguage} onChange={handleTargetLanguageChange}>
         <option value="vn" >VN</option>
         <option value="en">EN</option>
+        <option value="n/a">N/A</option>
       </select>
     </div>
     <div  className="m-2"><label>Ending Video URL:</label><input type="text" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} /></div>
