@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useAxiosFetch } from '../../hooks'
 import DataTable from '../questions_manager/data-table';
 import { UserProps } from './types';
+import { Outlet } from 'react-router-dom';
 
 
 
@@ -95,7 +96,9 @@ const columns = [
         <div className='flex flex-row justify-start'>
           <DataTable columns={columns} data={data} data_type='user' />
         </div>
+        <Outlet />
        </div>
+     
        </>
     )
 }

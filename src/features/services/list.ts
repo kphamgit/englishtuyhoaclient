@@ -76,9 +76,17 @@ export async function createQuiz(params: any) {
   //return "test"
 }
 
+export async function createUser(params: any) {
+  console.log(" in createUser params = ",params )
+  const url = `${rootpath}/api/users`
+  const response = await axios.post(url, params)
+  return response
+  //return "test"
+}
+
 export async function updateQuiz(id: string | undefined, params: any) {
   const url = `${rootpath}/api/quizzes/${id}`
-  console.log("HEEXZXXXXXX url", url)
+ // console.log("HEEXZXXXXXX url", url)
   const response = await axios.put(url, params)
   return response
 }

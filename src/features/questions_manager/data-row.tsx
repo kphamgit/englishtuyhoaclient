@@ -18,9 +18,7 @@ interface Props {
 }
 
   const DataRow: React.FC<Props> = ({ id, row, columns, parent_clone_func, parent_delete_func}) => {
-    
-    
-    console.log("MMMMM DataRow row=", row)
+    //console.log("MMMMM DataRow row=", row)
   const [myRow, setMyRow] = useState<DataRowProps>()
 
   const { attributes, listeners, setNodeRef, transform, transition } =

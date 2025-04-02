@@ -18,6 +18,7 @@ import QuizEditor from "./features/questions_manager/QuizEditor";
 //import UsersManager from "./features/components/UsersManager";
 import ListUsers from "./features/questions_manager/ListUsers";
 import UserEditor from "./features/questions_manager/UserEditor";
+import NewUser from "./features/utils/NewUser";
 //import CategoryPage from "./pages/CategoryPage";
 //import { QuizAttemptsManager } from "./features/components/QuizAttemptsManager";
 //import { S3ObjectsManager } from "./features/components/S3ObjectsManager";
@@ -93,7 +94,10 @@ function App() {
                   <Route path="sub_categories/:sub_categoryId/list_questions/:quiz_id/create_question/:format" element={<QuestionCreator />} />
                 </Route>
                 <Route path="/utils" element={<Utils />} >
-                  <Route path="manage_users" element={<ListUsers />} />
+                  <Route path="manage_users" element={<ListUsers />} >
+                    <Route path="new_user" element={<NewUser />} />
+                  </Route>
+                
                   <Route path="manage_quiz_attempts" element={<QuizAttemptsManager />} />
                   <Route path="manage_s3_objects" element={<S3ObjectsManager />} />
                   <Route path="manage_orphan_questions" element={<OrphanQuestionsManager />} />
