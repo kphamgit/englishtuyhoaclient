@@ -160,6 +160,11 @@ export default function QuestionEditor(props: any) {
         navigate(url)
     }
 
+    const insertSlashesInContent = () => {
+        let new_content = questionContent.replace(/ /g, '/')
+        setQuestionContent(new_content)
+    }
+
     //kpham: Javascript lesson: use dynamic key (i.e, format state variable) to index into formatConversion object
         return (
             <div className='bg-bgColor1'>
@@ -190,9 +195,14 @@ export default function QuestionEditor(props: any) {
                     onChange={e => setAudioSrc(e.target.value)}></input>
                 </div>
 
+                <div className='flex flex-row justify-start gap-2'>
                 <div className='mx-10 text-textColor1 mb-2'>Content
-                    <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md mx-1' type="text" size={70} value={questionContent}
+                    <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md  mx-1' size={70} type="text" value={questionContent}
                     onChange={e => setQuestionContent(e.target.value)}></input>
+                </div>
+                {format === "6" &&
+                    <button onClick={insertSlashesInContent} className='bg-bgColor3 text-textColor3 p-1 rounded-md'>Inser slashes</button>
+                }
                 </div>
 
                 <div className='mx-10 text-textColor1 mb-2'>Answer Key

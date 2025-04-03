@@ -119,8 +119,8 @@ import { clone_a_row, deleteTableRow, renumberRows } from '../services/list';
     })
 }
 
-        const renumber_rows = () => {
-          if (tableData) {
+      const renumber_rows = () => {
+        if (tableData) {
             //console.log(" tableData =", tableData)
             const table_with_sorted_item_numbers = tableData.map((row, index) => {
                 return {...row, item_number: (index+1).toString()}
@@ -178,6 +178,7 @@ import { clone_a_row, deleteTableRow, renumberRows } from '../services/list';
           </table>
         </SortableContext>
       </DndContext>
+      <div><button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2' onClick={renumber_rows}>Renumber {props.data_type}s</button></div>
     </div>
   );
 };

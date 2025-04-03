@@ -91,7 +91,7 @@ function App() {
                   <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/questions/:quiz_id/take_question/:question_number" element={<QuestionEditor />} />
                   <Route path="sub_categories/:sub_categoryId/create_unit" element={<NewUnit />} />
                   <Route path="sub_categories/:sub_categoryId/edit_unit/:unit_id" element={<UnitEditor />} />
-                  <Route path="sub_categories/:sub_categoryId/list_questions/:quiz_id/create_question/:format" element={<QuestionCreator />} />
+                  <Route path="sub_categories/:sub_categoryId/list_questions/:quiz_id/create_question/:format/:last_question_number" element={<QuestionCreator />} />
                 </Route>
                 <Route path="/utils" element={<Utils />} >
                   <Route path="manage_users" element={<ListUsers />} >

@@ -101,7 +101,7 @@ export default function ListQuestions(props:any) {
 
       <div className='flex flex-row justify-start pb-10'>
         <div>
-          <Link to={`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}/create_question/${newQuestionFormat}`}
+          <Link to={`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}/create_question/${newQuestionFormat}/${quiz?.questions.length}`}
             className='text-textColor1 bg-bgColor1 mx-10 my-4 p-1 rounded-md'
           >
             New Question
