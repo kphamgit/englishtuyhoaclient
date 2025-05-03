@@ -2,7 +2,7 @@ import { useState, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Login } from "./features/auth/components/Login";
 import { Logout } from "./features/auth/components/Logout";
-import ListQuizzes from "./features/questions_manager/ListQuizzes";
+//import ListQuizzes from "./features/questions_manager/ListQuizzes";
 import UnitEditor from "./features/questions_manager/UnitEditor";
 import ListUnits from "./features/questions_manager/ListUnits";
 import GameCreator from "./features/components/GameCreator";
@@ -19,6 +19,10 @@ import QuizEditor from "./features/questions_manager/QuizEditor";
 import ListUsers from "./features/questions_manager/ListUsers";
 import UserEditor from "./features/questions_manager/UserEditor";
 import NewUser from "./features/utils/NewUser";
+import { NewCategory } from "./features/components/NewCategory";
+import { EditCategory } from "./features/components/EditCategory";
+import { NewSubCategory } from "./features/components/NewSubCategory";
+import { EditSubCategory } from "./features/components/EditSubCategory";
 //import CategoryPage from "./pages/CategoryPage";
 //import { QuizAttemptsManager } from "./features/components/QuizAttemptsManager";
 //import { S3ObjectsManager } from "./features/components/S3ObjectsManager";
@@ -80,12 +84,14 @@ function App() {
               <Route path="/logout" element={<Logout onLogout={onLogout} />} />
               <Route path="/" element={<Home />}>
                 <Route path="/categories/:categoryId" element={<CategoryPage />}>
+                  <Route path="edit_category" element={<EditCategory />} ></Route>
                   <Route path="sub_categories/:sub_categoryId" element={<ListUnits />} />
+                  <Route path="sub_categories/new_sub_category" element={<NewSubCategory />} ></Route>
                   <Route path="sub_categories/:sub_categoryId/display_unit/:unit_id" element={<DisplayUnit />} >
                     <Route path="questions/:quiz_id" element={<ListQuestions />} />
-                    <Route path="list_quizzes/:unit_id" element={<ListQuizzes />} />
                     <Route path="create_quiz" element={<NewQuiz />} />
                   </Route>
+                  <Route path="sub_categories/:sub_categoryId/edit" element={<EditSubCategory />} />
                   <Route path="sub_categories/:sub_categoryId/edit_quiz/:quiz_id" element={<QuizEditor />} />
                   <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/questions/:quiz_id/edit_question/:question_id" element={<QuestionEditor />} />
                   <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/questions/:quiz_id/take_question/:question_number" element={<QuestionEditor />} />
@@ -93,6 +99,7 @@ function App() {
                   <Route path="sub_categories/:sub_categoryId/edit_unit/:unit_id" element={<UnitEditor />} />
                   <Route path="sub_categories/:sub_categoryId/list_questions/:quiz_id/create_question/:format/:last_question_number" element={<QuestionCreator />} />
                 </Route>
+                <Route path="/new_category" element={<NewCategory />} ></Route>
                 <Route path="/utils" element={<Utils />} >
                   <Route path="manage_users" element={<ListUsers />} >
                     <Route path="new_user" element={<NewUser />} />

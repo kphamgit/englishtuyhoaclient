@@ -58,12 +58,77 @@ export async function updateUser(id: string | undefined, params: any) {
   //return "test"
 }
 
+export async function createCategory(params: any) {
+  console.log(" in createCategory params ", params )
+  const url = `${rootpath}/api/categories`
+  //console.log("HEE url", url)
+  const response = await axios.post(url, params)
+  return response
+  //return "test"
+}
+
+
+
+export async function updateCategory(id: string | undefined, params: any) {
+  const url = `${rootpath}/api/categories/${id}`
+ // console.log("HEEXZXXXXXX url", url)
+  const response = await axios.put(url, params)
+  return response
+}
+
+export async function createSubCategory(params: any) {
+  //console.log(" in updateQuestion id ",id )
+  //console.log(" in updateQuestion id ",body )
+  const url = `${rootpath}/api/sub_categories`
+  //console.log("createSubCategory url", url)
+  const response = await axios.post(url, params)
+  return response
+  //return "test"
+}
+
+export async function updateSubCategory(id: string | undefined, params: any) {
+  const url = `${rootpath}/api/sub_categories/${id}`
+ // console.log("HEEXZXXXXXX url", url)
+  const response = await axios.put(url, params)
+  return response
+}
+
 export async function createUnit(params: any) {
   //console.log(" in updateQuestion id ",id )
   //console.log(" in updateQuestion id ",body )
   const url = `${rootpath}/api/units`
   //console.log("HEE url", url)
   const response = await axios.post(url, params)
+  return response
+  //return "test"
+}
+
+export async function moveQuestion(id: string, quiz_id: string) {
+  //console.log(" in updateQuestion id ",id )
+  //console.log(" in updateQuestion id ",body )
+  const url = `${rootpath}/api/questions/${id}/move/${quiz_id}`
+  //console.log("HEE url", url)
+  const response = await axios.get(url)
+  return response
+  //return "test"
+}
+
+export async function moveQuiz(id: string, unit_id: string) {
+  //console.log(" in updateQuestion id ",id )
+  //console.log(" in updateQuestion id ",body )
+  const url = `${rootpath}/api/quizzes/${id}/move/${unit_id}`
+  //console.log("HEE url", url)
+  const response = await axios.get(url)
+  return response
+  //return "test"
+}
+
+export async function moveUnit(id: string, sub_cat_id: string) {
+  //console.log(" in updateQuestion id ",id )
+  //console.log(" in updateQuestion id ",body )
+  const url = `${rootpath}/api/units/${id}/move/${sub_cat_id}`
+  //console.log("HEE url", url)
+  const response = await axios.get(url)
   return response
   //return "test"
 }

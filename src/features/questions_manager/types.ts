@@ -10,6 +10,7 @@ export interface DataRowProps {
     extra_link?: string,
     clone_button: string,
     delete_button: string,
+    move_button: string,
     format?: string; 
     content?: string; 
     answer_key?: string;
@@ -44,7 +45,7 @@ export type UserProps = {
   full_name: string,
   role: string,
   level: string,
-  classId: number,
+  classId: string,
   message: string,
 }
 /*

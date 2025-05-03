@@ -26,25 +26,19 @@ import { ColumnProps, DataRowProps, UnitProps } from './types';
     const params = useParams<{ categoryId: string, sub_categoryId: string }>();
     const { data: sub_category, loading: sub_loading, error: sub_error } = useAxiosFetch<SubCategoryProps>({ url: `/sub_categories/${params.sub_categoryId}`, method: 'get' });
   
-
-        const [data, setData] = useState<DataRowProps[]>([])
+//sub_categories/:sub_category_id" 
+        const [unitData, setUnitData] = useState<DataRowProps[]>([])
         const columns: ColumnProps[] = [
             { Header: 'Id', accessor: 'id', },
             { Header: 'Unit No.', accessor: 'item_number',  },
             { Header: 'Unit Name', accessor: 'item_name',  },
             { Header: 'Edit', accessor: 'edit_link' ,  },
             { Header: 'Delete', accessor: 'delete_button'  },
+            { Header: 'Move', accessor: 'move_button'  },
             { Header: 'Extra Link', accessor: 'extra_link' },
         ];
-      /*
-   <Route path="sub_categories/:sub_categoryId/display_unit/unit_id" element={<DisplayUnit />} >
-                    <Route path="questions/:quiz_id" element={<ListQuestions />} />
-                    <Route path="list_quizzes/:unit_id" element={<ListQuizzes />} />
-                  </Route>
-      */
-     /*
- <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id" element={<ListQuizzes />} />
-     */
+      
+     
         //extra_link: `list_quizzes/${unit.id}*Quizzes`,
         useEffect(() => {
             if (sub_category && sub_category.units) {
@@ -55,11 +49,12 @@ import { ColumnProps, DataRowProps, UnitProps } from './types';
                         edit_link: `edit_unit/${unit.id}`, 
                         clone_button: "", 
                         delete_button: "",
+                        move_button: "",
                         extra_link: `display_unit/${unit.id}*Quizzes`,
                         data_type: "unit"
                         }
               })
-              setData(units_row)
+              setUnitData(units_row)
             }
         },[sub_category])
 
@@ -70,7 +65,7 @@ import { ColumnProps, DataRowProps, UnitProps } from './types';
       <div className='bg-bgColor2 text-textColor2 p-3'>Units: </div>
         <div className='grid grid-rows-2 bg-bgColor3 text-textColor2'>
         <div className='flex flex-row justify-start'>
-          <DataTable columns={columns} data={data} data_type='unit' />
+          <DataTable columns={columns} data={unitData} data_type='unit' />
         </div>
         <div className='mx-5 mt-3'>
           <Link to={`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/create_unit`}

@@ -69,7 +69,7 @@ import { clone_a_row, deleteTableRow, renumberRows } from '../services/list';
       clone_a_row(id, dataType)
         .then((data) => {  //returns the id and the question number of the newly cloned row
           //look for row in tableData that has the same question number
-          console.log("cloning...data row", data)
+          //console.log("cloning...data row", data)
           /*
 {
     "id": 5036,
@@ -87,7 +87,7 @@ import { clone_a_row, deleteTableRow, renumberRows } from '../services/list';
             if (new_table_data) {
               //new_table_data.sort((a, b) => a.item_number.localeCompare(b.item_number));
               new_table_data.sort((a, b) => Number(a.item_number) - Number(b.item_number));
-              console.log(" after sort new_table_data", new_table_data)
+              //console.log(" after sort new_table_data", new_table_data)
               setTableData(new_table_data as DataRowProps[])
               //have to use "as any" here for typescript to work. Don't know why. kpham
             }

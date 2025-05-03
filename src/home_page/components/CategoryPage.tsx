@@ -46,10 +46,9 @@ export default function CategoryPage() {
     <>
     
     <div className='bg-bgColor1 p-3 rounded-b-md m-0'>
-      <div className='flex flex-row gap-1 bg-bgColor1 text-md mx-0'>
+      <div className='flex flex-row justify-center items-center gap-1 bg-bgColor1 text-md mx-0'>
         {category?.sub_categories ? 
           category?.sub_categories.map(sub_cat => (
-
             <div key={sub_cat.id} className='flex flex-row'>
             <NavLink
               to={`sub_categories/${sub_cat.id}`}
@@ -57,16 +56,28 @@ export default function CategoryPage() {
                 return isActive ? 'text-textColor1 bg-navCatButtonBgActive text-lg p-2 rounded-t-md' : 'rounded-md text-lg text-textColor1 bg-navCatButtonBgInActive p-2 hover:bg-navCatButtonBgInHover';
               }}
             >
-              {sub_cat.name}
+              {sub_cat.name} ({sub_cat.id})
             </NavLink>
+            <NavLink
+                    to={`sub_categories/${sub_cat.id}/edit`}
+                    className={({ isActive }) => {
+                      return isActive ? 'text-textColor1 bg-navCatButtonBgActive text-lg p-0 rounded-t-md' : 'rounded-md text-lg text-textColor1 bg-navCatButtonBgInActive p-2 hover:bg-navCatButtonBgInHover';
+                    }}
+                  >
+                    (E)
+                  </NavLink>
           </div>
-    
-        )
-        
-        ) 
-
+        )) 
+         
         : null
         }
+        <div>
+          <div className='text-textColor1 bg-bgColor1 p-2'>
+            <NavLink to={`sub_categories/new_sub_category`}>
+                    New Subcategory
+            </NavLink>
+            </div>
+        </div>
       </div>
       </div>
       <div className='bg-bgColor3'>

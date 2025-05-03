@@ -64,8 +64,23 @@ export function NavigationBar(props: any) {
                   >
                     {category.name}
                   </NavLink>
+                  <NavLink
+                    to={`/categories/${category.id}/edit_category`}
+                    className={({ isActive }) => {
+                      return isActive ? 'text-textColor1 bg-navCatButtonBgActive text-lg p-0 rounded-t-md' : 'rounded-md text-lg text-textColor1 bg-navCatButtonBgInActive p-2 hover:bg-navCatButtonBgInHover';
+                    }}
+                  >
+                    (E)
+                  </NavLink>
                 </div>
               ))}
+               <div className='text-textColor1 bg-bgColor1 p-2'>
+                <NavLink
+                    to={`/new_category`}
+                  >
+                    New Category
+                </NavLink>
+               </div>
                <div className='text-textColor1 bg-bgColor1 p-2'>
                 <NavLink
                     to={`/utils`}

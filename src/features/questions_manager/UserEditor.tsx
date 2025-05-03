@@ -12,6 +12,7 @@ export default function UserEditor(props: any) {
       const [userName, setUserName]= useState<string>('')
       const [fullName, setFullName] = useState<string>('')
       const [level, setLevel] = useState<string | undefined>('')
+      const [classId, setClassId] = useState<string>('2')
       const [message, setMessage] = useState<string>('')
       const [role, setRole]= useState<string>('')
      
@@ -28,6 +29,7 @@ export default function UserEditor(props: any) {
             setFullName(user.full_name)
             setLevel(user.level)
             setUserName(user.user_name)
+            setClassId(user.classId)
             setRole(user.role)
             setMessage(user.message)
         }
@@ -73,6 +75,10 @@ const update_user = () => {
                 <div className='mx-10 text-textColor1 mb-2'>Role
                     <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={role}
                     onChange={e => setRole(e.target.value)}></input>
+                </div>
+                <div className='mx-10 text-textColor1 mb-2'>Class Id
+                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={classId}
+                    onChange={e => setClassId(e.target.value)}></input>
                 </div>
                 <div className='mx-10 text-textColor1 mb-2'>Level
                     <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={level}

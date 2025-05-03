@@ -84,6 +84,10 @@ const create_user = () => {
                     <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={role}
                     onChange={e => setRole(e.target.value)}></input>
                 </div>
+                <div className='mx-10 text-textColor1 mb-2'>Class Id
+                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={classId}
+                    onChange={e => setClassId(e.target.value)}></input>
+                </div>
                 <div className='mx-10 text-textColor1 mb-2'>Password
                     <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={password}
                     onChange={e => setPassword(e.target.value)}></input>

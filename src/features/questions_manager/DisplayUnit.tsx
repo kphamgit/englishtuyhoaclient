@@ -21,13 +21,10 @@ interface QuizProps {
 //{ id: string; question_number: number; format: number; content: string; answer_key: string; }[] | undefined' 
 export default function DisplayUnit(props:any) {
     
-        const [data, setData] = useState<DataRowProps[]| undefined>([])
+        const [quizData, setQuizData] = useState<DataRowProps[]| undefined>([])
         const params = useParams<{ categoryId: string, sub_categoryId: string, unit_id: string}>();
         //const [newQuestionFormat, setNewQuestionFormat] = useState('1')
-        /*
- <Route path="sub_categories/:sub_categoryId" element={<SubCategoryPageTeacher />}>
-                    <Route path="quizzes/:unit_id" element={<ListQuizzes />} />
-        */
+     
         const url = `units/${params.unit_id}`
 
           const columns = [
@@ -37,6 +34,7 @@ export default function DisplayUnit(props:any) {
             { Header: 'Edit', accessor: 'edit_link' },
             { Header: 'Clone', accessor: 'clone_button' },
             { Header: 'Delete', accessor: 'delete_button' },
+            { Header: 'Move', accessor: 'move_button' },
             { Header: 'Extra Link', accessor: 'extra_link' },
           ];
         
@@ -59,12 +57,13 @@ export default function DisplayUnit(props:any) {
                           edit_link: `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/edit_quiz/${quiz.id}`, 
                           delete_button: "",
                           clone_button: "",
+                          move_button: "",
                           extra_link: `questions/${quiz.id}*Questions`,
                           data_type: "quiz",
                           }
                 })
-                //console.log(" in ListQuizzes quiz rows =", quiz_rows)
-                setData(quiz_rows)
+             
+                setQuizData(quiz_rows)
               }
           },[unit])
 //sub_categories/:sub_categoryId/display_unit/:unit_id/create_quiz
@@ -74,7 +73,7 @@ export default function DisplayUnit(props:any) {
       <div>
         <div className='bg-bgColor2 text-textColor2'>Quizzes: </div>
         <div className='flex flex-col'>
-          <div><DataTable columns={columns} data={data} data_type="quiz" /></div>
+          <div><DataTable columns={columns} data={quizData} data_type="quiz" /></div>
           <div className='p-3'>
             <Link to={`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/create_quiz`}
               className='text-textColor1 bg-bgColor1 rounded-md p-2'
