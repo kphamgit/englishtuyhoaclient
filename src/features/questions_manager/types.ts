@@ -10,7 +10,7 @@ export interface DataRowProps {
     extra_link?: string,
     clone_button: string,
     delete_button: string,
-    move_button: string,
+    move_button?: string,
     format?: string; 
     content?: string; 
     answer_key?: string;

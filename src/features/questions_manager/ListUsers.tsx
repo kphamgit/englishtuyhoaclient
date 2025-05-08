@@ -3,10 +3,11 @@ import { useEffect, useRef, useState } from 'react'
 import { useAxiosFetch } from '../../hooks'
 import DataTable from '../questions_manager/data-table';
 import { UserProps } from './types';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 
-
+import { DataRowProps } from './types';
+/*
 interface DataRowProps {
     id: string,
     item_number: string,
@@ -17,6 +18,7 @@ interface DataRowProps {
     extra_link?: string,
     data_type: string
 }
+*/
 
 export interface ColumnProps { 
     Header: string, accessor: string 
@@ -32,6 +34,8 @@ export default function ListUsers(props: any) {
     const checkboxesRef = useRef<HTMLInputElement[] | undefined>([]);
      const [data, setData] = useState<DataRowProps[]>([])
     
+     const navigate = useNavigate()
+
      const url = `users`
   const { data: users, loading, error } =
         useAxiosFetch<UserProps[]>({ url: url, method: 'get' })
@@ -89,13 +93,21 @@ const columns = [
         }
     };
 
+    const addNewUser = () => {
+        console.log("add new user")
+        navigate('/utils/manage_users/new_user')
+    }
+
     return (
         <>
-      <div className='bg-bgColor2 text-textColor2 p-3'>Units: </div>
-        <div className='grid grid-rows-2 bg-bgColor3 text-textColor2'>
+      <div className='bg-bgColor2 text-textColor2 p-3'>Users: </div>
+        <div className='grid grid-rows-3 bg-bgColor3 text-textColor2'>
+        </div>
+        <div><button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2' onClick={addNewUser}>Add new user</button>
+        </div>
         <div className='flex flex-row justify-start'>
           <DataTable columns={columns} data={data} data_type='user' />
-        </div>
+      
         <Outlet />
        </div>
      
