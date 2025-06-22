@@ -4,6 +4,7 @@ import { login } from "../services/list";
 import { setCurrentUser } from "../../../redux/current_user";
 //import { ThemeContext } from "../../../contexts/theme_context";
 //import { ThemeContextInterface } from "../../../types";
+import { setRootPath } from "../../../redux/rootpath";
 
 
 export function Login(props:any) {
@@ -15,6 +16,7 @@ export function Login(props:any) {
     const [password, setPassword] = useState<string>('');
   
     const dispatch = useAppDispatch()
+    //const dispatch = useAppDispatch();
     
     const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
@@ -22,6 +24,20 @@ export function Login(props:any) {
       .then (response => {
         props.onLoginSuccess(response.token)
         //setUser({user_name: 'test', level: 'basic', role: 'student'})
+        let rootpath = ''
+        console.log("App.ts onLogin process.env.NODE_ENV = ", process.env.NODE_ENV)
+        if (process.env.NODE_ENV === "production") {
+          rootpath = 'https://kphamenglish-f26e8b4d6e4b.herokuapp.com'
+          //rootpath = 'https://www.tienganhtuyhoa.com'
+        }
+        else if (process.env.NODE_ENV === "development") {
+          rootpath = 'http://localhost:5001'
+
+        }
+        else {
+          console.log("invalid NODE_ENV ")
+        }
+        dispatch(setRootPath({value: rootpath}))
         dispatch(setCurrentUser({value: response.user}))
       })
       .catch(error => {

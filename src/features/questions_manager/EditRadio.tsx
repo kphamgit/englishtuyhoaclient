@@ -58,18 +58,19 @@ export interface RadioProps {
 
     return (
         <>
-        <div className='mx-12 my-10'>
-    <fieldset className="flex max-w-md flex-col gap-4">
+        <div className='mx-12  p-5 '>
+    <fieldset className="flex max-w-md flex-col gap-4 mb-10">
       <legend className="mb-4">Choose your favorite country</legend>
       <div className="flex items-center gap-2">
+     
         { props.answer_key === "choice1" 
             ?
-            <Radio onChange={e => handleChange(e.target.value)} id="choice1" name="choices" value="choice1" defaultChecked />
+            <Radio onChange={e => handleChange(e.target.value)} id="choice1" name="choices" value="choice1"  defaultChecked />
             :
             <Radio onChange={e => handleChange(e.target.value)} id="choice1" name="choices" value="choice1" />
         }
     
-        <input type='text' value={choice1Text}  onChange={e => setChoice1Text(e.target.value)} />
+        <input type='text' value={choice1Text} size={80} onChange={e => setChoice1Text(e.target.value)} />
       </div>
       <div className="flex items-center gap-2">
       { props.answer_key === "choice2" 
@@ -78,7 +79,7 @@ export interface RadioProps {
             :
             <Radio onChange={e => handleChange(e.target.value)} id="choice2" name="choices" value="choice2" />
         }
-        <input type='text' value={choice2Text}  onChange={e => setChoice2Text(e.target.value)} />
+        <input type='text' value={choice2Text}  size={80} onChange={e => setChoice2Text(e.target.value)} />
       </div>
       <div className="flex items-center gap-2">
       { props.answer_key === "choice3" 
@@ -87,7 +88,7 @@ export interface RadioProps {
             :
             <Radio onChange={e => handleChange(e.target.value)} id="choice3" name="choices" value="choice3" />
         }
-        <input type='text' value={choice3Text}  onChange={e => setChoice3Text(e.target.value)} />
+        <input type='text' value={choice3Text}  size={80} onChange={e => setChoice3Text(e.target.value)} />
       </div>
       <div className="flex items-center gap-2">
       { props.answer_key === "choice4" 
@@ -96,7 +97,7 @@ export interface RadioProps {
             :
             <Radio onChange={e => handleChange(e.target.value)} id="choice4" name="choices" value="choice4" />
         }
-        <input type='text' value={choice4Text}  onChange={e => setChoice4Text(e.target.value)} />
+        <input type='text' value={choice4Text}  size={80} onChange={e => setChoice4Text(e.target.value)} />
       </div>
     </fieldset>
     </div>

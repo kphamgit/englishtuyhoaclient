@@ -1,7 +1,5 @@
-import React from 'react'
-
 import { useEffect, useRef, useState } from 'react'
-import { deleteAllQuizAttempts, deleteOrphanQuestions, getOrphanQuestions, getQuizAttempts } from '../services/list'
+import { deleteOrphanQuestions, getOrphanQuestions } from '../services/list'
 
 type OrphanQuestionProps = {
  

@@ -213,10 +213,20 @@ export async function updateQuestion(id: string | undefined, params: any) {
   }
 
   export async function getOrphanQuestions() {
-    //console.log(" in updateQuestion id ",id )
-    //console.log(" in updateQuestion id ",body )
+    console.log(" XXXXX in getOrphanQuestions")
     const url = `${rootpath}/api/questions/find_orphans`
     
+    const response = await axios.get(url)
+    //console.log("get Quiz Attempts , response", response)
+    return response.data
+    //return "test"
+  }
+
+  export async function getQuestionsByFormat(format: string) {
+    console.log(" VVVVVVVV in getQuestionsByFormat format =", format)
+    //console.log(" in updateQuestion id ",body )
+    const url = `${rootpath}/api/questions/find_by_format/${format}`
+    ///api/questions/find_by_format/:format
     const response = await axios.get(url)
     //console.log("get Quiz Attempts , response", response)
     return response.data

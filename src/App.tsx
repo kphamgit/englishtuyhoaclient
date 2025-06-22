@@ -23,6 +23,9 @@ import { NewCategory } from "./features/components/NewCategory";
 import { EditCategory } from "./features/components/EditCategory";
 import { NewSubCategory } from "./features/components/NewSubCategory";
 import { EditSubCategory } from "./features/components/EditSubCategory";
+import { useAppDispatch } from "./redux/store";
+import { setRootPath } from "./redux/rootpath";
+import QuestionsByFormat from "./features/utils/QuestionsByFormat";
 //import CategoryPage from "./pages/CategoryPage";
 //import { QuizAttemptsManager } from "./features/components/QuizAttemptsManager";
 //import { S3ObjectsManager } from "./features/components/S3ObjectsManager";
@@ -53,9 +56,26 @@ function App() {
     //const {socket, uid, users, user_uuids} = useContext(SocketContext).SocketState;
     const [auth, setAuth] = useState(getAuthFromSessionStorage());
 
-    
       const onLogin = (userToken: string) => {
         setAuth(userToken)
+       /* 
+        let rootpath = ''
+        console.log("App.ts onLogin process.env.NODE_ENV = ", process.env.NODE_ENV)
+        if (process.env.NODE_ENV === "production") {
+          rootpath = 'https://kphamenglish-f26e8b4d6e4b.herokuapp.com'
+          //rootpath = 'https://www.tienganhtuyhoa.com'
+        }
+        else if (process.env.NODE_ENV === "development") {
+          rootpath = 'http://localhost:5001'
+
+        }
+        else {
+          console.log("invalid NODE_ENV ")
+        }
+        console.log("App.ts rootpath = ", rootpath)
+        
+        dispatch(setRootPath({value: rootpath}))
+        */
         //also persits auth state in session Storage so that user is still logged after a page refresh
         sessionStorage.setItem('auth', JSON.stringify(userToken));
       }
@@ -74,6 +94,7 @@ function App() {
         setAuth(null)
     }
 
+    //get_questions_by_format
     //matched location "/categories/6/sub_categories/13/display_unit/37/edit_quiz/146
   return (
     <>
@@ -104,8 +125,8 @@ function App() {
                   <Route path="manage_users" element={<ListUsers />} >
                     <Route path="new_user" element={<NewUser />} />
                   </Route>
-                
                   <Route path="manage_quiz_attempts" element={<QuizAttemptsManager />} />
+                  <Route path="get_questions_by_format" element={<QuestionsByFormat />} />
                   <Route path="manage_s3_objects" element={<S3ObjectsManager />} />
                   <Route path="manage_orphan_questions" element={<OrphanQuestionsManager />} />
                   <Route path="upload_file" element={<FileUpload />} />

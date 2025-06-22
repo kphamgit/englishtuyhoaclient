@@ -1,5 +1,6 @@
 import {configureStore} from "@reduxjs/toolkit"
 import { UserSlice } from "./current_user"
+import { RootPathSlice } from "./rootpath"
 
 
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
@@ -14,11 +15,12 @@ const persistConfig = {
   }
 
 const persistedUserReducer = persistReducer(persistConfig, UserSlice.reducer)
+const persistedRootPathrReducer = persistReducer(persistConfig, RootPathSlice.reducer)
 
 export const store = configureStore({
     reducer: {
         user: persistedUserReducer,
-
+        rootpath: persistedRootPathrReducer,
        
     },
     middleware: (getDefaultMiddleware) =>

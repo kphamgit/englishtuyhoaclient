@@ -49,6 +49,13 @@ export function Utils(props: any) {
                     Manage Orphan Questions
                 </NavLink>
             </div>
+            <div className='text-textColor1 bg-bgColor1 p-2'>
+                <NavLink
+                    to={`/utils/get_questions_by_format`}
+                >
+                    Find Questions by Formats
+                </NavLink>
+            </div>
             </div>
             <Outlet />
         </>
