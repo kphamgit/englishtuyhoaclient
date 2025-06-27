@@ -90,6 +90,7 @@ export type QuestionProps = {
   quizId : number,
   radio : RadioProps,
   speech_recognition : boolean
+  button_cloze_options?: string,
 }
 
 

@@ -13,6 +13,7 @@ import NewRadio from './NewRadio';
 
 import { WordScrambleComponentHandle } from './types';
 import NewWordScramble from './NewWordScramble';
+import NewButtonCloze, { ButtonClozeComponentHandle } from './NewButtonCloze';
 
 /*
 interface WordScrambleDirOption {
@@ -52,6 +53,7 @@ export default function QuestionCreator() {
       //console.log("FFFFFFFF ", formatConversion[tname] )
      
       const radioRef = useRef<RadioComponentHandle>(null)
+      const buttonClozeRef = useRef<ButtonClozeComponentHandle>(null)
       const wordScrambleRef = useRef<WordScrambleComponentHandle>(null)
 
       const navigate = useNavigate();
@@ -94,7 +96,17 @@ export default function QuestionCreator() {
             quiz_id: params.quiz_id
         }
 
-        if (format === "4") {    //add parameters for radio questions
+        if (format === "2") {  
+            //console.log("buttonClozeRef.current=", buttonClozeRef.current)
+            if (buttonClozeRef.current) {
+                //console.log("buttonClozeRef.current.getChoices()=", buttonClozeRef.current.getChoices())
+                const button_cloze_options = buttonClozeRef.current?.getChoices()
+                const my_params = {...question_params, button_cloze_options}
+                console.log("MMMMMM my_params=", my_params)
+                await createQuestion(my_params )
+            }
+        }
+        else if (format === "4") {    //add parameters for radio questions
             if (radioRef.current) {
                 //question_params = radioRef.current.addParams(question_params)
                 const radio_params = radioRef.current.getRadioTexts(question_params)
@@ -175,8 +187,11 @@ export default function QuestionCreator() {
                     <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={timeLimit}
                     onChange={e => setTimeLimit(e.target.value)}></input>
                 </div>
-                { (format === "1" || format === "2" || format === "10") && 
+                { (format === "1" || format === "10") && 
                     <NewCloze question_content={questionContent} set_answer_key={set_answer_key}/>
+                }
+                { (format === "2") && 
+                    <NewButtonCloze  ref={buttonClozeRef}/>
                 }
                 { (format === "4") && 
                     <NewRadio set_radio_answer_key={set_answer_key} ref={radioRef}/>

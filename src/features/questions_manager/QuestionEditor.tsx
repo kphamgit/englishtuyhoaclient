@@ -12,7 +12,10 @@ import { RadioComponentHandle } from './types';
 import EditWordScramble from './EditWordScramble';
 import { WordScrambleComponentHandle } from './types';
 import { RadioProps } from './types';
-import { time } from 'console';
+
+import  {EditButtonClozeRef} from './EditButtonCloze';
+import EditButtonCloze from './EditButtonCloze';
+
 
 export default function QuestionEditor(props: any) {
 
@@ -44,6 +47,7 @@ export default function QuestionEditor(props: any) {
       const radioRef = useRef<RadioComponentHandle>(null)
       const wordScrambleRef = useRef<WordScrambleComponentHandle>(null)
 
+      const buttonClozeRef = useRef<EditButtonClozeRef>(null)
 
       const editorRef = useRef<EditorRef>(null)
 
@@ -114,8 +118,26 @@ export default function QuestionEditor(props: any) {
             help1: help1
         }
         
-        //console.log("NNNN q_params=", question_params)
-        if (format === "4") {    //add parameters for radio questions
+        if (format === "2") {  
+            //console.log("buttonClozeRef.current=", buttonClozeRef.current)
+            if (buttonClozeRef.current) {
+                //console.log("buttonClozeRef.current.getChoices()=", buttonClozeRef.current.getChoices())
+                const button_cloze_options = buttonClozeRef.current?.getChoices()
+                //const my_params = {...question_params, button_cloze_options}
+                
+                //console.log("HHHHHHHHHHHH my_params=", my_params)
+                
+                updateQuestion(question?.id, {...question_params, button_cloze_options} )
+                .then(response => {
+                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
+                    navigate(url)
+                 })
+                    
+                 //button_cloze_options: { button_cloze_choices: 'choice1/choice2/choice3' }
+                //console.log("question_params=", question_params)
+            }
+        }
+        else if (format === "4") {    //add parameters for radio questions
             console.log("in here...")
             if (radioRef.current) {
                 //console.log("HEEEE")
@@ -214,8 +236,11 @@ export default function QuestionEditor(props: any) {
                     onChange={e => setTimeLimit(e.target.value)}></input>
                 </div>
 
-                { (format === "1" || format === "2" || format === "10") && 
+                { (format === "1" || format === "10") && 
                     <NewCloze question_content={questionContent} set_answer_key ={setAnswerKey} />
+                }
+                { (format === "2" ) && 
+                    <EditButtonCloze ref = {buttonClozeRef} button_cloze_choices = {question?.button_cloze_options} />
                 }
                 { (format === "3") &&  
                     <EditButtonSelect question_content={questionContent} answer_key={answerKey} set_answer_key ={setAnswerKey} />

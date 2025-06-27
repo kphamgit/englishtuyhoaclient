@@ -1,53 +1,137 @@
 import { useEffect, useRef, useState } from 'react'
 import { getQuestionsByFormat } from '../services/list'
-import { u, use } from 'framer-motion/client';
-import { useParams } from 'react-router-dom';
-
-
+import { useAppSelector } from '../../redux/store';
+import { Link } from 'react-router-dom';
 
 export default function QuestionsByFormat() {
     
-    const [checkedItems, setCheckedItems] = useState<string[]>([]);
-    const checkboxesRef = useRef<HTMLInputElement[] | undefined>([]);
+    //const rootpath = useAppSelector(state => state.rootpath.value)
+    const rootpath = useAppSelector(state => state.rootpath.value)
 
     const [data, setData] = useState<any[]>([]);
-    const [format, setFormat] = useState<'1' | '2' | '3' | '4' >(); // Default format is '0'
+    const [format, setFormat] = useState<'1' | '2' | '3' | '4' >('1'); // Default format is '0'
+    const [url_to_quiz_questions, setUrlToQuizQuestions] = useState<string>('');
    
+    const [questionTypes, setQuestionTypes] = useState<string[]>([
+        'Word Cloze',
+        'Button Cloze Select',
+        'Button Select',
+        'Radio',
+        'Word Scramble',
+        'Speech Recognition',
+        'Word Select',
+        'Recording',
+        'Drop Down',
+        'Letter Cloze'
+    ]);
+
     useEffect(() => {
         if (!format) {
             setData([]);
             return;
         }
 
+        console.log(" root path in QuestionsByFormat = ", rootpath)
         //console.log("format", format)
         getQuestionsByFormat(format.toString())
             .then((data) => {
                 // setOrphanQuestions(data.orphan_questions)
                 //console.log(data.questions)
                 // store data in a dictionary with data.questions.quiz_id as key
-
-
                setData(data.questions);
             })
             .catch(error =>
                 console.log(error)
             )
-    }, [format])
+    }, [format, rootpath])
 
+    const fetch_quiz = (quiz_id: string) => {
+        //console.log("fetch quiz with id = ", quiz_id)
+        const url = `${rootpath}/api/quizzes/${quiz_id}/get_info`;
+     
+        setUrlToQuizQuestions(`questions/${quiz_id}`);
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log("fetched quiz data = ", data);
+                const unit_id = data.unitId;
+                const part = `display_unit/${unit_id}`;
+                // prepend part to url_to_quiz_questions
+                setUrlToQuizQuestions((prevUrl) => {
+                    const newUrl = `${part}/${prevUrl}`;
+                    console.log("****** newUrl = ", newUrl);
+                    return newUrl;
+                });
+                // fetch unit based on unit_id
+                const unitUrl = `${rootpath}/api/units/${unit_id}`;
+                return fetch(unitUrl);
+            })
+            .then(response => response.json())
+            .then(unitData => {
+                console.log("fetched unit data = ", unitData);
+                const subCategoryId = unitData.subCategoryId;
+                const part = `sub_categories/${subCategoryId}`;
+                setUrlToQuizQuestions((prevUrl) => {
+                    const newUrl = `${part}/${prevUrl}`;
+                    console.log("****** newUrl after sub_category = ", newUrl);
+                    return newUrl;
+                });
+                // prepend part to url_to_quiz_questions
+                //url_to_quiz_questions = `${part}/${url_to_quiz_questions}`;
+                //setUrlToQuizQuestions(`${part}/${url_to_quiz_questions}`);
+                // fetch sub_category based on subCategoryId
+                const subCategoryUrl = `${rootpath}/api/sub_categories/${subCategoryId}`;
+                return fetch(subCategoryUrl);
+            })
+            .then(response => response.json())
+            .then(subCategoryData => {
+                console.log("fetched sub_category data = ", subCategoryData);
+                const categoryId = subCategoryData.categoryId;
+                const part = `categories/${categoryId}`;
+                setUrlToQuizQuestions((prevUrl) => {
+                    const newUrl = `${part}/${prevUrl}`;
+                    console.log("****** newUrl after category = ", newUrl);
+                    return newUrl;
+                });
+                // prepend part to url_to_quiz_questions
+                //setUrlToQuizQuestions(`${part}/${url_to_quiz_questions}`);
+                // fetch category based on categoryId
+                // You can handle the fetched quiz data here, e.g., display it or store it in state
+            })
+            .catch(error => {
+                console.error("Error fetching quiz:", error);
+            });
+    }
+
+    /*
+ <a href={`/${url_to_quiz_questions}`} className='text-textColor1'>
+                    View quiz questions
+                </a>
+                 <span>1.Cloze, 2.ButtonCloze, 3.Button Select, 4.Radio, 6.DragDrop, 7.Speech Recog, 8.Word Select.
+                    10.DropDown, 11. Cloze Letters.
+                </span>
+    */
     return (
         <div>
-            <div className='text-white'> Enter Format</div>
-            <input
-                type='text'
-                className='text-white bg-bgColor1 p-2'
-                placeholder='Enter format (e.g., 1, 2, etc.)'
-                autoFocus
-                value={format}
-                onChange={(e) => setFormat(e.target.value as '1' | '2' | '3' | '4' | undefined)}
-            />
+            <div>
+               {/*  make a select box for question types */}
+                <select
+                    className='text-white bg-bgColor1 p-2'
+                    value={format}
+                    onChange={(e) => setFormat(e.target.value as '1' | '2' | '3' | '4')}
+                >
+                    {questionTypes.map((type, index) => (
+                        <option key={index} value={(index + 1).toString()}>
+                            {type}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
+         
             {data.map((item, index) => {
                 return (
-                    <div key={index} className='flex flex-row justify-start'>
+                    <div key={index} className='flex flex-row justify-start mb-3'>
                         <div className='text-white bg-bgColor1 p-2'>
                             Question id: {item.id}
                         </div>
@@ -57,9 +141,17 @@ export default function QuestionsByFormat() {
                         <div className='text-white bg-bgColor1 p-2'>
                             Content: {item.content}
                         </div>
-                        <div className='text-white bg-bgColor1 p-2'>
-                            Quiz id: {item.quiz_id}
+                        <div className='text-white bg-green-700 p-2 rounded-md'>
+                            <button onClick={() => (fetch_quiz(item.quiz_id)) }>Fetch quiz {item.quiz_id}</button>
                         </div>
+                        { url_to_quiz_questions &&
+            <div className='text-white bg-red-900 p-2 mx-3'>
+               <Link to={`/${url_to_quiz_questions}`} className='text-textColor1'>
+                    Edit questions
+                </Link>
+            </div>
+            }
+                        
                     </div>
                 )
             })

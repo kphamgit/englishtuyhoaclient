@@ -37,6 +37,7 @@ export function Login(props:any) {
         else {
           console.log("invalid NODE_ENV ")
         }
+        console.log("App.ts setRootPath: rootpath = ", rootpath)
         dispatch(setRootPath({value: rootpath}))
         dispatch(setCurrentUser({value: response.user}))
       })
