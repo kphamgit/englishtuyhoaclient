@@ -25,9 +25,10 @@ export function Login(props:any) {
         props.onLoginSuccess(response.token)
         //setUser({user_name: 'test', level: 'basic', role: 'student'})
         let rootpath = ''
-        console.log("App.ts onLogin process.env.NODE_ENV = ", process.env.NODE_ENV)
+        //console.log("App.ts onLogin process.env.NODE_ENV = ", process.env.NODE_ENV)
         if (process.env.NODE_ENV === "production") {
-          rootpath = 'https://kphamenglish-f26e8b4d6e4b.herokuapp.com'
+          //rootpath = 'https://kphamenglish-f26e8b4d6e4b.herokuapp.com'
+          rootpath = 'https://fullstack-kp-f6a689f4a15c.herokuapp.com'
           //rootpath = 'https://www.tienganhtuyhoa.com'
         }
         else if (process.env.NODE_ENV === "development") {
@@ -37,7 +38,7 @@ export function Login(props:any) {
         else {
           console.log("invalid NODE_ENV ")
         }
-        console.log("App.ts setRootPath: rootpath = ", rootpath)
+        //console.log("App.ts setRootPath: rootpath = ", rootpath)
         dispatch(setRootPath({value: rootpath}))
         dispatch(setCurrentUser({value: response.user}))
       })

@@ -56,12 +56,14 @@ export default function QuestionsByFormat() {
 
         console.log("fetch quiz with id = ", quiz_id);
         const quiz_url = `${rootpath}/api/quizzes/${quiz_id}/get_questions`;
+        console.log("quiz_url = ", quiz_url);
         axios.get(quiz_url)
           .then(quiz => {
             console.log('Quiz data:', quiz.data);
             unit_id = quiz.data.unitId;
             console.log("Quiz fetched, unitId = ", unit_id);
             const unit_url = `${rootpath}/api/units/${unit_id}`;
+            console.log("unit_url = ", unit_url);
             // Now use data from response1 in the second request
             return axios.get(unit_url); 
           })
@@ -70,6 +72,7 @@ export default function QuestionsByFormat() {
             sub_category_id = unit.data.subCategoryId;
             console.log("Unit fetched, subCategoryId = ", sub_category_id);
             const sub_category_url = `${rootpath}/api/sub_categories/${sub_category_id}`;
+            console.log("sub_category_url = ", sub_category_url);
             // Now use data from response2 in the third request
             return axios.get(sub_category_url);
           })

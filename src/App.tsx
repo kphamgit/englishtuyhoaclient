@@ -58,24 +58,6 @@ function App() {
 
       const onLogin = (userToken: string) => {
         setAuth(userToken)
-       /* 
-        let rootpath = ''
-        console.log("App.ts onLogin process.env.NODE_ENV = ", process.env.NODE_ENV)
-        if (process.env.NODE_ENV === "production") {
-          rootpath = 'https://kphamenglish-f26e8b4d6e4b.herokuapp.com'
-          //rootpath = 'https://www.tienganhtuyhoa.com'
-        }
-        else if (process.env.NODE_ENV === "development") {
-          rootpath = 'http://localhost:5001'
-
-        }
-        else {
-          console.log("invalid NODE_ENV ")
-        }
-        console.log("App.ts rootpath = ", rootpath)
-        
-        dispatch(setRootPath({value: rootpath}))
-        */
         //also persits auth state in session Storage so that user is still logged after a page refresh
         sessionStorage.setItem('auth', JSON.stringify(userToken));
       }
