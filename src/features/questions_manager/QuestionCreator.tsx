@@ -4,7 +4,7 @@ import { EditorRef, SimpleEditor } from './tiptap_editor/SimpleEditor'
 import { useNavigate, useParams } from 'react-router-dom';
 //import { useAxiosFetch } from '../../hooks';
 //import { QuestionProps } from './types';
-import { createQuestion, updateQuestion } from '../services/list';
+import { createQuestion } from '../services/list';
 import NewCloze from './NewCloze';
 //import { EditButtonSelect } from './EditButtonSelect';
 //import EditWordScramble from './EditWordScramble';
@@ -13,7 +13,8 @@ import NewRadio from './NewRadio';
 
 import { WordScrambleComponentHandle } from './types';
 import NewWordScramble from './NewWordScramble';
-import NewButtonCloze, { ButtonClozeComponentHandle } from './NewButtonCloze';
+//import NewButtonCloze, { ButtonClozeComponentHandle } from './NewButtonCloze';
+import NewButtonCloze, { ButtonClozeComponentHandle }  from './NewButtonCloze';
 
 /*
 interface WordScrambleDirOption {
@@ -80,7 +81,7 @@ export default function QuestionCreator() {
         setAnswerKey(answer_key)
     }
 
-    const create_question = async () => {
+    const create_question = async () => {      
         let question_params = {
             question_number: questionNumber,
             format: format,
@@ -127,6 +128,7 @@ export default function QuestionCreator() {
         }
         const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
         navigate(url)
+        
     }
     
     const handleCancel = () => {
@@ -191,7 +193,7 @@ export default function QuestionCreator() {
                     <NewCloze question_content={questionContent} set_answer_key={set_answer_key}/>
                 }
                 { (format === "2") && 
-                    <NewButtonCloze  ref={buttonClozeRef}/>
+                    <NewButtonCloze question_content={questionContent} set_answer_key={set_answer_key} ref={buttonClozeRef} />
                 }
                 { (format === "4") && 
                     <NewRadio set_radio_answer_key={set_answer_key} ref={radioRef}/>

@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getQuestionsByFormat } from '../services/list'
 import { useAppSelector } from '../../redux/store';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function QuestionsByFormat() {
@@ -34,7 +34,7 @@ export default function QuestionsByFormat() {
             return;
         }
 
-        console.log(" root path in QuestionsByFormat = ", rootpath)
+        //console.log(" root path in QuestionsByFormat = ", rootpath)
         //console.log("format", format)
         getQuestionsByFormat(format.toString())
             .then((data) => {
@@ -54,39 +54,34 @@ export default function QuestionsByFormat() {
         let sub_category_id = '';
         let category_id = '';
 
-        console.log("fetch quiz with id = ", quiz_id);
+        //console.log("fetch quiz with id = ", quiz_id);
         const quiz_url = `${rootpath}/api/quizzes/${quiz_id}/get_questions`;
-        console.log("quiz_url = ", quiz_url);
+        //console.log("quiz_url = ", quiz_url);
         axios.get(quiz_url)
           .then(quiz => {
-            console.log('Quiz data:', quiz.data);
+            //console.log('Quiz data:', quiz.data);
             unit_id = quiz.data.unitId;
-            console.log("Quiz fetched, unitId = ", unit_id);
+            //console.log("Quiz fetched, unitId = ", unit_id);
             const unit_url = `${rootpath}/api/units/${unit_id}`;
-            console.log("unit_url = ", unit_url);
+            //console.log("unit_url = ", unit_url);
             // Now use data from response1 in the second request
             return axios.get(unit_url); 
           })
           .then(unit => {
-            console.log('Unit fetched, data:', unit.data);
+            //console.log('Unit fetched, data:', unit.data);
             sub_category_id = unit.data.subCategoryId;
-            console.log("Unit fetched, subCategoryId = ", sub_category_id);
+            //console.log("Unit fetched, subCategoryId = ", sub_category_id);
             const sub_category_url = `${rootpath}/api/sub_categories/${sub_category_id}`;
-            console.log("sub_category_url = ", sub_category_url);
+            //console.log("sub_category_url = ", sub_category_url);
             // Now use data from response2 in the third request
             return axios.get(sub_category_url);
           })
           .then(sub_category => {
-            console.log('Sub-category fetched, data:', sub_category.data);
+            //console.log('Sub-category fetched, data:', sub_category.data);
             category_id = sub_category.data.categoryId;
-            console.log("Sub-category fetched, categoryId = ", category_id);
-            //const category_url = `${rootpath}/api/categories/${category_id}`;
-            // Now use data from response3 in the fourth request
-            //return axios.get(category_url);
-            // print unit_id, sub_category_id, category_id
-            console.log(" unit_id = ", unit_id, ", sub_category_id = ", sub_category_id, ", category_id = ", category_id);
+            //console.log(" unit_id = ", unit_id, ", sub_category_id = ", sub_category_id, ", category_id = ", category_id);
             const react_router_str = `categories/${category_id}/sub_categories/${sub_category_id}/display_unit/${unit_id}/questions/${quiz_id}`;
-            console.log("react_router_str = ", react_router_str);
+            //console.log("react_router_str = ", react_router_str);
             navigate('/' + react_router_str); 
             setRouteToQuizQuestions(react_router_str);
           })

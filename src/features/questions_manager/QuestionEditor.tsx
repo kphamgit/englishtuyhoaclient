@@ -240,7 +240,11 @@ export default function QuestionEditor(props: any) {
                     <NewCloze question_content={questionContent} set_answer_key ={setAnswerKey} />
                 }
                 { (format === "2" ) && 
-                    <EditButtonCloze ref = {buttonClozeRef} button_cloze_choices = {question?.button_cloze_options} />
+                    <EditButtonCloze ref = {buttonClozeRef} 
+                     button_cloze_choices = {question?.button_cloze_options} 
+                     question_content={questionContent}
+                     set_answer_key ={setAnswerKey}
+                     />
                 }
                 { (format === "3") &&  
                     <EditButtonSelect question_content={questionContent} answer_key={answerKey} set_answer_key ={setAnswerKey} />

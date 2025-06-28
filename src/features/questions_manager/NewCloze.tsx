@@ -3,7 +3,9 @@ import { getClozeAnswerKey } from './getClozeAnswerKey'
 
 export function NewCloze(props: {question_content: string, set_answer_key: (answer_string: string) => void}) {
         const [questionContent, setQuestionContent] = useState("")
+
         useEffect(() => {
+            console.log("question_content in NewCloze = ", props.question_content)
             setQuestionContent(props.question_content)
         },[props.question_content])
 
