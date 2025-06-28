@@ -87,6 +87,7 @@ export default function QuestionsByFormat() {
             console.log(" unit_id = ", unit_id, ", sub_category_id = ", sub_category_id, ", category_id = ", category_id);
             const react_router_str = `categories/${category_id}/sub_categories/${sub_category_id}/display_unit/${unit_id}/questions/${quiz_id}`;
             console.log("react_router_str = ", react_router_str);
+            navigate('/' + react_router_str); 
             setRouteToQuizQuestions(react_router_str);
           })
           .catch(error => {
@@ -94,22 +95,6 @@ export default function QuestionsByFormat() {
           });
       }
 
-   
-    const edit_questions = () => {
-        //console.log("edit questions with quiz_id = ", quiz_id)
-        //const url = url_to_quiz_questions;
-        console.log("url_to_quiz_questions = ", routeToQuizQuestions)
-        navigate(`/${routeToQuizQuestions}`);
-    }
-        
-    /*
- <a href={`/${url_to_quiz_questions}`} className='text-textColor1'>
-                    View quiz questions
-                </a>
-                 <span>1.Cloze, 2.ButtonCloze, 3.Button Select, 4.Radio, 6.DragDrop, 7.Speech Recog, 8.Word Select.
-                    10.DropDown, 11. Cloze Letters.
-                </span>
-    */
     return (
         <div>
             <div>
@@ -142,15 +127,9 @@ export default function QuestionsByFormat() {
                             Content: {item.content}
                         </div>
                         <div className='text-white bg-green-700 p-2 rounded-md'>
-                            <button onClick={() => (fetch_quiz(item.quiz_id)) }>Fetchcccch quiz {item.quiz_id}</button>
+                            <button onClick={() => (fetch_quiz(item.quiz_id)) }>Edit Quiz {item.quiz_id}</button>
                         </div>
-                        { routeToQuizQuestions &&
-            <div className='text-white bg-red-900 p-2 mx-3'>
-               <button className='text-textColor1' onClick={edit_questions}>
-                    Edit questions
-                </button>
-            </div>
-            }
+                       
                         
                     </div>
                 )
