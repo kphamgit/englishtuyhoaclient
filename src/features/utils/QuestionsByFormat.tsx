@@ -202,7 +202,7 @@ export default function QuestionsByFormat() {
                             Content: {item.content}
                         </div>
                         <div className='text-white bg-green-700 p-2 rounded-md'>
-                            <button onClick={() => (fetch_quiz(item.quiz_id)) }>Fetch quiz {item.quiz_id}</button>
+                            <button onClick={() => (fetch_quiz(item.quiz_id)) }>Fetchcccch quiz {item.quiz_id}</button>
                         </div>
                         { url_to_quiz_questions &&
             <div className='text-white bg-red-900 p-2 mx-3'>
