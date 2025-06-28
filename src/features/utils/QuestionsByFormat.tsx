@@ -106,8 +106,9 @@ export default function QuestionsByFormat() {
             });
     }
 
-    const fetch_quiz = async (quiz_id: string) => {
+    const fetch_quiz_save = async (quiz_id: string) => {
         try {
+            console.log("fetch quiz with id = ", quiz_id);
             const url = `${rootpath}/api/quizzes/${quiz_id}`;
     
             setUrlToQuizQuestions(`questions/${quiz_id}`);
@@ -154,7 +155,17 @@ export default function QuestionsByFormat() {
         } catch (error) {
             console.error("Error fetching quiz:", error);
         }
-    };
+    }
+
+    const fetch_quiz = async (quiz_id: string) => {
+        console.log("fetch quiz with id = ", quiz_id)
+        const url = `${rootpath}/api/quizzes/${quiz_id}`;
+        console.log("url = ", url)
+            // Fetch quiz data
+            const { data } = await axios.get(url);
+            console.log("fetched quiz data = ", data);
+    
+    }
 
     const edit_questions = () => {
         //console.log("edit questions with quiz_id = ", quiz_id)
