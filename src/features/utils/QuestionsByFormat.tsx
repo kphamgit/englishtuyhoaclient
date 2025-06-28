@@ -11,7 +11,7 @@ export default function QuestionsByFormat() {
 
     const [data, setData] = useState<any[]>([]);
     const [format, setFormat] = useState<'1' | '2' | '3' | '4' >('1'); // Default format is '0'
-    const [url_to_quiz_questions, setUrlToQuizQuestions] = useState<string>('');
+    const [routeToQuizQuestions, setRouteToQuizQuestions] = useState<string>('');
    
     const navigate = useNavigate();
 
@@ -48,122 +48,55 @@ export default function QuestionsByFormat() {
             )
     }, [format, rootpath])
 
-    const fetch_quiz_old = (quiz_id: string) => {
-        //console.log("fetch quiz with id = ", quiz_id)
-        const url = `${rootpath}/api/quizzes/${quiz_id}/get_info`;
-     
-        setUrlToQuizQuestions(`questions/${quiz_id}`);
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                console.log("fetched quiz data = ", data);
-                const unit_id = data.unitId;
-                const part = `display_unit/${unit_id}`;
-                // prepend part to url_to_quiz_questions
-                setUrlToQuizQuestions((prevUrl) => {
-                    const newUrl = `${part}/${prevUrl}`;
-                    console.log("****** newUrl = ", newUrl);
-                    return newUrl;
-                });
-                // fetch unit based on unit_id
-                const unitUrl = `${rootpath}/api/units/${unit_id}`;
-                return fetch(unitUrl);
-            })
-            .then(response => response.json())
-            .then(unitData => {
-                console.log("fetched unit data = ", unitData);
-                const subCategoryId = unitData.subCategoryId;
-                const part = `sub_categories/${subCategoryId}`;
-                setUrlToQuizQuestions((prevUrl) => {
-                    const newUrl = `${part}/${prevUrl}`;
-                    console.log("****** newUrl after sub_category = ", newUrl);
-                    return newUrl;
-                });
-                // prepend part to url_to_quiz_questions
-                //url_to_quiz_questions = `${part}/${url_to_quiz_questions}`;
-                //setUrlToQuizQuestions(`${part}/${url_to_quiz_questions}`);
-                // fetch sub_category based on subCategoryId
-                const subCategoryUrl = `${rootpath}/api/sub_categories/${subCategoryId}`;
-                return fetch(subCategoryUrl);
-            })
-            .then(response => response.json())
-            .then(subCategoryData => {
-                console.log("fetched sub_category data = ", subCategoryData);
-                const categoryId = subCategoryData.categoryId;
-                const part = `categories/${categoryId}`;
-                setUrlToQuizQuestions((prevUrl) => {
-                    const newUrl = `${part}/${prevUrl}`;
-                    console.log("****** newUrl after category = ", newUrl);
-                    return newUrl;
-                });
-                // prepend part to url_to_quiz_questions
-                //setUrlToQuizQuestions(`${part}/${url_to_quiz_questions}`);
-                // fetch category based on categoryId
-                // You can handle the fetched quiz data here, e.g., display it or store it in state
-            })
-            .catch(error => {
-                console.error("Error fetching quiz:", error);
-            });
-    }
+   
+    function fetch_quiz(quiz_id: string) {
+        let unit_id = '';
+        let sub_category_id = '';
+        let category_id = '';
 
-    const fetch_quiz = async (quiz_id: string) => {
-        try {
-            console.log("fetch quiz with id = ", quiz_id);
-            const url = `${rootpath}/api/quizzes/${quiz_id}/get_questions`;
-    
-            setUrlToQuizQuestions(`questions/${quiz_id}`);
-    
-            // Fetch quiz data
-            const { data } = await axios.get(url);
-            console.log("fetched quiz data = ", data);
-    
-            const unit_id = data.unitId;
-            const part = `display_unit/${unit_id}`;
-            setUrlToQuizQuestions((prevUrl) => {
-                const newUrl = `${part}/${prevUrl}`;
-                console.log("****** newUrl = ", newUrl);
-                return newUrl;
-            });
-    
-            // Fetch unit data
-            const unitUrl = `${rootpath}/api/units/${unit_id}`;
-            const { data: unitData } = await axios.get(unitUrl);
-            console.log("fetched unit data = ", unitData);
-    
-            const subCategoryId = unitData.subCategoryId;
-            const subCategoryPart = `sub_categories/${subCategoryId}`;
-            setUrlToQuizQuestions((prevUrl) => {
-                const newUrl = `${subCategoryPart}/${prevUrl}`;
-                console.log("****** newUrl after sub_category = ", newUrl);
-                return newUrl;
-            });
-    
-            // Fetch sub-category data
-            const subCategoryUrl = `${rootpath}/api/sub_categories/${subCategoryId}`;
-            const { data: subCategoryData } = await axios.get(subCategoryUrl);
-            console.log("fetched sub_category data = ", subCategoryData);
-    
-            const categoryId = subCategoryData.categoryId;
-            const categoryPart = `categories/${categoryId}`;
-            setUrlToQuizQuestions((prevUrl) => {
-                const newUrl = `${categoryPart}/${prevUrl}`;
-                console.log("****** newUrl after category = ", newUrl);
-                return newUrl;
-            });
-    
-            // You can handle the fetched quiz data here, e.g., display it or store it in state
-        } catch (error) {
-            console.error("Error fetching quiz:", error);
-        }
-    }
+        console.log("fetch quiz with id = ", quiz_id);
+        const quiz_url = `${rootpath}/api/quizzes/${quiz_id}/get_questions`;
+        axios.get(quiz_url)
+          .then(quiz => {
+            console.log('Quiz data:', quiz.data);
+            unit_id = quiz.data.unitId;
+            console.log("Quiz fetched, unitId = ", unit_id);
+            const unit_url = `${rootpath}/api/units/${unit_id}`;
+            // Now use data from response1 in the second request
+            return axios.get(unit_url); 
+          })
+          .then(unit => {
+            console.log('Unit fetched, data:', unit.data);
+            sub_category_id = unit.data.subCategoryId;
+            console.log("Unit fetched, subCategoryId = ", sub_category_id);
+            const sub_category_url = `${rootpath}/api/sub_categories/${sub_category_id}`;
+            // Now use data from response2 in the third request
+            return axios.get(sub_category_url);
+          })
+          .then(sub_category => {
+            console.log('Sub-category fetched, data:', sub_category.data);
+            category_id = sub_category.data.categoryId;
+            console.log("Sub-category fetched, categoryId = ", category_id);
+            //const category_url = `${rootpath}/api/categories/${category_id}`;
+            // Now use data from response3 in the fourth request
+            //return axios.get(category_url);
+            // print unit_id, sub_category_id, category_id
+            console.log(" unit_id = ", unit_id, ", sub_category_id = ", sub_category_id, ", category_id = ", category_id);
+            const react_router_str = `categories/${category_id}/sub_categories/${sub_category_id}/display_unit/${unit_id}/questions/${quiz_id}`;
+            console.log("react_router_str = ", react_router_str);
+            setRouteToQuizQuestions(react_router_str);
+          })
+          .catch(error => {
+            console.error('Error fetching data:', error);
+          });
+      }
 
-    
-
+   
     const edit_questions = () => {
         //console.log("edit questions with quiz_id = ", quiz_id)
         //const url = url_to_quiz_questions;
-        console.log("url_to_quiz_questions = ", url_to_quiz_questions)
-        navigate(`/${url_to_quiz_questions}`);
+        console.log("url_to_quiz_questions = ", routeToQuizQuestions)
+        navigate(`/${routeToQuizQuestions}`);
     }
         
     /*
@@ -177,6 +110,7 @@ export default function QuestionsByFormat() {
     return (
         <div>
             <div>
+                <div className='text-white bg-bgColor3'>{routeToQuizQuestions}</div>
                {/*  make a select box for question types */}
                 <select
                     className='text-white bg-bgColor1 p-2'
@@ -207,7 +141,7 @@ export default function QuestionsByFormat() {
                         <div className='text-white bg-green-700 p-2 rounded-md'>
                             <button onClick={() => (fetch_quiz(item.quiz_id)) }>Fetchcccch quiz {item.quiz_id}</button>
                         </div>
-                        { url_to_quiz_questions &&
+                        { routeToQuizQuestions &&
             <div className='text-white bg-red-900 p-2 mx-3'>
                <button className='text-textColor1' onClick={edit_questions}>
                     Edit questions
