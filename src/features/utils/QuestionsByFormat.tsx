@@ -160,7 +160,7 @@ export default function QuestionsByFormat() {
         //console.log("edit questions with quiz_id = ", quiz_id)
         //const url = url_to_quiz_questions;
         console.log("url_to_quiz_questions = ", url_to_quiz_questions)
-        navigate(`/${url_to_quiz_questions}`);
+        //navigate(`/${url_to_quiz_questions}`);
     }
         
     /*
