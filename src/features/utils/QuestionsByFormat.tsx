@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { getQuestionsByFormat } from '../services/list'
 import { useAppSelector } from '../../redux/store';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function QuestionsByFormat() {
     
@@ -47,7 +48,7 @@ export default function QuestionsByFormat() {
             )
     }, [format, rootpath])
 
-    const fetch_quiz = (quiz_id: string) => {
+    const fetch_quiz_old = (quiz_id: string) => {
         //console.log("fetch quiz with id = ", quiz_id)
         const url = `${rootpath}/api/quizzes/${quiz_id}/get_info`;
      
@@ -105,10 +106,61 @@ export default function QuestionsByFormat() {
             });
     }
 
+    const fetch_quiz = async (quiz_id: string) => {
+        try {
+            const url = `${rootpath}/api/quizzes/${quiz_id}/get_info`;
+    
+            setUrlToQuizQuestions(`questions/${quiz_id}`);
+    
+            // Fetch quiz data
+            const { data } = await axios.get(url);
+            console.log("fetched quiz data = ", data);
+    
+            const unit_id = data.unitId;
+            const part = `display_unit/${unit_id}`;
+            setUrlToQuizQuestions((prevUrl) => {
+                const newUrl = `${part}/${prevUrl}`;
+                console.log("****** newUrl = ", newUrl);
+                return newUrl;
+            });
+    
+            // Fetch unit data
+            const unitUrl = `${rootpath}/api/units/${unit_id}`;
+            const { data: unitData } = await axios.get(unitUrl);
+            console.log("fetched unit data = ", unitData);
+    
+            const subCategoryId = unitData.subCategoryId;
+            const subCategoryPart = `sub_categories/${subCategoryId}`;
+            setUrlToQuizQuestions((prevUrl) => {
+                const newUrl = `${subCategoryPart}/${prevUrl}`;
+                console.log("****** newUrl after sub_category = ", newUrl);
+                return newUrl;
+            });
+    
+            // Fetch sub-category data
+            const subCategoryUrl = `${rootpath}/api/sub_categories/${subCategoryId}`;
+            const { data: subCategoryData } = await axios.get(subCategoryUrl);
+            console.log("fetched sub_category data = ", subCategoryData);
+    
+            const categoryId = subCategoryData.categoryId;
+            const categoryPart = `categories/${categoryId}`;
+            setUrlToQuizQuestions((prevUrl) => {
+                const newUrl = `${categoryPart}/${prevUrl}`;
+                console.log("****** newUrl after category = ", newUrl);
+                return newUrl;
+            });
+    
+            // You can handle the fetched quiz data here, e.g., display it or store it in state
+        } catch (error) {
+            console.error("Error fetching quiz:", error);
+        }
+    };
+
     const edit_questions = () => {
         //console.log("edit questions with quiz_id = ", quiz_id)
-        const url = url_to_quiz_questions;
-        navigate(`/${url}`);
+        //const url = url_to_quiz_questions;
+        console.log("url_to_quiz_questions = ", url_to_quiz_questions)
+        navigate(`/${url_to_quiz_questions}`);
     }
         
     /*
