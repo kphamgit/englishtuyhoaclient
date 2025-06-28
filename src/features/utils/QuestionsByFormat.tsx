@@ -108,7 +108,7 @@ export default function QuestionsByFormat() {
 
     const fetch_quiz = async (quiz_id: string) => {
         try {
-            const url = `${rootpath}/api/quizzes/${quiz_id}/get_info`;
+            const url = `${rootpath}/api/quizzes/${quiz_id}`;
     
             setUrlToQuizQuestions(`questions/${quiz_id}`);
     
