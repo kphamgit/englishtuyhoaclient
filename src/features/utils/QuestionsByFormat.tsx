@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { getQuestionsByFormat } from '../services/list'
 import { useAppSelector } from '../../redux/store';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function QuestionsByFormat() {
     
@@ -12,6 +12,8 @@ export default function QuestionsByFormat() {
     const [format, setFormat] = useState<'1' | '2' | '3' | '4' >('1'); // Default format is '0'
     const [url_to_quiz_questions, setUrlToQuizQuestions] = useState<string>('');
    
+    const navigate = useNavigate();
+
     const [questionTypes, setQuestionTypes] = useState<string[]>([
         'Word Cloze',
         'Button Cloze Select',
@@ -103,6 +105,12 @@ export default function QuestionsByFormat() {
             });
     }
 
+    const edit_questions = () => {
+        //console.log("edit questions with quiz_id = ", quiz_id)
+        const url = url_to_quiz_questions;
+        navigate(`/${url}`);
+    }
+        
     /*
  <a href={`/${url_to_quiz_questions}`} className='text-textColor1'>
                     View quiz questions
@@ -146,9 +154,9 @@ export default function QuestionsByFormat() {
                         </div>
                         { url_to_quiz_questions &&
             <div className='text-white bg-red-900 p-2 mx-3'>
-               <Link to={`/${url_to_quiz_questions}`} className='text-textColor1'>
+               <button className='text-textColor1' onClick={edit_questions}>
                     Edit questions
-                </Link>
+                </button>
             </div>
             }
                         
