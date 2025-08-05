@@ -219,8 +219,15 @@ export default function QuestionEditor(props: any) {
 
                 <div className='flex flex-row justify-start gap-2'>
                 <div className='mx-10 text-textColor1 mb-2'>Content
-                    <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md  mx-1' size={70} type="text" value={questionContent}
-                    onChange={e => setQuestionContent(e.target.value)}></input>
+                {format === "4" ?
+                     <div className='mx-10 text-textColor1 mb-2 bg-gray-700 p-2 rounded-md'>
+                     {questionContent}
+                 </div>
+                      :
+                      <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md  mx-1' size={70} type="text" value={questionContent}
+                      onChange={e => setQuestionContent(e.target.value)}></input>
+                }
+
                 </div>
                 {format === "6" &&
                     <button onClick={insertSlashesInContent} className='bg-bgColor3 text-textColor3 p-1 rounded-md'>Inser slashes</button>
