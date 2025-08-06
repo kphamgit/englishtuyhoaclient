@@ -15,6 +15,25 @@ export const MenuBar = (props: { editor: any }) => {
     //className={props.editor.isActive('bold') ? 'is-active' : ''}
     return (
       <div className='menu-bar text-red-400'>
+        <div className="button-group">
+          <button
+            onClick={() =>props.editor.chain().focus().setFontSize('28px').run()}
+            className={props.editor.isActive('textStyle', { fontSize: '28px' }) ? 'is-active' : ''}
+            data-test-id="28px"
+          >
+            Font size 28px
+          </button>
+          <button
+            onClick={() => props.editor.chain().focus().setFontSize('32px').run()}
+            className={props.editor.isActive('textStyle', { fontSize: '32px' }) ? 'is-active' : ''}
+            data-test-id="32px"
+          >
+            Font size 32px
+          </button>
+          <button onClick={() => props.editor.chain().focus().unsetFontSize().run()} data-test-id="unsetGGGGGFontSize">
+            Unset font size
+          </button>
+        </div>
         <button
           onClick={() => props.editor.chain().focus().toggleBold().run()}
           disabled={

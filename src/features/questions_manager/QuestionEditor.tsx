@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { EditorRef, SimpleEditor } from './tiptap_editor/SimpleEditor'
-
+import { EditorRef }  from './tiptap_editor/SimpleEditor';
+import  SimpleEditor  from './tiptap_editor/SimpleEditor';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAxiosFetch } from '../../hooks';
 import { QuestionProps } from './types';
@@ -187,6 +187,7 @@ export default function QuestionEditor(props: any) {
         setQuestionContent(new_content)
     }
 
+    // <SimpleEditor initialContent={instruction} ref={editorRef} />
     //kpham: Javascript lesson: use dynamic key (i.e, format state variable) to index into formatConversion object
         return (
             <div className='bg-bgColor1'>
@@ -194,7 +195,7 @@ export default function QuestionEditor(props: any) {
                 <span className='mx-2 text-textColor1'>{format && formatConversion[format]} ({format}) </span>
                 </div>
                  { instruction &&
-                    <SimpleEditor initialContent={instruction} ref={editorRef} />
+                    <SimpleEditor initialContent={instruction} ref={editorRef}/>
                  }
            
                 <div className='flex flex-row justify-start gap-2'>

@@ -6,7 +6,7 @@ export function Utils(props: any) {
 
     return (
         <>
-            <div className='flex flex-row justify-around text-textColor1 bg-bgColor1'>
+            <div className='flex flex-row justify-start text-textColor1 bg-bgColor1'>
             <div className='text-textColor1 bg-bgColor1 p-2 flex flex-row justify-start'>
                 <NavLink
                     to={`/utils/manage_quiz_attempts`}
