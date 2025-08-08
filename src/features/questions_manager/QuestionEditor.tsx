@@ -28,6 +28,7 @@ export default function QuestionEditor(props: any) {
       const [answerKey, setAnswerKey] = useState('')
       const [score, setScore] = useState<number>()
       const [instruction, setInstruction] = useState<string>('')
+      const [display_instruction, setDisplayInstruction] = useState<boolean>(false)
       const [help1, setHelp1] = useState(null)
       //const [help2, setHelp2] = useState(null)
       const [radioContent, setRadioContent] = useState<RadioProps | undefined>()
@@ -76,6 +77,7 @@ export default function QuestionEditor(props: any) {
             setInstruction(' ')     // there has to be at least a space. Otherwise SimpleEditor won't show
 
         setPrompt(question.prompt)
+        setDisplayInstruction(question.display_instruction)
         setAudioSrc(question.audio_src)
         setAudioStr(question.audio_str)
         setQuestionContent(question.content)
@@ -108,6 +110,7 @@ export default function QuestionEditor(props: any) {
         let question_params = {
             format: format,
             instruction: editorRef.current?.get_content(),
+            display_instruction: display_instruction,
             prompt: prompt,
             audio_src: audioSrc,
             audio_str: audioStr,
@@ -201,6 +204,13 @@ export default function QuestionEditor(props: any) {
                 <div className='flex flex-row justify-start gap-2'>
                     <button className='bg-bgColor4 text-textColor4 m-3 p-1' onClick={update_question}>Save question</button>
                     <button className='bg-bgColor4 m-3 p-1 text-textColor4' onClick={handleCancel}>Cancel</button>
+                </div>
+
+                <div className='mx-10 bg-bgColor1 text-textColor1 mb-2'>Display Instruction
+                     {/* add a checkbox to toggle display_instruction */}
+                     <input className='mx-2' type="checkbox" checked={display_instruction}
+                        onChange={e => setDisplayInstruction(e.target.checked)}>
+                        </input>
                 </div>
 
                 <div className='mx-10 bg-bgColor1 text-textColor1 mb-2'>Prompt1

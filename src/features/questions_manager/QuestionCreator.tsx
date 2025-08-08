@@ -36,6 +36,7 @@ export default function QuestionCreator() {
       const [score, setScore] = useState<number>()
       const [instruction, setInstruction] = useState<string>('instruction')
       const [help1, setHelp1] = useState(null)
+      const [display_instruction, setDisplayInstruction] = useState<boolean>(false)
       //const [help2, setHelp2] = useState(null)
       //const [radioContent, setRadioContent] = useState<RadioProps | undefined>()
       //const [wordScrambleDirection, setwordScrambleDirection] = useState<string>('');
@@ -86,6 +87,7 @@ export default function QuestionCreator() {
             question_number: questionNumber,
             format: format,
             instruction: editorRef.current?.get_content(),
+            display_instruction: display_instruction,
             prompt: prompt,
             audio_src: audioSrc,
             audio_str: audioStr,
@@ -157,6 +159,14 @@ export default function QuestionCreator() {
                     <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={questionNumber}
                     onChange={e => setQuestionNumber(e.target.value)}></input>
                 </div>
+
+                <div className='mx-10 bg-bgColor1 text-textColor1 mb-2'>Display Instruction
+                     {/* add a checkbox to toggle display_instruction */}
+                     <input className='mx-2' type="checkbox" checked={display_instruction}
+                        onChange={e => setDisplayInstruction(e.target.checked)}>
+                        </input>
+                </div>
+
                 <div className='mx-10 bg-bgColor1 text-textColor1 mb-2'>Promptt
                  <textarea className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md mx-1' rows={5} cols={70} value={prompt}
                     onChange={e => setPrompt(e.target.value)}></textarea>

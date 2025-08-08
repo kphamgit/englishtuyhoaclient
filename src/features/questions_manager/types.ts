@@ -77,6 +77,7 @@ export type QuestionProps = {
   audio_str : string,
   video_src : string,
   instruction : string,
+  display_instruction : boolean,
   prompt : string,
   content : string,
   words_scramble_direction : string,
