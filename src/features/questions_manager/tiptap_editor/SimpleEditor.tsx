@@ -1,9 +1,13 @@
 import { TextStyle } from '@tiptap/extension-text-style'
 import { FontSize } from 'tiptap-extension-font-size'
-import { EditorContent, useEditor } from '@tiptap/react'
+import { EditorContent, useEditor, Editor} from '@tiptap/react'
 import Color from "@tiptap/extension-color";
 import { BackColor } from "./extensions/backgroundColor";
 import StarterKit from '@tiptap/starter-kit'
+import TextAlign from "@tiptap/extension-text-align";
+import ResizableImage from 'tiptap-resize-image'
+import './styles.css';
+
 
 import { useImperativeHandle } from 'react';
 
@@ -36,15 +40,28 @@ const SimpleEditor = (props: MyProps) => {
       FontSize,
       Color,
       BackColor,
-      
+      ResizableImage,
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
     ],
     content: props.initialContent,
   
-  })
+  }) as Editor;
+
 
   if (!editor) {
     return null
   }
+
+  editor.setOptions({
+    editorProps: {
+      attributes: {
+        class: 'my-custom-class',
+      },
+    },
+    //injectCSS: true,
+  })
 
  useImperativeHandle(props.ref, () => ({
     get_content() {
@@ -252,7 +269,7 @@ const SimpleEditor = (props: MyProps) => {
           </div>
  
       </div>
-      <div>
+      <div className='height-[500px] overflow-y-auto border-2 border-gray-300 rounded-lg p-2 mt-2'>
       <EditorContent editor={editor} />
       </div>
     </>

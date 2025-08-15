@@ -168,7 +168,7 @@ export default function QuestionCreator() {
                 </div>
 
                 <div className='mx-10 bg-bgColor1 text-textColor1 mb-2'>Promptt
-                 <textarea className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md mx-1' rows={5} cols={70} value={prompt}
+                 <textarea className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md mx-1' rows={3} cols={70} value={prompt}
                     onChange={e => setPrompt(e.target.value)}></textarea>
                 </div>
         
