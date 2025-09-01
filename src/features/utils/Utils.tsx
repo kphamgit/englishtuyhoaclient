@@ -56,6 +56,13 @@ export function Utils(props: any) {
                     Find Questions by Formats
                 </NavLink>
             </div>
+            <div className='text-textColor1 bg-bgColor1 p-2'>
+                <NavLink
+                    to={`/utils/get_all_quizzes`}
+                >
+                    Find Quizzes
+                </NavLink>
+            </div>
             </div>
             <Outlet />
         </>

@@ -26,6 +26,7 @@ export const useAxiosFetch = <T>(props: {url: string, method: string, body? : {}
   const [error, setError] = useState<AxiosError | null>(null);
 
   let rootpath = ''
+  console.log("***** in useAxiosFetch, NODE_ENV = ", process.env.NODE_ENV)
   if (process.env.NODE_ENV === "development") {
     rootpath = 'http://localhost:5001'
   }

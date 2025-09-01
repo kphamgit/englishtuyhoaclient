@@ -31,8 +31,6 @@ export interface RadioProps {
         const [choice4Text, setChoice4Text] = useState('')
 
     const handleChange = (value: any) => {
-        //console.log("in handlChange")
-        //setAnswerKey(value)
         props.set_radio_answer_key(value)
     }
     /*
@@ -51,24 +49,14 @@ export interface RadioProps {
             return my_params
         }
       }));
-
-      /*
-    useEffect(() => {
-     
-      setChoice1Text(props.radio_data.choice_1_text)
-      setChoice2Text(props.radio_data.choice_2_text)
-      setChoice3Text(props.radio_data.choice_3_text)
-      setChoice4Text(props.radio_data.choice_4_text)
-    },[props.radio_data])
-    */
-
+      
     return (
         <>
         <div className='mx-12 my-10'>
     <fieldset className="flex max-w-md flex-col gap-4 pb-12">
       <legend className="mb-4">Fill in choices</legend>
       <div className="flex items-center gap-2">
-            <Radio onChange={e => handleChange(e.target.value)} id="choice1" name="choices" value="choice1" defaultChecked />
+            <Radio onChange={e => handleChange(e.target.value)} id="choice1" name="choices" value="choice1"  />
             <input type='text' value={choice1Text}  onChange={e => setChoice1Text(e.target.value)} size={80} />
       </div>
       <div className="flex items-center gap-2">
@@ -76,11 +64,11 @@ export interface RadioProps {
             <input type='text' value={choice2Text}  onChange={e => setChoice2Text(e.target.value)} size={80} />
       </div>
       <div className="flex items-center gap-2">
-            <Radio onChange={e => handleChange(e.target.value)} id="choice3" name="choices" value="choice3" defaultChecked />
+            <Radio onChange={e => handleChange(e.target.value)} id="choice3" name="choices" value="choice3"  />
             <input type='text' value={choice3Text}  onChange={e => setChoice3Text(e.target.value)} size={80} />
       </div>
       <div className="flex items-center gap-2">
-            <Radio onChange={e => handleChange(e.target.value)} id="choice4" name="choices" value="choice4" defaultChecked />
+            <Radio onChange={e => handleChange(e.target.value)} id="choice4" name="choices" value="choice4"  />
         <input type='text' value={choice4Text}  onChange={e => setChoice4Text(e.target.value)} size={80} />
       </div>
     </fieldset>

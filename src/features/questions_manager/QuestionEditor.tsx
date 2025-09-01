@@ -15,6 +15,8 @@ import { RadioProps } from './types';
 
 import  {EditButtonClozeRef} from './EditButtonCloze';
 import EditButtonCloze from './EditButtonCloze';
+import { NewCheckboxComponentHandle } from './NewCheckbox';
+import EditCheckbox from './EditCheckbox';
 
 
 export default function QuestionEditor(props: any) {
@@ -46,6 +48,7 @@ export default function QuestionEditor(props: any) {
    //const tname = "1"
 
       const radioRef = useRef<RadioComponentHandle>(null)
+      const checkBoxRef = useRef<NewCheckboxComponentHandle>(null)
       const wordScrambleRef = useRef<WordScrambleComponentHandle>(null)
 
       const buttonClozeRef = useRef<EditButtonClozeRef>(null)
@@ -154,6 +157,21 @@ export default function QuestionEditor(props: any) {
                     navigate(url)
                  })
                  
+            }
+        }
+        else if (format === "5") {    //add parameters for radio questions
+            if (checkBoxRef.current) {
+
+                //question_params = radioRef.current.addParams(question_params)
+                const checkbox_params = checkBoxRef.current.getCheckboxTexts(question_params)
+                const my_params = { ...question_params, checkbox_params }
+                console.log("MMMMMM my_params=", my_params)
+                updateQuestion(question?.id, my_params)
+                    .then(response => {
+                        const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
+                        navigate(url)
+                    })
+
             }
         }
         else if (format === "6") {    //add parameters for radio questions
@@ -269,6 +287,9 @@ export default function QuestionEditor(props: any) {
                 }
                 { (format === "4" && radioContent) && 
                     <EditRadio radio_data = {radioContent} answer_key ={answerKey} set_radio_answer_key={set_radio_answer_key} ref={radioRef}/>
+                }
+                { (format === "5") && 
+                    <EditCheckbox question_content={questionContent} answer_key={answerKey} set_checkbox_answer_key={set_radio_answer_key} ref={checkBoxRef}/>
                 }
                 { (format === "6") && 
                     <EditWordScramble ref = {wordScrambleRef} direction={wordScrambleDirection}/>

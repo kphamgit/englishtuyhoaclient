@@ -31,7 +31,7 @@ export default function ListQuestions(props:any) {
         const url = `/quizzes/${params.quiz_id}/get_questions`
 
         const formatConversion: { [key: string]: string } = {"1": 'Cloze', "2": "Button Cloze Select", "3": 'Button Select', 
-        "4": "Radio ", "6": "Word Scramble", "7": "Speech Recognition", "8": "Word Select",
+        "4": "Radio ", "5" : "Checkbox", "6": "Word Scramble", "7": "Speech Recognition", "8": "Word Select",
         "9": "Recording", "10": "Drop Down", "11": "Letter Cloze",
       }
 
@@ -109,16 +109,17 @@ export default function ListQuestions(props:any) {
         </div>
         <div>
           <select value={newQuestionFormat} onChange={handleChange}>
-            <option value="1" >Cloze</option>
-            <option value="2">Button Cloze Select</option>
-            <option value="3">Button Select</option>
-            <option value="4">Radio</option>
-            <option value="6">Scramble</option>
-            <option value="7">Speech Recognition</option>
-            <option value="8">Words Select</option>
-            <option value="9">Recording</option>
-            <option value="10">Drop Down</option>
-            <option value="11">Letter Cloze</option>
+            <option value="1" >Cloze (1)</option>
+            <option value="2">Button Cloze Select (2)</option>
+            <option value="3">Button Select (3)</option>
+            <option value="4">Radio (4)</option>
+            <option value="5">Checkbox (5)</option>
+            <option value="6">Scramble (6)</option>
+            <option value="7">Speech Recognition (7)</option>
+            <option value="8">Words Select (8)</option>
+            <option value="9">Recording (9)</option>
+            <option value="10">Drop Down (10)</option>
+            <option value="11">Letter Cloze (11)</option>
           </select>
         </div>
       </div>

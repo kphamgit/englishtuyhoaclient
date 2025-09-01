@@ -15,13 +15,7 @@ import { WordScrambleComponentHandle } from './types';
 import NewWordScramble from './NewWordScramble';
 //import NewButtonCloze, { ButtonClozeComponentHandle } from './NewButtonCloze';
 import NewButtonCloze, { ButtonClozeComponentHandle }  from './NewButtonCloze';
-
-/*
-interface WordScrambleDirOption {
-    value: string;
-    label: string;
-  }
-*/
+import NewCheckbox, { NewCheckboxComponentHandle } from './NewCheckbox';
 
 export default function QuestionCreator() {
 
@@ -45,7 +39,7 @@ export default function QuestionCreator() {
 
       //kpham Typescript lesson: learned how to type an object as a dictionary 12/16/2024
       const formatConversion: { [key: string]: string } = {"1": 'Cloze', "2": "Button Cloze Select", "3": 'Button Select', 
-        "4": "Radio ", "6": "Word Scramble", "7": "Speech Recognition", "8": "Word Select",
+        "4": "Radio ",  "5": "Checkbox", "6": "Word Scramble", "7": "Speech Recognition", "8": "Word Select",
         "9": "Recording", "10": "Drop Down", "11": "Letter Cloze",
       }
 
@@ -55,6 +49,7 @@ export default function QuestionCreator() {
       //console.log("FFFFFFFF ", formatConversion[tname] )
      
       const radioRef = useRef<RadioComponentHandle>(null)
+      const checkBoxRef = useRef<NewCheckboxComponentHandle>(null)
       const buttonClozeRef = useRef<ButtonClozeComponentHandle>(null)
       const wordScrambleRef = useRef<WordScrambleComponentHandle>(null)
 
@@ -79,6 +74,7 @@ export default function QuestionCreator() {
 
     //this function is called when user selects a radio button
     const set_answer_key = (answer_key: string) => {
+        console.log("********** in set_answer_key ", answer_key)
         setAnswerKey(answer_key)
     }
 
@@ -116,6 +112,17 @@ export default function QuestionCreator() {
                 const my_params = {...question_params, radio_params}
                 //console.log("MMMMMM radio_params=", res)
                 await createQuestion(my_params )
+            }
+        }
+        else if (format === "5") {    //add parameters for radio questions
+            if (checkBoxRef.current) {
+                
+                //question_params = radioRef.current.addParams(question_params)
+                const checkbox_params = checkBoxRef.current.getCheckboxTexts(question_params)
+                const my_params = {...question_params, checkbox_params}
+                console.log("MMMMMM my_params=", my_params)
+                await createQuestion(my_params )
+                
             }
         }
         else if (format === "6") {    //add parameters for word scramble questions
@@ -184,7 +191,7 @@ export default function QuestionCreator() {
 
                  <div className='flex flex-row justify-start gap-2'>
                 <div className='mx-10 text-textColor1 mb-2'>Content
-                {format === "4" ?
+                {format === "4" || format === "5"?
                      <div className='mx-10 text-textColor1 mb-2 bg-gray-700 p-2 rounded-md'>
                        NO CONTENT
                       </div>
@@ -214,6 +221,9 @@ export default function QuestionCreator() {
                 }
                 { (format === "4") && 
                     <NewRadio set_radio_answer_key={set_answer_key} ref={radioRef}/>
+                }
+                { (format === "5") && 
+                    <NewCheckbox set_checkbox_answer_key={set_answer_key} ref={checkBoxRef}/>
                 }
                 { (format === "6") && 
                     <NewWordScramble  ref={wordScrambleRef}/>

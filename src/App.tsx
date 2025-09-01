@@ -26,6 +26,7 @@ import { EditSubCategory } from "./features/components/EditSubCategory";
 import { useAppDispatch } from "./redux/store";
 import { setRootPath } from "./redux/rootpath";
 import QuestionsByFormat from "./features/utils/QuestionsByFormat";
+import AllQuizzes from "./features/utils/AllQuizzes";
 //import CategoryPage from "./pages/CategoryPage";
 //import { QuizAttemptsManager } from "./features/components/QuizAttemptsManager";
 //import { S3ObjectsManager } from "./features/components/S3ObjectsManager";
@@ -109,6 +110,7 @@ function App() {
                   </Route>
                   <Route path="manage_quiz_attempts" element={<QuizAttemptsManager />} />
                   <Route path="get_questions_by_format" element={<QuestionsByFormat />} />
+                  <Route path="get_all_quizzes" element={<AllQuizzes />} />
                   <Route path="manage_s3_objects" element={<S3ObjectsManager />} />
                   <Route path="manage_orphan_questions" element={<OrphanQuestionsManager />} />
                   <Route path="upload_file" element={<FileUpload />} />
