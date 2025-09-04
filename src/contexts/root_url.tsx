@@ -15,7 +15,16 @@ interface RootUrlProviderProps {
 
 export const RootUrlProvider: React.FC<RootUrlProviderProps> = ({ children }) => {
   // Define the root URL (you can modify this as needed)
-  const rootUrl = process.env.REACT_APP_API_ROOT || 'http://localhost:5002';
+  console.log(" node env=", process.env.NODE_ENV)
+  //REACT_APP_API_ROOT
+  console.log("RootUrlProvider process.env.REACT_APP_API_ROOT=", process.env.REACT_APP_API_ROOT)
+  let rootUrl: string;
+  if (process.env.NODE_ENV === 'production') {
+    rootUrl = process.env.REACT_APP_API_ROOT || ''; // Replace with your production API URL
+  } else {
+    rootUrl = 'http://localhost:5002'; // Replace with your development API URL
+  }
+  //const rootUrl = process.env.REACT_APP_API_ROOT || 'http://localhost:5002';
 
   return (
     <RootUrlContext.Provider value={{ rootUrl }}>
