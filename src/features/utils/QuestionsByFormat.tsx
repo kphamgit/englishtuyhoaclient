@@ -3,17 +3,17 @@ import { getQuestionsByFormat } from '../services/list'
 import { useAppSelector } from '../../redux/store';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useRootUrl } from '../../contexts/root_url';
 
 export default function QuestionsByFormat() {
     
-    //const rootpath = useAppSelector(state => state.rootpath.value)
-    const rootpath = useAppSelector(state => state.rootpath.value)
-
     const [data, setData] = useState<any[]>([]);
     const [format, setFormat] = useState<'1' | '2' | '3' | '4' >('1'); // Default format is '0'
     const [routeToQuizQuestions, setRouteToQuizQuestions] = useState<string>('');
    
     const navigate = useNavigate();
+
+    const {rootUrl} = useRootUrl();
 
     const [questionTypes, setQuestionTypes] = useState<string[]>([
         'Word Cloze',
@@ -34,7 +34,7 @@ export default function QuestionsByFormat() {
             return;
         }
 
-        //console.log(" root path in QuestionsByFormat = ", rootpath)
+        //console.log(" root path in QuestionsByFormat = ", rootUrl)
         //console.log("format", format)
         getQuestionsByFormat(format.toString())
             .then((data) => {
@@ -46,7 +46,7 @@ export default function QuestionsByFormat() {
             .catch(error =>
                 console.log(error)
             )
-    }, [format, rootpath])
+    }, [format, rootUrl])
 
    
     function fetch_quiz(quiz_id: string) {
@@ -55,14 +55,14 @@ export default function QuestionsByFormat() {
         let category_id = '';
 
         //console.log("fetch quiz with id = ", quiz_id);
-        const quiz_url = `${rootpath}/api/quizzes/${quiz_id}/get_questions`;
+        const quiz_url = `${rootUrl}/api/quizzes/${quiz_id}/get_questions`;
         //console.log("quiz_url = ", quiz_url);
         axios.get(quiz_url)
           .then(quiz => {
             //console.log('Quiz data:', quiz.data);
             unit_id = quiz.data.unitId;
             //console.log("Quiz fetched, unitId = ", unit_id);
-            const unit_url = `${rootpath}/api/units/${unit_id}`;
+            const unit_url = `${rootUrl}/api/units/${unit_id}`;
             //console.log("unit_url = ", unit_url);
             // Now use data from response1 in the second request
             return axios.get(unit_url); 
@@ -71,7 +71,7 @@ export default function QuestionsByFormat() {
             //console.log('Unit fetched, data:', unit.data);
             sub_category_id = unit.data.subCategoryId;
             //console.log("Unit fetched, subCategoryId = ", sub_category_id);
-            const sub_category_url = `${rootpath}/api/sub_categories/${sub_category_id}`;
+            const sub_category_url = `${rootUrl}/api/sub_categories/${sub_category_id}`;
             //console.log("sub_category_url = ", sub_category_url);
             // Now use data from response2 in the third request
             return axios.get(sub_category_url);
@@ -133,22 +133,3 @@ export default function QuestionsByFormat() {
         </div>
     )
 }
-
-/*
-              return (
-                    <div key={index} className='flex flex-row justify-start'>
-                        <div className='text-white bg-bgColor1 p-2'>
-                            Question id: {item.id}
-                        </div>
-                        <div className='text-white bg-bgColor1 p-2'>
-                            Question number: {item.question_number}
-                        </div>
-                        <div className='text-white bg-bgColor1 p-2'>
-                            Content: {item.content}
-                        </div>
-                        <div className='text-white bg-bgColor1 p-2'>
-                            Quiz id: {item.quiz_id}
-                        </div>
-                    </div>
-                )
-*/

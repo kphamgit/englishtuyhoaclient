@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import axios, { AxiosRequestConfig, AxiosError } from "axios";
+import { useRootUrl } from "../contexts/root_url";
 
-axios.defaults.baseURL = "http://localhost:8080/api";
+//axios.defaults.baseURL = "http://localhost:8080/api";
 
 //const useAxios = <T>({ url, method = 'get', data, config }: UseAxiosOptions<T>): UseAxiosResult<T> => {
 interface DataResponse<T> {
@@ -10,40 +11,19 @@ interface DataResponse<T> {
   error: AxiosError | null
 }
   
-/*
-export async function findCreateQuizAttempt(quiz_id, user_id) {
-  const url = `${rootpath}/api/quiz_attempts/find_create_new/${quiz_id}/${user_id}`
-  const response = await axios.get(url)
-  return response
-}
-
-*/
-
 export const useAxiosFetch = <T>(props: {url: string, method: string, body? : {} }): DataResponse<T> => {
 
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<AxiosError | null>(null);
-
-  let rootpath = ''
-  if (process.env.NODE_ENV === "development") {
-    rootpath = 'http://localhost:5001'
-  }
-  else if (process.env.NODE_ENV === "production") {
-    rootpath = 'https://fullstack-kp-f6a689f4a15c.herokuapp.com'
-    //rootpath = 'https://www.tienganhtuyhoa.com'
-  }
-  else {
-    console.log("invalid NODE_ENV ")
-  }
-
-  
+   
+  const { rootUrl } = useRootUrl();
 
   useEffect(() => {
     const config: AxiosRequestConfig = {
       url: props.url,
       method: props.method, // or 'POST', 'PUT', 'DELETE', etc.
-      baseURL: rootpath + '/api',
+      baseURL: rootUrl + '/api',
       data: props.body
     };
     const fetchData = async (): Promise<void> => {
@@ -62,7 +42,7 @@ export const useAxiosFetch = <T>(props: {url: string, method: string, body? : {}
         }
     }
     fetchData();
-  }, [props.method, props.url, props.body, rootpath]);
+  }, [props.method, props.url, props.body, rootUrl]);
 
   //return { data, error, loading } as const;
   return { data: data, loading, error };

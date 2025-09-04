@@ -3,6 +3,7 @@ import { getQuestionsByFormat } from '../services/list'
 import { useAppSelector } from '../../redux/store';
 import { Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useRootUrl } from '../../contexts/root_url';
 
 type MissingQuestionNumbers = {
     quiz_id: string;
@@ -11,9 +12,8 @@ type MissingQuestionNumbers = {
 
 export default function AllQuizzes() {
     
+    const { rootUrl } = useRootUrl();
     
-    //const rootpath = useAppSelector(state => state.rootpath.value)
-    const rootpath = useAppSelector(state => state.rootpath.value)
     const [quizId, setQuizId] = useState<string>('');
     const [quizzesWithMissingQuestions, setQuizzesWithMissingQuestions] = useState<any[]>([]);
 
@@ -24,7 +24,7 @@ export default function AllQuizzes() {
     function fetch_all_quizzes() {
         //console.log("fetch all quizzes");
         ///api/quizzes/get_all',
-        const quiz_url = `${rootpath}/api/quizzes/get_all`;
+        const quiz_url = `${rootUrl}/api/quizzes/get_all`;
        // console.log("quiz_url = ", quiz_url);
         axios.get(quiz_url)
           .then(response => {
@@ -58,7 +58,7 @@ export default function AllQuizzes() {
       function get_full_path(quiz_id: string) {
         //console.log("fetch all quizzes");
         ///api/quizzes/get_all',
-        const quiz_url = `${rootpath}/api/quizzes/get_full_path/${quiz_id}`;
+        const quiz_url = `${rootUrl}/api/quizzes/get_full_path/${quiz_id}`;
        // console.log("quiz_url = ", quiz_url);
         axios.get(quiz_url)
           .then(full_path => {
@@ -71,47 +71,12 @@ export default function AllQuizzes() {
               //console.log(`http://localhost:5173/categories/${category_id}/sub_categories/${sub_category_id}/display_unit/${unit_id}/questions/${quiz_id}`);
               const quiz_route = `/categories/${category_id}/sub_categories/${sub_category_id}/display_unit/${unit_id}/questions/${quiz_id}`
               navigate(quiz_route)
-              /*
-{
-    "quiz": {
-        "id": 6,
-        "name": "Law for Kids. Grammar 1",
-        "quiz_number": 1,
-        "disabled": false,
-        "video_url": null,
-        "unitId": 4
-    },
-    "unit": {
-        "id": 4,
-        "name": "Level G",
-        "unit_number": 4,
-        "level": null,
-        "content": "<p>Level G unit 4 content content content</p>",
-        "subCategoryId": 2
-    },
-    "sub_category": {
-        "id": 2,
-        "name": "Razkids",
-        "level": "beginner,basic,intermediate,advanced",
-        "sub_category_number": 1,
-        "categoryId": 2
-    },
-    "category": {
-        "id": 2,
-        "name": "Reading",
-        "level": "beginner,basic,intermediate,advanced",
-        "category_number": 2
-    }
-}
-    //http://localhost:5173/categories/2/sub_categories/2/display_unit/4/questions/6
-    //categories/${category_id}/sub_categories/${sub_category_id}/display_unit/${unit_id}/questions/${quiz_id}
-              */
            })
       }
    
       async function fetch_quiz(quiz_id: string): Promise<string | null> {
         //console.log("fetch quiz with id = ", quiz_id);
-        const quiz_url = `${rootpath}/api/quizzes/${quiz_id}`;
+        const quiz_url = `${rootUrl}/api/quizzes/${quiz_id}`;
       
         try {
           const response = await axios.get(quiz_url);

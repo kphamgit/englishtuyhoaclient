@@ -2,44 +2,26 @@ import { useState } from "react";
 import { useAppDispatch } from "../../../redux/store";
 import { login } from "../services/list";
 import { setCurrentUser } from "../../../redux/current_user";
-//import { ThemeContext } from "../../../contexts/theme_context";
-//import { ThemeContextInterface } from "../../../types";
-import { setRootPath } from "../../../redux/rootpath";
+import { useRootUrl } from '../../../contexts/root_url';
 
 
 export function Login(props:any) {
  
    // const { darkTheme, toggleTheme } = useContext(ThemeContext) as ThemeContextInterface;
-
+   const { rootUrl } = useRootUrl();
+   //console.log("Login.tsx nnnn rootUrl = ", rootUrl)
 
     const [userName, setUserName] = useState<string>('');
     const [password, setPassword] = useState<string>('');
   
     const dispatch = useAppDispatch()
-    //const dispatch = useAppDispatch();
-    
+ 
     const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
-      login({username: userName, password: password} )
+      login(rootUrl, {username: userName, password: password} )
       .then (response => {
         props.onLoginSuccess(response.token)
         //setUser({user_name: 'test', level: 'basic', role: 'student'})
-        let rootpath = ''
-        //console.log("App.ts onLogin process.env.NODE_ENV = ", process.env.NODE_ENV)
-        if (process.env.NODE_ENV === "production") {
-          //rootpath = 'https://kphamenglish-f26e8b4d6e4b.herokuapp.com'
-          rootpath = 'https://fullstack-kp-f6a689f4a15c.herokuapp.com'
-          //rootpath = 'https://www.tienganhtuyhoa.com'
-        }
-        else if (process.env.NODE_ENV === "development") {
-          rootpath = 'http://localhost:5001'
-
-        }
-        else {
-          console.log("invalid NODE_ENV ")
-        }
-        //console.log("App.ts setRootPath: rootpath = ", rootpath)
-        dispatch(setRootPath({value: rootpath}))
         dispatch(setCurrentUser({value: response.user}))
       })
       .catch(error => {

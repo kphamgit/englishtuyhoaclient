@@ -4,41 +4,22 @@ import React, { PropsWithChildren, useEffect, useReducer, useState } from 'react
 import { useSocket } from '../../hooks';
 import { defaultSocketContextState, SocketContextProvider, SocketReducer } from './Context';
 import { useAppSelector } from '../../redux/store';
+import { useRootUrl } from '../root_url';
 
 export interface ISocketContextComponentProps extends PropsWithChildren {}
 
 interface SocketInfo {
     socket_id: string;
     user_name: string;
- 
 }
-//Youtube: https://www.youtube.com/watch?v=-aTWWl4klYE
 
 const SocketContextComponent: React.FunctionComponent<ISocketContextComponentProps> = (props) => {
     const { children } = props;
 
     const user = useAppSelector(state => state.user.value)
 
-    const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:5001';
-    let rootpath = ''
-    if (process.env.NODE_ENV === "production") {
-        //rootpath = 'fullstack-kp-f6a689f4a15c.herokuapp.com'
-        rootpath = 'https://kphamenglish-f26e8b4d6e4b.herokuapp.com/'
-        //rootpath = 'https://www.kevinphamengli.com'
-    }
-    else if (process.env.NODE_ENV === "development"){
-        rootpath = 'localhost:5001'
-        
-    }
-    else {
-        console.log("invalid NODE_ENV ")
-    }
-
-    //const URL1 = 'http://localhost:5001'
-
-    //const socket = useSocket(`ws://${rootpath}`, {
-        
-    const socket = useSocket(URL!, {
+    const { rootUrl}  = useRootUrl()
+    const socket = useSocket(rootUrl!, {
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,
         autoConnect: false,

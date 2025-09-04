@@ -23,10 +23,9 @@ import { NewCategory } from "./features/components/NewCategory";
 import { EditCategory } from "./features/components/EditCategory";
 import { NewSubCategory } from "./features/components/NewSubCategory";
 import { EditSubCategory } from "./features/components/EditSubCategory";
-import { useAppDispatch } from "./redux/store";
-import { setRootPath } from "./redux/rootpath";
 import QuestionsByFormat from "./features/utils/QuestionsByFormat";
 import AllQuizzes from "./features/utils/AllQuizzes";
+import { RootUrlProvider } from "./contexts/root_url";
 //import CategoryPage from "./pages/CategoryPage";
 //import { QuizAttemptsManager } from "./features/components/QuizAttemptsManager";
 //import { S3ObjectsManager } from "./features/components/S3ObjectsManager";
@@ -66,7 +65,9 @@ function App() {
       if (!auth) {
         return (
         <>
+        <RootUrlProvider>
         <Login onLoginSuccess={onLogin} />
+        </RootUrlProvider>
    
         </>
         )
@@ -81,9 +82,11 @@ function App() {
     //matched location "/categories/6/sub_categories/13/display_unit/37/edit_quiz/146
   return (
     <>
+    <RootUrlProvider>
       <SocketContextComponent>
         <Suspense fallback={<div>Loading...</div>}>
           <BrowserRouter>
+           
             <Routes>
               <Route path="/logout" element={<Logout onLogout={onLogout} />} />
               <Route path="/" element={<Home />}>
@@ -121,10 +124,12 @@ function App() {
                 </Route>
               </Route>
             </Routes>
+         
           </BrowserRouter>
 
         </Suspense>
       </SocketContextComponent>
+      </RootUrlProvider>
     </>
   );
 

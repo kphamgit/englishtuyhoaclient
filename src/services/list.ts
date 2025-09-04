@@ -1,17 +1,6 @@
 import axios from "axios"
-
-let rootpath = ''
-if (process.env.NODE_ENV === "production") {
-    rootpath = 'https://fullstack-kp-f6a689f4a15c.herokuapp.com'
-    //rootpath = 'https://www.tienganhtuyhoa.com'
-}
-else if (process.env.NODE_ENV === "development"){
-    rootpath = 'http://localhost:5001'
-    
-}
-else {
-    console.log("invalid NODE_ENV ")
-}
+import { use } from "framer-motion/client"
+import { useRootUrl } from "../contexts/root_url"
 
 type ClassProps = 
     {
@@ -35,8 +24,8 @@ type ClassProps =
 
 export async function getAClass(id: string): Promise<ClassProps> {
     //console.log("in getAClass")
-  
-    const url = `${rootpath}/api/classes/${id}`
+    const { rootUrl} = useRootUrl();
+    const url = `${rootUrl}/api/classes/${id}`
     const response = await axios.get(url)
    // console.log("UUUU response.data", response.data)
     return response.data
@@ -44,21 +33,24 @@ export async function getAClass(id: string): Promise<ClassProps> {
   }
 
   export async function getAGame(id: string | undefined) {
-    const url = `${rootpath}/api/match_games/${id}` 
+    const { rootUrl} = useRootUrl();
+    const url = `${rootUrl}/api/match_games/${id}` 
     const response = await axios.get(url)
     return response.data
   
   }
 
   export async function getAllGamee() {
-    const url = `${rootpath}/api/match_games` 
+    const { rootUrl} = useRootUrl();
+    const url = `${rootUrl}/api/match_games` 
     const response = await axios.get(url)
     return response.data
   
   }
 
   export async function upload_form_data_to_s3(formData: any, config: any) {
-    const url = `${rootpath}/api/uploads/do_upload_single` 
+    const { rootUrl} = useRootUrl();
+    const url = `${rootUrl}/api/uploads/do_upload_single` 
     //console.log(" in list upload..url =", url)
     //console.log("form data: ", formData)
      axios.post(url, formData, config).then((response) => {
