@@ -30,7 +30,7 @@ export interface RadioProps {
         const [choice3Text, setChoice3Text] = useState('')
         const [choice4Text, setChoice4Text] = useState('')
 
-    const handleChange = (value: any) => {
+    const handleChange = (value: any, choice_text: string) => {
         props.set_radio_answer_key(value)
     }
     /*
@@ -56,19 +56,19 @@ export interface RadioProps {
     <fieldset className="flex max-w-md flex-col gap-4 pb-12">
       <legend className="mb-4">Fill in choices</legend>
       <div className="flex items-center gap-2">
-            <Radio onChange={e => handleChange(e.target.value)} id="choice1" name="choices" value="choice1"  />
+            <Radio onChange={e => handleChange(e.target.value, choice1Text)} id="choice1" name="choices" value="choice1"  />
             <input type='text' value={choice1Text}  onChange={e => setChoice1Text(e.target.value)} size={80} />
       </div>
       <div className="flex items-center gap-2">
-            <Radio onChange={e => handleChange(e.target.value)} id="choice2" name="choices" value="choice2" />
+            <Radio onChange={e => handleChange(e.target.value, choice2Text)} id="choice2" name="choices" value="choice2" />
             <input type='text' value={choice2Text}  onChange={e => setChoice2Text(e.target.value)} size={80} />
       </div>
       <div className="flex items-center gap-2">
-            <Radio onChange={e => handleChange(e.target.value)} id="choice3" name="choices" value="choice3"  />
+            <Radio onChange={e => handleChange(e.target.value, choice3Text)} id="choice3" name="choices" value="choice3"  />
             <input type='text' value={choice3Text}  onChange={e => setChoice3Text(e.target.value)} size={80} />
       </div>
       <div className="flex items-center gap-2">
-            <Radio onChange={e => handleChange(e.target.value)} id="choice4" name="choices" value="choice4"  />
+            <Radio onChange={e => handleChange(e.target.value, choice4Text)} id="choice4" name="choices" value="choice4"  />
         <input type='text' value={choice4Text}  onChange={e => setChoice4Text(e.target.value)} size={80} />
       </div>
     </fieldset>

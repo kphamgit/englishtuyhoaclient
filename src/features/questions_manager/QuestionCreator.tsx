@@ -16,6 +16,7 @@ import NewWordScramble from './NewWordScramble';
 //import NewButtonCloze, { ButtonClozeComponentHandle } from './NewButtonCloze';
 import NewButtonCloze, { ButtonClozeComponentHandle }  from './NewButtonCloze';
 import NewCheckbox, { NewCheckboxComponentHandle } from './NewCheckbox';
+import { useRootUrl } from '../../contexts/root_url';
 
 export default function QuestionCreator() {
 
@@ -31,6 +32,8 @@ export default function QuestionCreator() {
       const [instruction, setInstruction] = useState<string>('instruction')
       const [help1, setHelp1] = useState(null)
       const [display_instruction, setDisplayInstruction] = useState<boolean>(false)
+
+      const {rootUrl} = useRootUrl();
       //const [help2, setHelp2] = useState(null)
       //const [radioContent, setRadioContent] = useState<RadioProps | undefined>()
       //const [wordScrambleDirection, setwordScrambleDirection] = useState<string>('');
@@ -74,7 +77,7 @@ export default function QuestionCreator() {
 
     //this function is called when user selects a radio button
     const set_answer_key = (answer_key: string) => {
-        console.log("********** in set_answer_key ", answer_key)
+        //console.log("********** in set_answer_key ", answer_key)
         setAnswerKey(answer_key)
     }
 
@@ -101,8 +104,8 @@ export default function QuestionCreator() {
                 //console.log("buttonClozeRef.current.getChoices()=", buttonClozeRef.current.getChoices())
                 const button_cloze_options = buttonClozeRef.current?.getChoices()
                 const my_params = {...question_params, button_cloze_options}
-                console.log("MMMMMM my_params=", my_params)
-                await createQuestion(my_params )
+                //console.log("MMMMMM my_params=", my_params)
+                await createQuestion(rootUrl, my_params )
             }
         }
         else if (format === "4") {    //add parameters for radio questions
@@ -111,7 +114,7 @@ export default function QuestionCreator() {
                 const radio_params = radioRef.current.getRadioTexts(question_params)
                 const my_params = {...question_params, radio_params}
                 //console.log("MMMMMM radio_params=", res)
-                await createQuestion(my_params )
+                await createQuestion(rootUrl, my_params )
             }
         }
         else if (format === "5") {    //add parameters for radio questions
@@ -120,8 +123,8 @@ export default function QuestionCreator() {
                 //question_params = radioRef.current.addParams(question_params)
                 const checkbox_params = checkBoxRef.current.getCheckboxTexts(question_params)
                 const my_params = {...question_params, checkbox_params}
-                console.log("MMMMMM my_params=", my_params)
-                await createQuestion(my_params )
+                //console.log("MMMMMM my_params=", my_params)
+                await createQuestion(rootUrl, my_params )
                 
             }
         }
@@ -129,11 +132,11 @@ export default function QuestionCreator() {
                 if (wordScrambleRef.current) {
                 const my_params = {...question_params,  words_scramble_direction: wordScrambleRef.current.getDirection()}
                 //console.log("MMMMMM radio_params=", res)
-                await createQuestion(my_params )
+                await createQuestion(rootUrl, my_params )
             }
         }
         else {
-                await createQuestion(question_params)
+                await createQuestion(rootUrl, question_params)
         }
         const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
         navigate(url)

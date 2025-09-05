@@ -17,6 +17,7 @@ import  {EditButtonClozeRef} from './EditButtonCloze';
 import EditButtonCloze from './EditButtonCloze';
 import { NewCheckboxComponentHandle } from './NewCheckbox';
 import EditCheckbox from './EditCheckbox';
+import { useRootUrl } from '../../contexts/root_url';
 
 
 export default function QuestionEditor(props: any) {
@@ -58,12 +59,13 @@ export default function QuestionEditor(props: any) {
       const navigate = useNavigate();
       const params = useParams<{categoryId: string, sub_categoryId: string, unit_id: string,  quiz_id: string, question_id: string}>();
      // console.log("MMMMNNNNNNN question editor:  params", params)
-   
+      const {rootUrl} = useRootUrl();
+
       const url = `/questions/${params.question_id}`
       //console.log("url ", url)
       const { data: question, loading, error } =
           useAxiosFetch<QuestionProps>({ url: url, method: 'get' })
-          //  const url = `${rootpath}/api/questions/${id}`
+ 
 
     useEffect(() => {
         if (question) {
@@ -133,7 +135,7 @@ export default function QuestionEditor(props: any) {
                 
                 //console.log("HHHHHHHHHHHH my_params=", my_params)
                 
-                updateQuestion(question?.id, {...question_params, button_cloze_options} )
+                updateQuestion(rootUrl, question?.id, {...question_params, button_cloze_options} )
                 .then(response => {
                     const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
                     navigate(url)
@@ -151,7 +153,7 @@ export default function QuestionEditor(props: any) {
                 const radio_params = radioRef.current.getRadioTexts(question_params)
                 const my_params = {...question_params, radio_params}
                 //console.log("MMMMMM my_params=", my_params)
-                updateQuestion(question?.id, my_params )
+                updateQuestion(rootUrl, question?.id, my_params )
                 .then(response => {
                     const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
                     navigate(url)
@@ -166,7 +168,7 @@ export default function QuestionEditor(props: any) {
                 const checkbox_params = checkBoxRef.current.getCheckboxTexts(question_params)
                 const my_params = { ...question_params, checkbox_params }
                 console.log("MMMMMM my_params=", my_params)
-                updateQuestion(question?.id, my_params)
+                updateQuestion(rootUrl, question?.id, my_params)
                     .then(response => {
                         const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
                         navigate(url)
@@ -178,7 +180,7 @@ export default function QuestionEditor(props: any) {
                 if (wordScrambleRef.current) {
                 const my_params = {...question_params,  words_scramble_direction: wordScrambleRef.current.getDirection()}
                 //console.log("MMMMMM radio_params=", res)
-                updateQuestion(question?.id, my_params )
+                updateQuestion(rootUrl, question?.id, my_params )
                 .then(response => {
                     const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
                     navigate(url)
@@ -187,7 +189,7 @@ export default function QuestionEditor(props: any) {
         }
         else {
            // console.log("Update question!!!")
-            updateQuestion(params.question_id, question_params)
+            updateQuestion(rootUrl, params.question_id, question_params)
                 .then(response => {
                     const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
                     //console.log("XXXXX UTL", url)

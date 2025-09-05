@@ -19,6 +19,7 @@ import {
 } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { clone_a_row, deleteTableRow, renumberRows } from '../services/list';
+import { useRootUrl } from '../../contexts/root_url';
 
 //interface ColumnProps { 
    //// Header: string, accessor: string 
@@ -30,6 +31,7 @@ import { clone_a_row, deleteTableRow, renumberRows } from '../services/list';
 
   const [dataType, setDataType] = useState('')
   const [tableData, setTableData] = useState<DataRowProps[] | undefined >([])
+  const {rootUrl} = useRootUrl();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -66,7 +68,7 @@ import { clone_a_row, deleteTableRow, renumberRows } from '../services/list';
   }
 
     const clone_row = (id: string) => {
-      clone_a_row(id, dataType)
+      clone_a_row(rootUrl, id, dataType)
         .then((data) => {  //returns the id and the question number of the newly cloned row
           //look for row in tableData that has the same question number
           //console.log("cloning...data row", data)
@@ -103,7 +105,7 @@ import { clone_a_row, deleteTableRow, renumberRows } from '../services/list';
   const delete_row = (id: string) => {
     //const el = event.target as HTMLButtonElement
     //deleteQuestion(id)
-    deleteTableRow(id, dataType)
+    deleteTableRow(rootUrl, id, dataType)
     .then(data => {   //data is ID of row deleted
      // console.log(" in DataTable delete_row id of row deleted=", data)
      if (data) {
@@ -132,7 +134,7 @@ import { clone_a_row, deleteTableRow, renumberRows } from '../services/list';
             const ids_table = tableData.map((row) => {
               return row.id
             })
-            renumberRows(ids_table, props.data_type)
+            renumberRows(rootUrl, ids_table, props.data_type)
             .then( response => {
                 //console.log("eeeee", response)
             })

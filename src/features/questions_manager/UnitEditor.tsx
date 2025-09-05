@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { updateUnit } from '../services/list';
 import { UnitProps } from './types';
 import { useAxiosFetch } from './useAxiosFetch';
+import { useRootUrl } from '../../contexts/root_url';
 
 
 export default function UnitEditor(props: any) {
@@ -18,7 +19,7 @@ export default function UnitEditor(props: any) {
       //console.log("MMMMNNNNNNN xxxxxxxxxxxx params", params)
       // const { data: sub_category, loading: sub_loading, error: sub_error } =
       // useAxiosFetch<SubCategoryProps>({ url: `/sub_categories/${params.sub_categoryId}`, method: 'get' });
-
+      const {rootUrl} = useRootUrl();
     //  const { data: question, loading, error } =
     //  useAxiosFetch<QuestionProps>({ url: url, method: 'get' })
 
@@ -43,7 +44,7 @@ const update_unit = () => {
         name: name
         
     }
-    updateUnit(params.unit_id, unit_params )
+    updateUnit(rootUrl, params.unit_id, unit_params )
     .then(response => {
         //console.log("SUCCESS updating question")
         //navigate("/live_quiz", { state: arg })

@@ -36,7 +36,7 @@ export default function QuestionsByFormat() {
 
         //console.log(" root path in QuestionsByFormat = ", rootUrl)
         //console.log("format", format)
-        getQuestionsByFormat(format.toString())
+        getQuestionsByFormat(rootUrl, format.toString())
             .then((data) => {
                 // setOrphanQuestions(data.orphan_questions)
                 //console.log(data.questions)

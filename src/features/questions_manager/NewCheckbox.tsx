@@ -19,8 +19,8 @@ import { RadioProps } from './types';
         const [choice4Text, setChoice4Text] = useState('')
         const answerKey = useRef<string[]>([])
 
-    const handleChange = (id: string, checked: any) => {
-        console.log("in new Checkbox handlChange checked =", checked)
+    const handleChange = (id: string, choice_text: string, checked: any) => {
+        //console.log("in new Checkbox handlChange checked =", checked)
         // id can be choice1, choice2, choice3, or choice4
         
         // append id to answerKey string if checked is true 
@@ -35,7 +35,7 @@ import { RadioProps } from './types';
           // if checked is false, remove id from answerKey string
           answerKey.current = answerKey.current.filter(item => item !== id)
         }
-        console.log("answerKey.current = ", answerKey.current)
+        //console.log("answerKey.current = ", answerKey.current)
         //console.log("value = ", value)
         props.set_checkbox_answer_key(answerKey.current.join('/'))
     }
@@ -60,19 +60,19 @@ return (
   <div className="flex max-w-md flex-col gap-4" id="checkbox">
     <h3>{choice1Text}</h3>
     <div className="flex items-center gap-2">
-      <Checkbox id="choice1" onChange={(e) => handleChange(e.target.id, e.target.checked)}  />
+      <Checkbox id="choice1" onChange={(e) => handleChange(e.target.id, choice1Text, e.target.checked)}  />
       <input type='text' value={choice1Text}  onChange={e => {setChoice1Text(e.target.value); }} size={80} />
     </div>
     <div className="flex items-center gap-2">
-      <Checkbox id="choice2" onChange={(e) => handleChange(e.target.id, e.target.checked)} />
+      <Checkbox id="choice2" onChange={(e) => handleChange(e.target.id, choice2Text, e.target.checked)} />
       <input type='text' value={choice2Text}  onChange={e => {setChoice2Text(e.target.value); }} size={80} />
     </div>
     <div className="flex items-center gap-2">
-      <Checkbox id="choice3" onChange={(e) => handleChange(e.target.id, e.target.checked)} />
+      <Checkbox id="choice3" onChange={(e) => handleChange(e.target.id, choice3Text, e.target.checked)} />
       <input type='text' value={choice3Text}  onChange={e => {setChoice3Text(e.target.value); }} size={80} />
     </div>
     <div className="flex gap-2 mb-14">
-    <Checkbox id="choice4" onChange={(e) => handleChange(e.target.id, e.target.checked)} />
+    <Checkbox id="choice4" onChange={(e) => handleChange(e.target.id, choice4Text, e.target.checked)} />
     <input type='text' value={choice4Text}  onChange={e => {setChoice4Text(e.target.value); }} size={80} />
     </div>
  
