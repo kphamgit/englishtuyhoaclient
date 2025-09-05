@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { createSubCategory } from '../services/list'
 import { useParams } from 'react-router-dom';
+import { useRootUrl } from '../../contexts/root_url';
 
 export function NewSubCategory(props: any) {
     const [name, setName] = useState<string>('')
     const [subCategoryNumber, setSubCategoryNumber] = useState<string>('')
     
      const params = useParams<{categoryId: string}>();
-
+    const {rootUrl} = useRootUrl();
    
 const create_sub_category = () => {
     let sub_category_params = {
@@ -15,7 +16,7 @@ const create_sub_category = () => {
         sub_category_number: subCategoryNumber,
         categoryId: params.categoryId,
     }
-    createSubCategory(sub_category_params )
+    createSubCategory(rootUrl, sub_category_params )
     .then(response => {
         console.log("SUCCESS creating sub_category")
         //navigate("/live_quiz", { state: arg })

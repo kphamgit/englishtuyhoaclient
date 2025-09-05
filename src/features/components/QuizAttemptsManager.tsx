@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { deleteQuizAttempts, getQuizAttempts } from '../services/list'
 import { useAxiosFetch } from '../../hooks'
+import { useRootUrl } from '../../contexts/root_url'
 
 type QuizAttemptProps = {
  
@@ -21,8 +22,9 @@ export default function QuizAttemptsManager(props: any) {
     
     const [checkedItems, setCheckedItems] = useState<string[]>([]);
     const checkboxesRef = useRef<HTMLInputElement[] | undefined>([]);
-    
-    
+
+    const {rootUrl} = useRootUrl()
+
      const url = `quiz_attempts`
   const { data: quiz_attempts, loading, error } =
         useAxiosFetch<QuizAttemptProps[]>({ url: url, method: 'get' })
@@ -117,7 +119,7 @@ useEffect(() => {
       };
 
     const handleRefresh = () => {
-        getQuizAttempts()
+        getQuizAttempts(rootUrl)
             .then((data) => {          
                 //console.log("in handleRefresh data=",data)  
                   setQuizAttempts(data)
@@ -144,11 +146,11 @@ useEffect(() => {
 
     const deleteChecked = () => {
         
-        deleteQuizAttempts(checkedItems)
+        deleteQuizAttempts(rootUrl, checkedItems)
         .then( (data) => {
             setCheckedItems([]);
             //setQuizAttempts([])
-            getQuizAttempts()
+            getQuizAttempts(rootUrl)
             .then((data) => {          
                 //console.log("in handleRefresh data=",data)  
                   setQuizAttempts(data)

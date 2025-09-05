@@ -1,5 +1,7 @@
 import { MouseEventHandler, useEffect, useState } from 'react'
 import { getAClass, getS3RecordingObjects, deleteAudioRecordings } from '../services/list'
+import { use } from 'framer-motion/client';
+import { useRootUrl } from '../../contexts/root_url';
 
 interface MyProps {
     Key: string;
@@ -11,9 +13,10 @@ export default function S3ObjectsManager(props: any) {
     const [targetClass , setTargetClass ] = useState<string>('')
     const [classstudents, setClassStudents] = useState<string[] | undefined>()
 
+    const {rootUrl} = useRootUrl();
     useEffect(() => {
         if (targetClass.length > 0 ) {
-            getAClass(targetClass)
+            getAClass(rootUrl, targetClass)
             .then((response) => {
                 console.log("in S3 ojbect manager, class students ...", response.users)
                 if (response.users) {
@@ -34,7 +37,7 @@ export default function S3ObjectsManager(props: any) {
         const el = event.target as HTMLButtonElement
         const student_name:string | null = el.textContent
           if (student_name) {
-              getS3RecordingObjects(student_name)
+              getS3RecordingObjects(rootUrl, student_name)
                   .then((data) => {
                       //console.log("..xxxxxxxccccccccccc. s3 objects:", data as string[])
                       //data is an array of json objects such as "Key": "audios/recordings/thienkim/", {
@@ -60,7 +63,7 @@ export default function S3ObjectsManager(props: any) {
         const student_name:string | null = el.textContent
           if (student_name) {
             console.log(" calling delee student name", student_name)
-              deleteAudioRecordings(student_name)
+              deleteAudioRecordings(rootUrl, student_name)
                   .then((data) => {
                       //console.log("..xxxxxxxccccccccccc. s3 objects:", data as string[])
                       //data is an array of json objects such as "Key": "audios/recordings/thienkim/", {

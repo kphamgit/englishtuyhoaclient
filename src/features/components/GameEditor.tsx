@@ -3,6 +3,7 @@ import DynamicInput, { DynamicInputRefProps } from "./DynamicInput";
 import { useNavigate, useParams } from "react-router-dom";
 import { getAGame } from "../../services/list";
 import { updateGame } from "../services/list";
+import { useRootUrl } from "../../contexts/root_url";
 
 
 interface InputField {
@@ -24,6 +25,7 @@ export default function GameEditor(props: any) {
     const params = useParams<{id: string}>()
 
     const dynamicInputRef = useRef<DynamicInputRefProps>(null);
+    const {rootUrl} = useRootUrl();
 
     const navigate = useNavigate()
 
@@ -93,7 +95,7 @@ export default function GameEditor(props: any) {
       };
 
       //console.log("...saving game,  game_params = ", game_params)
-      updateGame(params.id, {update_params: game_params})
+      updateGame(rootUrl, params.id, {update_params: game_params})
       .then(response => {
         //console.log("xxxx after update response =  ", response)
         const url = `/utils/list_games`

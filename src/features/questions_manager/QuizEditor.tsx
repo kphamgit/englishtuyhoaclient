@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { createQuiz, updateQuiz } from '../services/list';
 import { useAxiosFetch } from './useAxiosFetch';
 import { QuizProps } from './types';
+import { useRootUrl } from '../../contexts/root_url';
 
 export default function QuizEditor(props: any) {
 
@@ -13,8 +14,9 @@ export default function QuizEditor(props: any) {
         const [videoUrl, setVideoUrl] = useState<string | undefined>('')
       const [unitId, setUnitId] = useState('')
       const navigate = useNavigate();
+      const {rootUrl} = useRootUrl();
       const params = useParams<{categoryId: string, sub_categoryId: string, unit_id: string, quiz_id: string }>();
-        console.log("HUUUUU quiz editor, params =", params)
+       // console.log("HUUUUU quiz editor, params =", params)
         //
 //{categoryId: '6', sub_categoryId: '13', quiz_id: '146'}
         /*
@@ -65,7 +67,7 @@ const update_quiz = () => {
         video_url: videoUrl,
         unitId: params.unit_id
     }
-    updateQuiz(quiz?.id, quiz_params )
+    updateQuiz(rootUrl, quiz?.id, quiz_params )
     .then(response => {
         //console.log("SUCCESS updating question")
         //navigate("/live_quiz", { state: arg })

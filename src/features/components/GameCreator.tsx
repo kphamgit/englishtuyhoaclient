@@ -2,6 +2,7 @@ import { useState } from "react";
 import DynamicInput from "./DynamicInput";
 import { useNavigate } from "react-router-dom";
 import { createGame } from "../services/list";
+import { useRootUrl } from "../../contexts/root_url";
 
 interface InputField {
   source: string;
@@ -19,6 +20,7 @@ export default function GameCreator(props: any) {
     const [sourceLanguage, setSourceLanguage] = useState('')
     const [targetLanguage, setTargetLanguage] = useState('')
     const [isContinuous, setIsContinuous] = useState(false);
+    const {rootUrl} = useRootUrl();
 
     const navigate = useNavigate()
 
@@ -53,7 +55,7 @@ export default function GameCreator(props: any) {
         target_language: targetLanguage,
       };
 
-      createGame({create_params: game_params})
+      createGame(rootUrl, {create_params: game_params})
       .then(response => {
         //console.log("xxxx after update response =  ", response)
         const url = `/list_games`

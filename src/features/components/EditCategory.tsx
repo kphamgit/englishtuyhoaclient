@@ -3,6 +3,7 @@ import { updateCategory } from '../services/list'
 import { useParams } from 'react-router-dom'
 
 import { useAxiosFetch } from '../../hooks'
+import { useRootUrl } from '../../contexts/root_url';
 
 interface CategoryProps {
     id: number;
@@ -18,6 +19,7 @@ export function EditCategory(props: any) {
 
     //const navigate = useNavigate();
     const params = useParams<{categoryId: string}>();
+    const {rootUrl} = useRootUrl();
     /*
    const navigate = useNavigate();
       const params = useParams<{categoryId: string, sub_categoryId: string, unit_id: string}>();
@@ -58,7 +60,7 @@ const update_category = () => {
         category_number: categoryNumber,
         level: level,
     }
-    updateCategory(params.categoryId, category_params )
+    updateCategory(rootUrl, params.categoryId, category_params )
     .then(response => {
         //console.log("SUCCESS updating question")
         //navigate("/live_quiz", { state: arg })

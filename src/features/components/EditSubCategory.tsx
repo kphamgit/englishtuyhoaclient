@@ -3,6 +3,7 @@ import { updateSubCategory } from '../services/list'
 import { useParams } from 'react-router-dom';
 
 import { useAxiosFetch } from '../../hooks';
+import { useRootUrl } from '../../contexts/root_url';
 
 interface SubCategoryProps {
     id: number;
@@ -21,6 +22,7 @@ export function EditSubCategory(props: any) {
     const url = `/sub_categories/${params.sub_categoryId}`
      
     const { data: sub_category, loading, error } = useAxiosFetch<SubCategoryProps>({ url: url, method: 'get' })
+    const {rootUrl} = useRootUrl();
 
     useEffect(() => {
         if (sub_category) {
@@ -38,7 +40,7 @@ const update_sub_category = () => {
         sub_category_number: subCategoryNumber,
         categoryId: params.categoryId,
     }
-    updateSubCategory(params.sub_categoryId, sub_category_params )
+    updateSubCategory(rootUrl, params.sub_categoryId, sub_category_params )
     .then(response => {
         console.log("SUCCESS updating sub_category")
         //navigate("/live_quiz", { state: arg })

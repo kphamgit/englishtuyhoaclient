@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { createCategory } from '../services/list'
+import { useRootUrl } from '../../contexts/root_url'
 
 export function NewCategory(props: any) {
     const [name, setName] = useState<string>('')
     const [categoryNumber, setCategoryNumber] = useState<string>('')
     const [level, setLevel] = useState<string>('')
+const {rootUrl} = useRootUrl();
 
 const create_category = () => {
     let category_params = {
@@ -12,7 +14,7 @@ const create_category = () => {
         category_number: categoryNumber,
         level: level,
     }
-    createCategory(category_params )
+    createCategory(rootUrl, category_params )
     .then(response => {
         //console.log("SUCCESS updating question")
         //navigate("/live_quiz", { state: arg })
