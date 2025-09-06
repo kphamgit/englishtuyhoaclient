@@ -89,9 +89,9 @@ export default function QuestionEditor(props: any) {
         setAnswerKey(question.answer_key)
         setTimeLimit(question.timeout.toString())
         setScore(question.score)
-        if (question.radio != null) {
-            setRadioContent({...question.radio})
-        }
+        //if (question.radio != null) {
+           // setRadioContent(question.content ? question.radio : undefined)
+       // }
         if (question.format === 6) {
             //console.log("SCRAMMMMMMMMM direction =", response.data.direction)
             //setDirection(question.words_scramble_direction)
@@ -146,13 +146,14 @@ export default function QuestionEditor(props: any) {
             }
         }
         else if (format === "4") {    //add parameters for radio questions
-            console.log("in here...")
+            //console.log("in RADIO format ...")
             if (radioRef.current) {
                 //console.log("HEEEE")
                 //question_params = radioRef.current.addParams(question_params)
                 const radio_params = radioRef.current.getRadioTexts(question_params)
                 const my_params = {...question_params, radio_params}
-                //console.log("MMMMMM my_params=", my_params)
+                //console.log("MMMMMM MMMMMMMMMMM my_params=", my_params)
+                
                 updateQuestion(rootUrl, question?.id, my_params )
                 .then(response => {
                     const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
@@ -167,7 +168,7 @@ export default function QuestionEditor(props: any) {
                 //question_params = radioRef.current.addParams(question_params)
                 const checkbox_params = checkBoxRef.current.getCheckboxTexts(question_params)
                 const my_params = { ...question_params, checkbox_params }
-                console.log("MMMMMM my_params=", my_params)
+                //console.log("MMMMMM my_params=", my_params)
                 updateQuestion(rootUrl, question?.id, my_params)
                     .then(response => {
                         const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
@@ -214,6 +215,7 @@ export default function QuestionEditor(props: any) {
     //kpham: Javascript lesson: use dynamic key (i.e, format state variable) to index into formatConversion object
         return (
             <div className='bg-bgColor1'>
+                <div>EDITOR........</div>
                 <div className='mx-10 text-textColor1'>Question: {question?.question_number}
                 <span className='mx-2 text-textColor1'>{format && formatConversion[format]} ({format}) </span>
                 </div>
@@ -287,8 +289,8 @@ export default function QuestionEditor(props: any) {
                 { (format === "3") &&  
                     <EditButtonSelect question_content={questionContent} answer_key={answerKey} set_answer_key ={setAnswerKey} />
                 }
-                { (format === "4" && radioContent) && 
-                    <EditRadio radio_data = {radioContent} answer_key ={answerKey} set_radio_answer_key={set_radio_answer_key} ref={radioRef}/>
+                { (format === "4") && 
+                    <EditRadio radio_data = {question?.content || ''} answer_key ={answerKey || ''} set_radio_answer_key={set_radio_answer_key} ref={radioRef}/>
                 }
                 { (format === "5") && 
                     <EditCheckbox question_content={questionContent} answer_key={answerKey} set_checkbox_answer_key={set_radio_answer_key} ref={checkBoxRef}/>

@@ -112,7 +112,7 @@ export interface RadioComponentHandle {
 
 export interface RadioComponentProps {
     answer_key: string,
-    radio_data: RadioProps
+    radio_data: string
     set_radio_answer_key: (answer_key: string) => void
   }
 

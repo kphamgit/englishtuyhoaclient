@@ -43,21 +43,25 @@ export interface RadioProps {
                 choice_3_text: choice3Text,
                 choice_4_text: choice4Text,
             }
+            console.log("^^^^^^^^ EditRadio getRadioTexts my_params =", my_params)
             //return {...base_params, ...my_params}
             return my_params
         }
       }));
 
     useEffect(() => {
-     
-      setChoice1Text(props.radio_data.choice_1_text)
-      setChoice2Text(props.radio_data.choice_2_text)
-      setChoice3Text(props.radio_data.choice_3_text)
-      setChoice4Text(props.radio_data.choice_4_text)
+      // radio_data: string ('one', 'two', 'three', 'four')
+      // split radio_data by '/' into array of strings
+      const radio_parts = props.radio_data.split('/')
+      setChoice1Text(radio_parts[0] || '')
+      setChoice2Text(radio_parts[1] || '')
+      setChoice3Text(radio_parts[2] || '')
+      setChoice4Text(radio_parts[3] || '')
     },[props.radio_data])
 
     return (
         <>
+        <h3>EEEEEEEEEE EIDT RADIO</h3>
         <div className='mx-12  p-5 '>
     <fieldset className="flex max-w-md flex-col gap-4 mb-10">
       <legend className="mb-4">Choose your favorite country</legend>
