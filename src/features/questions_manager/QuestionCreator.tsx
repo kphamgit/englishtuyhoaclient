@@ -67,12 +67,10 @@ export default function QuestionCreator() {
     }>();
    
     useEffect(() => {
-        setFormat(params.format)
-        let question_number = ''
-        if (params.last_question_number) {
-            question_number = (parseInt(params.last_question_number) + 1).toString()
-         }
-        setQuestionNumber(question_number || '')
+       //increment params.last_question_number by 1
+       setQuestionNumber((parseInt(params.last_question_number || '0') + 1).toString())
+       setFormat(params.format)
+       
     }, [params.format, params.last_question_number])
 
     //this function is called when user selects a radio button

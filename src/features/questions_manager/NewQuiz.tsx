@@ -3,14 +3,7 @@ import { useEffect, useState } from 'react'
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { createQuiz } from '../services/list';
-
-/*
-     name: req.body.name,
-          unit_number: req.body.unit_number,
-          level: req.body.level,
-          content: req.body.content,
-          subCategoryId: req.body.subCategoryId
-*/
+import { useRootUrl } from '../../contexts/root_url';
 
 export default function NewQuiz(props: any) {
 
@@ -20,7 +13,9 @@ export default function NewQuiz(props: any) {
 
       const navigate = useNavigate();
       const params = useParams<{categoryId: string, sub_categoryId: string, unit_id: string }>();
-        console.log("HUUUUU params =", params)
+        //console.log("HUUUUU params =", params)
+
+      const {rootUrl} = useRootUrl();
      // useEffect(() => {
       //  setSubCategoryId(params.sub_categoryId)
      // }, [params.sub_categoryId])
@@ -32,21 +27,17 @@ const handleCancel = () => {
    //navigate(`display_unit/${params.unitId}`)
 }
 
-/*
- name: req.body.name,
-    quiz_number: req.body.quiz_number,
-    disabled: disabled,
-    video_url: req.body.video_url,
-    unitId: req.body.unitId
-*/
-
 const create_quiz = () => {
     let quiz_params = {
         name: name,
         quiz_number: quizNumber,
-        unitId: params.unit_id
+        video_url: videoUrl,
+        unitId: params.unit_id, 
+
     }
-    createQuiz(quiz_params )
+    console.log("create quiz rootUrl = ", rootUrl)
+    
+    createQuiz(rootUrl, quiz_params )
     .then(response => {
         //console.log("SUCCESS updating question")
         //navigate("/live_quiz", { state: arg })
@@ -56,6 +47,7 @@ const create_quiz = () => {
     .catch(error => {
         console.log(error)
     })
+        
 }
   
         return (

@@ -30,6 +30,8 @@ export default function ListQuestions(props:any) {
         const [newQuestionFormat, setNewQuestionFormat] = useState('1')
         const url = `/quizzes/${params.quiz_id}/get_questions`
 
+        const [lastQuestionNumber, setLastQuestionNumber] = useState<number | undefined>(undefined) //used for create new question
+
         const formatConversion: { [key: string]: string } = {"1": 'Cloze', "2": "Button Cloze Select", "3": 'Button Select', 
         "4": "Radio ", "5" : "Checkbox", "6": "Word Scramble", "7": "Speech Recognition", "8": "Word Select",
         "9": "Recording", "10": "Drop Down", "11": "Letter Cloze",
@@ -48,8 +50,8 @@ export default function ListQuestions(props:any) {
           ];
         
 //http://localhost:5173/categories/2/sub_categories/15/display_unit/42/questions/155/take_question/5069
-        const { data: quiz } =
-            useAxiosFetch<QuizProps>({ url: url, method: 'get' })
+           const { data: quiz } = useAxiosFetch<QuizProps>({ url: url, method: 'get' })
+
             useEffect(() => {
             const sub_questions: DataRowProps[] | undefined = quiz?.questions.map(({ id, question_number, format, content, answer_key }) => {
               return {
@@ -73,6 +75,12 @@ export default function ListQuestions(props:any) {
             }
            
             //const names = users.map(({ name }) => name);
+            if (quiz && quiz.questions.length > 0) {  
+              setLastQuestionNumber(quiz.questions[quiz.questions.length - 1].question_number)
+            }
+            else {  // quiz has no questions yet
+              setLastQuestionNumber(0)
+            }
         },[quiz, setsubQuestions])
 
 
@@ -101,7 +109,7 @@ export default function ListQuestions(props:any) {
 
       <div className='flex flex-row justify-start pb-10'>
         <div>
-          <Link to={`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}/create_question/${newQuestionFormat}/${quiz?.questions.length}`}
+          <Link to={`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}/create_question/${newQuestionFormat}/${lastQuestionNumber}`}
             className='text-textColor1 bg-bgColor1 mx-10 my-4 p-1 rounded-md'
           >
             New Question
