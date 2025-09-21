@@ -27,6 +27,7 @@ type ClassProps =
 
 export async function updateUnit(rootUrl: string, id: string | undefined, params: any) {
    
+  console.log(" in *********** updateUnit id ",id )
   const url = `${rootUrl}/api/units/${id}`
   //console.log("HEE url", url)
   const response = await axios.put(url, params)

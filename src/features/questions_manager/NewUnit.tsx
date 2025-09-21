@@ -3,14 +3,7 @@ import { useEffect, useState } from 'react'
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { createUnit, updateUnit } from '../services/list';
-
-/*
-     name: req.body.name,
-          unit_number: req.body.unit_number,
-          level: req.body.level,
-          content: req.body.content,
-          subCategoryId: req.body.subCategoryId
-*/
+import { useRootUrl } from '../../contexts/root_url';
 
 export default function NewUnit(props: any) {
 
@@ -21,6 +14,8 @@ export default function NewUnit(props: any) {
       
       const navigate = useNavigate();
       const params = useParams<{categoryId: string, sub_categoryId: string }>();
+
+      const { rootUrl} = useRootUrl();
 
       useEffect(() => {
         setSubCategoryId(params.sub_categoryId)
@@ -38,7 +33,7 @@ const create_unit = () => {
         content: '',
         subCategoryId: subCategoryId
     }
-    createUnit(unit_params )
+    createUnit(rootUrl, unit_params )
     .then(response => {
         //console.log("SUCCESS updating question")
         //navigate("/live_quiz", { state: arg })
