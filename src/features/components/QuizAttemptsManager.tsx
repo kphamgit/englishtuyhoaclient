@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { deleteQuizAttempts, getQuizAttempts } from '../services/list'
 import { useAxiosFetch } from '../../hooks'
 import { useRootUrl } from '../../contexts/root_url'
+import { time } from 'console'
 
 type QuizAttemptProps = {
  
@@ -30,15 +31,10 @@ export default function QuizAttemptsManager(props: any) {
         useAxiosFetch<QuizAttemptProps[]>({ url: url, method: 'get' })
 
 useEffect(() => {
-    console.log("in useEffect ")
     if (quiz_attempts) {
-       // console.log("in useEffect quiz_attempts", quiz_attempts)
+        console.log("in useEffect quiz_attempts", quiz_attempts)
         setQuizAttempts(quiz_attempts)
-        
     }
-    //else {
-       // setQuizAttempts([])
-   // }
 }, [quiz_attempts])
 
                 /*
@@ -74,17 +70,27 @@ useEffect(() => {
         //console.log("AAA", updatedAt)
         const updated = new Date(updatedAt)
         const totalSecondsUpdatedAt = updated.getTime()/1000
-        //console.log("xxxxxxxx xxxxxxx totalSecondsUpdatedAt=", totalSecondsUpdatedAt )
+        console.log("xxxxxxxx xxxxxxx totalSecondsUpdatedAt=", totalSecondsUpdatedAt )
         const created = new Date(createdAt)
         const totalSecondsCreatedAt = created.getTime()/1000
         //console.log("aaaaaa bbbbb totalSecondsCreatedAt=", totalSecondsCreatedAt )
         let totalSecondsElapsed = totalSecondsUpdatedAt - totalSecondsCreatedAt
-        //console.log("yyyyyyy yyyyy totalSecondsElapsed=", totalSecondsElapsed )
+        console.log("yyyyyyy yyyyy totalSecondsElapsed=", totalSecondsElapsed )
         //console.log("HERE totalSeconds", totalSeconds)
         //let hours = Math.floor(totalSecondsElapsed / 3600)
-        totalSecondsElapsed %= 60
-        var minutes = Math.floor( totalSecondsElapsed )
-        return minutes
+        if (totalSecondsElapsed >= 60) {
+            //totalSecondsElapsed = 0
+            // convert to minutes and seconds
+            let minutes = Math.floor( totalSecondsElapsed / 60)
+            totalSecondsElapsed = totalSecondsElapsed % 60
+            // combine minutes and seconds to a string and return
+            let timeString = minutes.toString().padStart(2, '0') + 'minutes :' + totalSecondsElapsed.toString().padStart(2, '0') + ' seconds'
+          
+            return timeString
+        }
+        
+        return totalSecondsElapsed.toString().padStart(2, '0') + ' seconds'
+        //return totalSecondsElapsed
     }
   
     
@@ -180,7 +186,7 @@ useEffect(() => {
                         <th>User Name</th>
                         <th>Start Time</th>
                         <th>Completed</th>
-                        <th>Time Elapsed</th>
+                        <th className='p-5'>Time Elapsed</th>
                         <th>Score</th>
                     </tr>
                 </thead>

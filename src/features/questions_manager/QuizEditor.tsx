@@ -6,6 +6,7 @@ import { createQuiz, updateQuiz } from '../services/list';
 import { useAxiosFetch } from './useAxiosFetch';
 import { QuizProps } from './types';
 import { useRootUrl } from '../../contexts/root_url';
+import { VideoSegmentProps } from './types';
 
 export default function QuizEditor(props: any) {
 
@@ -15,7 +16,13 @@ export default function QuizEditor(props: any) {
       const [unitId, setUnitId] = useState('')
       const navigate = useNavigate();
       const {rootUrl} = useRootUrl();
+
+      const [videoSegments, setVideoSegments] = useState<VideoSegmentProps[]>()
+
       const params = useParams<{categoryId: string, sub_categoryId: string, unit_id: string, quiz_id: string }>();
+
+    
+
        // console.log("HUUUUU quiz editor, params =", params)
         //
 //{categoryId: '6', sub_categoryId: '13', quiz_id: '146'}
@@ -37,6 +44,9 @@ export default function QuizEditor(props: any) {
                 setName(quiz.name)
                 setQuizNumber(quiz.quiz_number.toString())
                 setUnitId(quiz.unitId)
+                console.log("***** quiz video segments =", quiz.video_segments)
+                setVideoSegments(quiz.video_segments || [])
+                setVideoUrl(quiz.video_url || '')
             }
         },[quiz])
 
@@ -93,6 +103,20 @@ const update_quiz = () => {
                 <div className='mx-10 text-textColor1 mb-2'>Video URL
                     <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={videoUrl}
                     onChange={e => setVideoUrl(e.target.value)}></input>
+                </div>
+                <div>
+                {videoSegments && videoSegments.length > 0 && (
+                    <div className='mx-10 text-textColor1 mb-2'>
+                        <div>Video Segments:</div>
+                        <ul className='list-disc list-inside'>
+                            {videoSegments.map((segment, index) => (
+                                <li key={index}>
+                                    End: {segment.end_time}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
                 </div>
                 <div className='bg-bgColor1 text-textColor2 mb-2'>Unit ID:  {params.unit_id}</div>
                <div className='flex flex-row justify-start gap-2 mx-14'>

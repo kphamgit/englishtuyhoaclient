@@ -2,6 +2,13 @@ export interface ColumnProps {
     Header: string, accessor: string 
 }
 
+export interface VideoSegmentProps {
+    id: number,
+    duration: number,
+    end_time: string,
+    quizId: number
+}
+
 export interface DataRowProps {
     id: string,
     item_number: string,
@@ -67,6 +74,7 @@ export interface QuizProps {
   video_url?: string | undefined;
   unitId: string;
   question?: QuestionProps[]
+  video_segments?: VideoSegmentProps[] | undefined
 }
 
 export type QuestionProps = {

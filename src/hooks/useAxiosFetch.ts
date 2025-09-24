@@ -22,7 +22,7 @@ export const useAxiosFetch = <T>(props: {url: string, method: string, body? : {}
 
   useEffect(() => {
     console.log("useAxiosFetch rootUrl=", rootUrl)
-    console.log("useAxiosFetch props=", props)
+    console.log("useAxiosFetch props url=", props.url)
     const config: AxiosRequestConfig = {
       url: props.url,
       method: props.method, // or 'POST', 'PUT', 'DELETE', etc.
