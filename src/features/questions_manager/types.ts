@@ -5,6 +5,9 @@ export interface ColumnProps {
 export interface VideoSegmentProps {
     id: number,
     duration: number,
+    segment_number: number,
+    question_numbers: string,
+    start_time: string,
     end_time: string,
     quizId: number
 }
@@ -100,6 +103,7 @@ export type QuestionProps = {
   radio : RadioProps,
   speech_recognition : boolean
   button_cloze_options?: string,
+  videoSegmentId?: number
 }
 
 

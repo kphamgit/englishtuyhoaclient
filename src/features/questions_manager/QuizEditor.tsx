@@ -17,23 +17,11 @@ export default function QuizEditor(props: any) {
       const navigate = useNavigate();
       const {rootUrl} = useRootUrl();
 
+    
       const [videoSegments, setVideoSegments] = useState<VideoSegmentProps[]>()
 
       const params = useParams<{categoryId: string, sub_categoryId: string, unit_id: string, quiz_id: string }>();
 
-    
-
-       // console.log("HUUUUU quiz editor, params =", params)
-        //
-//{categoryId: '6', sub_categoryId: '13', quiz_id: '146'}
-        /*
-{
-    "categoryId": "6",
-    "sub_categoryId": "13",
-    "unit_id": "37",
-    "quiz_id": "146"
-}
-        */
         const url = `/quizzes/${params.quiz_id}`
        
         const { data: quiz,  } = useAxiosFetch<QuizProps>({ url: url, method: 'get' })
@@ -49,11 +37,6 @@ export default function QuizEditor(props: any) {
                 setVideoUrl(quiz.video_url || '')
             }
         },[quiz])
-
-
-     // useEffect(() => {
-      //  setSubCategoryId(params.sub_categoryId)
-     // }, [params.sub_categoryId])
      
 const handleCancel = () => {
     //navigate(`/categories/${params.sub_categoryId}/sub_categories/${params.unitId}`)
@@ -62,20 +45,13 @@ const handleCancel = () => {
    //navigate(`display_unit/${params.unitId}`)
 }
 
-/*
- name: req.body.name,
-    quiz_number: req.body.quiz_number,
-    disabled: disabled,
-    video_url: req.body.video_url,
-    unitId: req.body.unitId
-*/
-
 const update_quiz = () => {
     let quiz_params = {
         name: name,
         quiz_number: quizNumber,
         video_url: videoUrl,
-        unitId: params.unit_id
+        unitId: params.unit_id,
+        video_segments: videoSegments
     }
     updateQuiz(rootUrl, quiz?.id, quiz_params )
     .then(response => {
@@ -110,9 +86,67 @@ const update_quiz = () => {
                         <div>Video Segments:</div>
                         <ul className='list-disc list-inside'>
                             {videoSegments.map((segment, index) => (
-                                <li key={index}>
-                                    End: {segment.end_time}
-                                </li>
+                             <li key={index} className="mb-2">
+                             <div className="flex items-center gap-2">
+                               <span>Segment ID: {segment.id}</span>
+                               <input
+                                 className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-16 mx-1'
+                                 type="text"
+                                 value={segment.segment_number}
+                                 onChange={(e) => {
+                                   const updatedSegments = [...videoSegments];
+                                   updatedSegments[index] = {
+                                     ...updatedSegments[index],
+                                     segment_number: e.target.value === "" ? 0 : parseInt(e.target.value) , // Ensure segment_number is always a number
+                                   };
+                                   setVideoSegments(updatedSegments);
+                                 }}
+                                
+                               />
+                               <input
+                                 className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-24 mx-1'
+                                 type="text"
+                                 value={segment.start_time}
+                                 onChange={(e) => {
+                                   const updatedSegments = [...videoSegments];
+                                   updatedSegments[index] = {
+                                     ...updatedSegments[index],
+                                     start_time: e.target.value,
+                                   };
+                                   setVideoSegments(updatedSegments);
+                                 }}
+                                 placeholder="0:00"
+                               />
+                               <input
+                                 className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-24 mx-1'
+                                 type="text"
+                                 value={segment.end_time}
+                                 onChange={(e) => {
+                                   const updatedSegments = [...videoSegments];
+                                   updatedSegments[index] = {
+                                     ...updatedSegments[index],
+                                     end_time: e.target.value,
+                                   };
+                                   setVideoSegments(updatedSegments);
+                                 }}
+                                 placeholder="0:00"
+                               />
+                                <input
+                                 className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-24 mx-1'
+                                 type="text"
+                                 value={segment.question_numbers}
+                                 onChange={(e) => {
+                                   const updatedSegments = [...videoSegments];
+                                   updatedSegments[index] = {
+                                     ...updatedSegments[index],
+                                     question_numbers: e.target.value,
+                                   };
+                                   setVideoSegments(updatedSegments);
+                                 }}
+                                 placeholder="1"
+                               />
+                             </div>
+                           </li>
                             ))}
                         </ul>
                     </div>
@@ -128,3 +162,20 @@ const update_quiz = () => {
 }
 
 //<button className='bg-green-400 m-3 p-1' onClick={update_question}>Save question</button>
+/*
+              {videoSegments && videoSegments.length > 0 && (
+                    <div className='mx-10 text-textColor1 mb-2'>
+                        <div>Video Segments:</div>
+                        <ul className='list-disc list-inside'>
+                            {videoSegments.map((segment, index) => (
+                                <li key={index}>
+                                    Segment id: {segment.id},
+                                    Segment number: {segment.segment_number},
+                                    Start: {segment.start_time},
+                                    End: {segment.end_time}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+*/

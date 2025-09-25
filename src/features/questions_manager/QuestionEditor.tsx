@@ -37,6 +37,7 @@ export default function QuestionEditor(props: any) {
       const [radioContent, setRadioContent] = useState<RadioProps | undefined>()
       const [wordScrambleDirection, setwordScrambleDirection] = useState<string>('');
       const [timeLimit, setTimeLimit] = useState('')
+      
 
       //kpham Typescript lesson: learned how to type an object as a dictionary 12/16/2024
       const formatConversion: { [key: string]: string } = {"1": 'Cloze', "2": "Button Cloze Select", "3": 'Button Select', 
@@ -89,6 +90,7 @@ export default function QuestionEditor(props: any) {
         setAnswerKey(question.answer_key)
         setTimeLimit(question.timeout.toString())
         setScore(question.score)
+        
         //if (question.radio != null) {
            // setRadioContent(question.content ? question.radio : undefined)
        // }

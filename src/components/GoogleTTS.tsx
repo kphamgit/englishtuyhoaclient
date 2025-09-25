@@ -17,7 +17,7 @@ export default function GoogleTTS({ text }: { text: string }) {
             //const url = 'http://localhost:5001/api/tts/text_to_speech'
             ///api/google_tts/text_to_speech',
             const url = `${rootUrl}/api/google_tts/text_to_speech`
-            console.log("GoogleTTS, playAudio url = ", url)
+            //console.log("GoogleTTS, playAudio url = ", url)
             //console.log("playAudio question.audio_str = ", question?.audio_str)
             const response = await axios.post(url,{
                 text: text,
