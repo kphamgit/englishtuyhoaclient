@@ -68,8 +68,8 @@ export default function AllQuizzes() {
               const unit_id = full_path.data.unit.id
               const sub_category_id = full_path.data.sub_category.id
               const category_id = full_path.data.category.id
-              //console.log(`http://localhost:5173/categories/${category_id}/sub_categories/${sub_category_id}/display_unit/${unit_id}/questions/${quiz_id}`);
-              const quiz_route = `/categories/${category_id}/sub_categories/${sub_category_id}/display_unit/${unit_id}/questions/${quiz_id}`
+              //console.log(`http://localhost:5173/categories/${category_id}/sub_categories/${sub_category_id}/list_quizzes/${unit_id}/questions/${quiz_id}`);
+              const quiz_route = `/categories/${category_id}/sub_categories/${sub_category_id}/list_quizzes/${unit_id}/questions/${quiz_id}`
               navigate(quiz_route)
            })
       }

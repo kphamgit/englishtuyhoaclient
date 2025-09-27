@@ -139,7 +139,7 @@ export default function QuestionEditor(props: any) {
                 
                 updateQuestion(rootUrl, question?.id, {...question_params, button_cloze_options} )
                 .then(response => {
-                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
+                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
                     navigate(url)
                  })
                     
@@ -158,7 +158,7 @@ export default function QuestionEditor(props: any) {
                 
                 updateQuestion(rootUrl, question?.id, my_params )
                 .then(response => {
-                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
+                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
                     navigate(url)
                  })
                  
@@ -173,7 +173,7 @@ export default function QuestionEditor(props: any) {
                 //console.log("MMMMMM my_params=", my_params)
                 updateQuestion(rootUrl, question?.id, my_params)
                     .then(response => {
-                        const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
+                        const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
                         navigate(url)
                     })
 
@@ -185,7 +185,7 @@ export default function QuestionEditor(props: any) {
                 //console.log("MMMMMM radio_params=", res)
                 updateQuestion(rootUrl, question?.id, my_params )
                 .then(response => {
-                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
+                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
                     navigate(url)
                  })
             }
@@ -194,7 +194,7 @@ export default function QuestionEditor(props: any) {
            // console.log("Update question!!!")
             updateQuestion(rootUrl, params.question_id, question_params)
                 .then(response => {
-                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
+                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
                     //console.log("XXXXX UTL", url)
                     navigate(url)
                 })
@@ -203,7 +203,7 @@ export default function QuestionEditor(props: any) {
     }
     
     const handleCancel = () => {
-        const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
+        const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
         //console.log("XXXXX UTL", url)
         navigate(url)
     }

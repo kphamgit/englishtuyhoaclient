@@ -49,7 +49,7 @@ export default function ListQuestions(props:any) {
             { Header: 'Extra Link', accessor: 'extra_link' },
           ];
         
-//http://localhost:5173/categories/2/sub_categories/15/display_unit/42/questions/155/take_question/5069
+//http://localhost:5173/categories/2/sub_categories/15/list_quizzes/42/questions/155/take_question/5069
            const { data: quiz } = useAxiosFetch<QuizProps>({ url: url, method: 'get' })
 
             useEffect(() => {

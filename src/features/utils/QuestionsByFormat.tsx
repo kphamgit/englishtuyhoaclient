@@ -80,7 +80,7 @@ export default function QuestionsByFormat() {
             //console.log('Sub-category fetched, data:', sub_category.data);
             category_id = sub_category.data.categoryId;
             //console.log(" unit_id = ", unit_id, ", sub_category_id = ", sub_category_id, ", category_id = ", category_id);
-            const react_router_str = `categories/${category_id}/sub_categories/${sub_category_id}/display_unit/${unit_id}/questions/${quiz_id}`;
+            const react_router_str = `categories/${category_id}/sub_categories/${sub_category_id}/list_quizzes/${unit_id}/questions/${quiz_id}`;
             //console.log("react_router_str = ", react_router_str);
             navigate('/' + react_router_str); 
             setRouteToQuizQuestions(react_router_str);

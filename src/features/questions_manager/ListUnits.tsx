@@ -50,7 +50,7 @@ import { ColumnProps, DataRowProps, UnitProps } from './types';
                         clone_button: "", 
                         delete_button: "",
                         move_button: "",
-                        extra_link: `display_unit/${unit.id}*Quizzes`,
+                        extra_link: `list_quizzes/${unit.id}*Quizzes`,
                         data_type: "unit"
                         }
               })

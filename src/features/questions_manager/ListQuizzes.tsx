@@ -1,0 +1,258 @@
+//import { useAxiosFetch } from '../components/services/useAxiosFetch';
+import { useAxiosFetch } from '../../hooks';
+//import { QuestionProps } from '../components/Question';
+import { useEffect, useState } from 'react';
+import { Link, Outlet, useNavigate, useParams } from 'react-router-dom';
+import { createColumnHelper, getCoreRowModel, getSortedRowModel , SortingState} from '@tanstack/table-core';
+import { flexRender, useReactTable } from '@tanstack/react-table';
+import { UnitProps } from './types';
+import NewQuiz, { CreateQuizProps } from './NewQuiz';
+import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
+import { useRootUrl } from '../../contexts/root_url';
+
+
+const queryClient = new QueryClient();  
+
+//{ id: string; question_number: number; format: number; content: string; answer_key: string; }[] | undefined' 
+export default function ListQuizzes(props:any) {
+  const params = useParams<{ categoryId: string, sub_categoryId: string, unit_id: string}>();
+  //console.log("***** params = ", params)
+  //const url = `units/${params.unit_id}`;
+  const [enabledFetchUnit, setEnabledFetchUnit] = useState(true)
+
+const { rootUrl } = useRootUrl();
+
+
+
+const {data: unit} = useQuery({
+  queryKey: ['unit', params.unit_id],
+  queryFn: async () => {
+    console.log("Fetching unit data for unit_id:", params.unit_id);
+    const url = `${rootUrl}/api/units/${params.unit_id}`;
+    //console.log("url =", url)
+    console.log("Query key:", ['unit', params.unit_id]);
+    
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json() as Promise<UnitProps>;
+  },
+  //enabled: !!params.unit_id, // Only run the query if unit_id is available
+  enabled:  !!params.unit_id, // Only run the query if unit_id is available
+  //staleTime: 5 * 60 * 1000, // 5 minutes
+  staleTime: 0  // 5 minutes
+  // if the query is accessed again within 5 minutes, 
+  // it will use the cached data
+  // if the query is accessed after 5 minutes, React Query will consider the data to be
+  // stale and will refetch it in the background
+});
+
+
+//const { data: unit, loading, error } = useAxiosFetch<UnitProps>({ url: url, method: 'get' })
+//console.log("***** quizzes = ", unit?.quizzes)
+
+const [createNewQuiz, setCreateNewQuiz] = useState(false)
+
+const [sorting, setSorting] = useState<SortingState>([]);
+
+ const columnHelper = createColumnHelper<any>();
+
+const columns = [
+  columnHelper.accessor('id', {
+    header: () => <span className='flex items-center'>Id</span>,
+    cell: info => info.getValue(),
+  }),
+  columnHelper.accessor('name', {
+    header: () => <span className='flex items-center'>Name</span>,
+    cell: info => info.getValue(),
+  }),
+  columnHelper.accessor('quiz_number', {
+    header: () => <span className='flex items-center'>Quiz Number</span>,
+    cell: info => info.getValue(),
+  }),
+  columnHelper.accessor('video_url', {
+    header: () => <span className='flex items-center'>Video URL</span>,
+    cell: info => info.getValue(),
+  }),
+  columnHelper.accessor('edit', {
+    header: () => <span className='flex items-center'>Edit</span>,
+    cell: info => (
+      <Link className='italic text-blue-300' to={`edit_quiz/${info.row.original.id}`}>Edit</Link>
+    )
+  }),
+  columnHelper.accessor('delete', {
+    header: () => <span className='flex items-center'>Delete</span>,
+    cell: info => (
+      <button
+      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+      onClick={() => deleteQuiz(info.row.original.id)}
+    >
+      Delete
+    </button>
+    )
+  }),
+  columnHelper.accessor('questions', {
+    header: () => <span className='flex items-center'>Questions</span>,
+    cell: info => (
+      <Link className='italic text-blue-300' to={`edit_quiz/${info.row.original.id}`}>Questions</Link>
+    )
+  }),
+  columnHelper.accessor('assign', {
+    header: () => <span className='flex items-center'></span>,
+    cell: info => (
+      <button
+      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+      onClick={() => alert(`/sub_categories/${params.sub_categoryId}/take_quiz/${info.row.original.id}` + " " + info.row.original.name)}
+    >
+      Assign
+    </button>
+    )
+  }),
+]
+
+//router.delete("/:id", quizzes.delete);
+//https://www.englishtuyhoa.com/categories/4/sub_categories/9/edit_quiz/120
+
+  const table = useReactTable({
+      data: unit?.quizzes || [],
+      columns: columns,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      state: {
+        sorting: sorting,
+      },
+      onSortingChange: setSorting,
+     })
+
+     console.log("table sorting state = ", table.getState().sorting)
+     
+     const createQuiz = async ({ name, quiz_number, video_url, unitId, video_segments }: CreateQuizProps) => {
+      console.log("createQuiz called with:", { name, quiz_number, video_url, unitId, video_segments });
+      //console.log("Quiz Name:", name);
+      //console.log("Quiz Number:", quiz_number);
+      //console.log("Video URL:", video_url);
+      //console.log("Unit ID:", unitId);
+      //console.log("Video Segments:", video_segments);
+      //${rootUrl}/api/quizzes`
+      const response = await fetch(`${rootUrl}/api/quizzes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: name,
+          quiz_number: quiz_number,
+          video_url: video_url,
+          unitId: unitId,
+          video_segments: video_segments
+        }),
+      });
+      return response.json();
+  
+      // Perform additional logic with the properties
+  };
+
+     //const onQuizCreated = async (create_quiz_props : CreateQuizProps) => {
+     const onQuizCreated = async ({ name, quiz_number, video_url, unitId, video_segments }: CreateQuizProps) => {
+      //console.log("Quiz Name:", name);
+      //console.log("Quiz Number:", quiz_number);
+      //console.log("Video URL:", video_url);
+      //console.log("Unit ID:", unitId);
+      //console.log("Video Segments:", video_segments);
+      console.log("Calling mutate to create quiz")
+      mutate({ name, quiz_number, video_url, unitId, video_segments });
+      // Perform additional logic with the properties
+  };
+
+  const {mutate} = useMutation({
+    mutationFn: createQuiz,
+    onSuccess: (data) => {
+      console.log("Successfully created quiz:", data);
+      // Invalidate and refetch
+      console.log("All queries in cache:", queryClient.getQueryCache().getAll());
+      console.log("In mutate, Query key:", ['unit', params.unit_id]);
+      queryClient.invalidateQueries({ queryKey: ['unit', params.unit_id] });
+      setCreateNewQuiz(false)
+    },
+  
+  });
+
+  const deleteQuiz = async (quiz_id: string) => {
+    console.log("deleteQuiz called with quiz_id:", quiz_id);
+    const response = await fetch(`${rootUrl}/api/quizzes/${quiz_id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  };
+
+                     useEffect(() => {
+                      // Retrieve all rows from the table
+                      const rows = table.getRowModel().rows;
+                  
+                      // Extract the values of the "id" column
+                      const idColumnValues = rows.map((row) => row.original.id);
+                  
+                      console.log("Values of the 'id' column:", idColumnValues);
+                      // sent to server to update ids of quizzes in this unit
+                    }, [table, sorting]);
+
+   
+    return (
+      <div>
+          <div className='text-textColor1 p-2 flex flex-col justify-center text-xl mt-3 mb-3'>
+                 <table className='table-auto border-separate border border-slate-400 ...'>
+                   <thead className='bg-bgColor3 text-textColor1'>
+                     {table.getHeaderGroups().map(headerGroup => (
+                       <tr key={headerGroup.id}>
+                         {headerGroup.headers.map(header => (
+                        <th
+                        key={header.id}
+                        onClick={header.column.getToggleSortingHandler()}
+                        className="border border-slate-300 p-2"
+                      >
+                        <div>
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {header.column.getIsSorted() ? { asc: " ↑", desc: " ↓" }[header.column.getIsSorted() as "asc" | "desc"] : null}
+                        </div>
+                      </th>
+                         ))}
+                       </tr>
+                     ))}
+                   </thead>
+                   <tbody className='bg-bgColor1 text-textColor2'>
+                       {table.getRowModel().rows.map(row => (
+                         <tr key={row.id}>
+                           {row.getVisibleCells().map(cell => (
+                             <td key={cell.id} className='border border-slate-300 p-2'>
+                               {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                             </td>
+                           ))}
+                         </tr>
+                       ))}
+                   </tbody>
+                 </table>
+
+
+                 <div className='bg-bgColor2 text-textColor2 p-3'>
+                  <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
+                  onClick={() => setCreateNewQuiz(!createNewQuiz)}
+                  >
+                    {createNewQuiz ? 'Close New Quiz' : 'Create New Quiz'}
+                  </button>
+                  { createNewQuiz &&
+                    <NewQuiz categoryId={params.categoryId || ''} sub_categoryId={params.sub_categoryId || ''} unit_id={params.unit_id || ''} parent_func={onQuizCreated} />
+                  }
+                    </div>
+            </div>
+            <Outlet />
+            </div>
+    )
+      
+}
+
+//
+// <DataTable columns={columns} data={data} />

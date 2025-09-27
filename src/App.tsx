@@ -12,7 +12,7 @@ import FileUpload from "./features/utils/FileUpload";
 import OrphanQuestionsManager  from "./features/utils/OrphanQuestionsManager";
 import { Utils } from "./features/utils/Utils";
 import NewUnit from "./features/questions_manager/NewUnit";
-import DisplayUnit from "./features/questions_manager/DisplayUnit";
+import DisplayUnit from "./features/questions_manager/ListQuizzes";
 import NewQuiz from "./features/questions_manager/NewQuiz";
 import QuizEditor from "./features/questions_manager/QuizEditor";
 //import UsersManager from "./features/components/UsersManager";
@@ -26,11 +26,10 @@ import { EditSubCategory } from "./features/components/EditSubCategory";
 import QuestionsByFormat from "./features/utils/QuestionsByFormat";
 import AllQuizzes from "./features/utils/AllQuizzes";
 import { RootUrlProvider } from "./contexts/root_url";
-//import CategoryPage from "./pages/CategoryPage";
-//import { QuizAttemptsManager } from "./features/components/QuizAttemptsManager";
-//import { S3ObjectsManager } from "./features/components/S3ObjectsManager";
-//import { ListQuestions } from "./features/questions_manager/ListQuestions";
-//import QuestionCreator from "./features/questions_manager/QuestionCreator";
+import ListQuizzes from "./features/questions_manager/ListQuizzes";
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 
 const Home = lazy(() => import("./home_page/components/Home"))
 
@@ -56,6 +55,8 @@ function App() {
     //const {socket, uid, users, user_uuids} = useContext(SocketContext).SocketState;
     const [auth, setAuth] = useState(getAuthFromSessionStorage());
 
+    const queryClient = new QueryClient();
+    
       const onLogin = (userToken: string) => {
         setAuth(userToken)
         //also persits auth state in session Storage so that user is still logged after a page refresh
@@ -79,9 +80,10 @@ function App() {
     }
 
     //get_questions_by_format
-    //matched location "/categories/6/sub_categories/13/display_unit/37/edit_quiz/146
+    //matched location "/categories/6/sub_categories/13/list_quizzes/37/edit_quiz/146
   return (
     <>
+    <QueryClientProvider client={queryClient}>
     <RootUrlProvider>
       <SocketContextComponent>
         <Suspense fallback={<div>Loading...</div>}>
@@ -94,12 +96,12 @@ function App() {
                   <Route path="edit_category" element={<EditCategory />} ></Route>
                   <Route path="sub_categories/:sub_categoryId" element={<ListUnits />} />
                   <Route path="sub_categories/new_sub_category" element={<NewSubCategory />} ></Route>
-                  <Route path="sub_categories/:sub_categoryId/display_unit/:unit_id" element={<DisplayUnit />} >
+                  <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id" element={<ListQuizzes />} >
                     <Route path="questions/:quiz_id" element={<ListQuestions />} />
-                    <Route path="create_quiz" element={<NewQuiz />} />
+                    
                   </Route>
                   <Route path="sub_categories/:sub_categoryId/edit" element={<EditSubCategory />} />
-                  <Route path="sub_categories/:sub_categoryId/edit_quiz/:quiz_id" element={<QuizEditor />} />
+                  <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/edit_quiz/:quiz_id" element={<QuizEditor />} />
                   <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/questions/:quiz_id/edit_question/:question_id" element={<QuestionEditor />} />
                   <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/questions/:quiz_id/take_question/:question_number" element={<QuestionEditor />} />
                   <Route path="sub_categories/:sub_categoryId/create_unit" element={<NewUnit />} />
@@ -130,12 +132,13 @@ function App() {
         </Suspense>
       </SocketContextComponent>
       </RootUrlProvider>
+      </QueryClientProvider>
     </>
   );
 
 }
 //react-router-dom.js?v=ca023ebc:226 No routes matched location "/categories/1/sub_categories/7/list_units/list_quizzes/17" 
-////http://localhost:5173/categories/2/sub_categories/15/display_unit/42/questions/155/take_question/5069
+////http://localhost:5173/categories/2/sub_categories/15/list_quizzes/42/questions/155/take_question/5069
 
 //http://localhost:5173/categories/2/sub_categories/15/list_quizzes/42/questions/155/edit_question/3602
 

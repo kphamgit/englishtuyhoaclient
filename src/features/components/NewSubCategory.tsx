@@ -20,7 +20,7 @@ const create_sub_category = () => {
     .then(response => {
         console.log("SUCCESS creating sub_category")
         //navigate("/live_quiz", { state: arg })
-       // navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}`)
+       // navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}`)
         //ocalhost:5173/categories/1/sub_categories/7
      })
     .catch(error => {

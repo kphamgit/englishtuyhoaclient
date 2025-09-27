@@ -40,9 +40,9 @@ export default function QuizEditor(props: any) {
      
 const handleCancel = () => {
     //navigate(`/categories/${params.sub_categoryId}/sub_categories/${params.unitId}`)
-    // const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${params.unit_id}/questions/${params.quiz_id}`
-    navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${unitId}`)
-   //navigate(`display_unit/${params.unitId}`)
+    // const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+    navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${unitId}`)
+   //navigate(`list_quizzes/${params.unitId}`)
 }
 
 const update_quiz = () => {
@@ -57,7 +57,7 @@ const update_quiz = () => {
     .then(response => {
         //console.log("SUCCESS updating question")
         //navigate("/live_quiz", { state: arg })
-        navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/display_unit/${unitId}`)
+        navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${unitId}`)
         //ocalhost:5173/categories/1/sub_categories/7
      })
     .catch(error => {
