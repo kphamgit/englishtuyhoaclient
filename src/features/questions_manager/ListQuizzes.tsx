@@ -95,7 +95,7 @@ const columns = [
   columnHelper.accessor('questions', {
     header: () => <span className='flex items-center'>Questions</span>,
     cell: info => (
-      <Link className='italic text-blue-300' to={`edit_quiz/${info.row.original.id}`}>Questions</Link>
+      <Link className='italic text-blue-300' to={`questions/${info.row.original.id}`}>Questions</Link>
     )
   }),
   columnHelper.accessor('assign', {
