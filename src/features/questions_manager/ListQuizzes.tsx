@@ -1,7 +1,7 @@
 //import { useAxiosFetch } from '../components/services/useAxiosFetch';
 import { useAxiosFetch } from '../../hooks';
 //import { QuestionProps } from '../components/Question';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, Outlet, useNavigate, useParams } from 'react-router-dom';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel , SortingState} from '@tanstack/table-core';
 import { flexRender, useReactTable } from '@tanstack/react-table';
@@ -9,6 +9,7 @@ import { UnitProps } from './types';
 import NewQuiz, { CreateQuizProps } from './NewQuiz';
 import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { useRootUrl } from '../../contexts/root_url';
+import { use } from 'framer-motion/client';
 
 
 const queryClient = new QueryClient();  
@@ -19,6 +20,7 @@ export default function ListQuizzes(props:any) {
   //console.log("***** params = ", params)
   //const url = `units/${params.unit_id}`;
   const [enabledFetchUnit, setEnabledFetchUnit] = useState(true)
+  const [quizzes, setQuizzes] = useState<any[]>([])
 
 const { rootUrl } = useRootUrl();
 
@@ -48,6 +50,12 @@ const {data: unit} = useQuery({
   // stale and will refetch it in the background
 });
 
+useEffect(() => {
+  if (unit) {
+    console.log("Unit data updated:", unit);
+    setQuizzes(unit.quizzes || []);
+  }
+}, [unit]);
 
 //const { data: unit, loading, error } = useAxiosFetch<UnitProps>({ url: url, method: 'get' })
 //console.log("***** quizzes = ", unit?.quizzes)
@@ -69,7 +77,35 @@ const columns = [
   }),
   columnHelper.accessor('quiz_number', {
     header: () => <span className='flex items-center'>Quiz Number</span>,
-    cell: info => info.getValue(),
+      cell: info => {
+          const initialValue = info.getValue();
+          const rowIndex = info.row.index; // Get the row index
+          const [value, setValue] = useState(initialValue);
+          const inputRef = useRef<HTMLInputElement>(null);
+          const onBlur = () => {
+            //console.log(`Updated cell value for ${info.column.id} in row ${info.row.index}: ${value}`);
+          setQuizzes(prev => {
+          const updatedSegments = [...prev];
+          updatedSegments[rowIndex] = {
+            ...updatedSegments[rowIndex],
+            quiz_number: value, // Update the segment_number
+          };
+          //console.log("Updated row:", updatedSegments[rowIndex]);
+          return updatedSegments;
+        });
+    
+          };
+          return (
+            <div className='flex items-center'>
+            <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-16 mx-1'
+            ref={inputRef} // Attach the ref to the input field
+              value={value}
+              onChange={e => setValue(e.target.value)}
+              onBlur={onBlur}
+            />
+            </div>
+          );
+        },
   }),
   columnHelper.accessor('video_url', {
     header: () => <span className='flex items-center'>Video URL</span>,
@@ -116,7 +152,7 @@ const columns = [
 //https://www.englishtuyhoa.com/categories/4/sub_categories/9/edit_quiz/120
 
   const table = useReactTable({
-      data: unit?.quizzes || [],
+      data: quizzes || [],
       columns: columns,
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
@@ -238,6 +274,7 @@ const columns = [
                  </table>
 
                  <div className='bg-bgColor2 text-textColor2 p-3'>
+
                   <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
                   onClick={() => setCreateNewQuiz(!createNewQuiz)}
                   >

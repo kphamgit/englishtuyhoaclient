@@ -17,7 +17,7 @@ interface ListVideoSegmentsProps {
     quiz_id: string | undefined
 }
  
-export default function ListVideoSegments({ videoSegments, quiz_id }: { videoSegments: VideoSegmentProps[] | undefined , quiz_id: string | undefined}) {
+export default function ListVideoSegments({ videoSegments, quiz_id }: { videoSegments: VideoSegmentProps[] | undefined , quiz_id?: string | undefined}) {
 
   const [video_segments, setVideoSegments] = useState<VideoSegmentProps[]>(
     videoSegments || []
