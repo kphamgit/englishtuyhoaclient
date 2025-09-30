@@ -1,25 +1,16 @@
 //import { useAxiosFetch } from '../components/services/useAxiosFetch';
-import { useAxiosFetch } from '../../hooks';
+
 //import { QuestionProps } from '../components/Question';
 import { useEffect, useRef, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel , SortingState} from '@tanstack/table-core';
 import { flexRender, useReactTable } from '@tanstack/react-table';
 
-import { useMutation } from '@tanstack/react-query';
 import { useRootUrl } from '../../contexts/root_url';
 import { VideoSegmentProps } from './types';
-import { get } from 'http';
 
-interface CreateVideoSegmentProps {
-    id?: number,
-    duration: number,
-    segment_number: number,
-    question_numbers: string,
-    start_time: string,
-    end_time: string,
-    quizId: number
-}
+
+
 
 interface ListVideoSegmentsProps {
     videoSegments: VideoSegmentProps[] | undefined
@@ -168,7 +159,7 @@ const columns = [
       const [value, setValue] = useState(initialValue);
       const inputRef = useRef<HTMLInputElement>(null);
       const onBlur = () => {
-        console.log(`Updated cell value for ${info.column.id} in row ${info.row.index}: ${value}`);
+       // console.log(`Updated cell value for ${info.column.id} in row ${info.row.index}: ${value}`);
       setVideoSegments(prev => {
       const updatedSegments = [...prev];
       updatedSegments[rowIndex] = {
@@ -221,7 +212,7 @@ const columns = [
       className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
       onClick={(e) => {
         // Trigger the onBlur event for the input field
-        console.log(" inputElement exists, onBlur triggered", row.original)
+        //console.log(" inputElement exists, onBlur triggered", row.original)
         //console.log(" event target", e.target)
         updateVideoSegment(row.original, e)
       }}
@@ -246,9 +237,9 @@ const columns = [
 ]
 
 const updateVideoSegment = async (videoSegment: VideoSegmentProps, e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log("updateVideoSegment called with videoSegment:", videoSegment);
+    //console.log("updateVideoSegment called with videoSegment:", videoSegment);
     const htmlEl = e.target as HTMLElement;
-    console.log(" event target", htmlEl.innerText)
+    //console.log(" event target", htmlEl.innerText)
     const method = videoSegment.id ? 'PUT' : 'POST';
     const url = videoSegment.id ? `${rootUrl}/api/video_segments/${videoSegment.id}` : `${rootUrl}/api/video_segments`;
     const response = await fetch(url, {
@@ -259,7 +250,7 @@ const updateVideoSegment = async (videoSegment: VideoSegmentProps, e: React.Mous
       body: JSON.stringify(videoSegment),
     });
     const data = await response.json();
-    console.log("Successfully updated/created video segment:", data);
+    //console.log("Successfully updated/created video segment:", data);
     if (!videoSegment.id) {
       // If it was a new segment, update the local state with the new ID from the server
       setVideoSegments(prev => prev.map(vs => vs === videoSegment ? data : vs));
@@ -271,7 +262,7 @@ const updateVideoSegment = async (videoSegment: VideoSegmentProps, e: React.Mous
 }
 
 const deleteVideoSegment = async (id: string) => {
-  console.log("deleteVideoSegment called with id:", id);
+  //console.log("deleteVideoSegment called with id:", id);
   const url = `${rootUrl}/api/video_segments/${id}`;
   const response = await fetch(url, {
     method: "DELETE",
@@ -280,7 +271,7 @@ const deleteVideoSegment = async (id: string) => {
     },
   });
   const data = await response.json();
-  console.log("Successfully remove video segment:", data);
+  //console.log("Successfully remove video segment:", data);
   // Remove the deleted segment from local state
   setVideoSegments(prev => prev.filter(vs => vs.id !== parseInt(id)));
 }
@@ -310,57 +301,11 @@ const deleteVideoSegment = async (id: string) => {
      })
 
      //console.log("****** table header Groups = ", table.getHeaderGroups())
-  
-     const createVideoSegment = async ({ duration, segment_number, question_numbers, start_time, end_time }: CreateVideoSegmentProps) => {
-    
-      const response = await fetch(`${rootUrl}/api/quizzes`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          duration,
-          segment_number,
-          question_numbers,
-          start_time,
-          end_time,
-          quizId: video_segments && video_segments.length > 0 ? video_segments[0].quizId : 0
-        }),
-      });
-      return response.json();
-  
-      // Perform additional logic with the properties
-  };
-
   const getColumnValues = (columnId: string): unknown[] => {
     return table.getRowModel().rows.map(row => row.getValue(columnId));
   };
 
-  /*
-  const myColumnValues = getColumnValues('segment_number'); // Replace 'yourColumnId' with the actual ID
-  console.log(myColumnValues);
-*/
-
-  const {mutate} = useMutation({
-    mutationFn: createVideoSegment,
-    onSuccess: (data) => {
-      console.log("Successfully created quiz:", data);
-      // Invalidate and refetch
-      setCreateNewVideoSegment(false)
-    },
   
-  });
-
-  const deleteQuiz = async (quiz_id: string) => {
-    console.log("deleteQuiz called with quiz_id:", quiz_id);
-    const response = await fetch(`${rootUrl}/api/quizzes/${quiz_id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    return response.json();
-  };
 
                      useEffect(() => {
                       // Retrieve all rows from the table
@@ -369,7 +314,7 @@ const deleteVideoSegment = async (id: string) => {
                       // Extract the values of the "id" column
                       const idColumnValues = rows.map((row) => row.original.id);
                   
-                      console.log("Values of the 'id' column:", idColumnValues);
+                      //console.log("Values of the 'id' column:", idColumnValues);
                       // sent to server to update ids of quizzes in this unit
                     }, [table, sorting]);
 
@@ -382,7 +327,6 @@ const deleteVideoSegment = async (id: string) => {
         //console.log(`Row ${index}:`, row.original);
         // use fetch to save one row at a time to the server
         //const rows = table.getRowModel().rows;
-        console.log("stringified rows to server:", JSON.stringify(rows) );
         
         const update_url = `${rootUrl}/api/video_segments/batch_update`;
         fetch(update_url, {
@@ -483,18 +427,18 @@ const deleteVideoSegment = async (id: string) => {
                   onClick={() => {
                     // save all segment numbers to segmentNumbers state
                     const segment_numbers: number[] = getColumnValues('segment_number') as number[]; 
-                    console.log(" segment_numbers length:", segment_numbers.length);
+                    //console.log(" segment_numbers length:", segment_numbers.length);
                    // getColumnValues('segment_number').forEach((row, index) => {
                     //  console.log(row);
                    // })
                    for (let i = 0; i < segment_numbers.length; i++) {
-                    console.log(`Segment number at index ${i}:`, segment_numbers[i]);
+                    //console.log(`Segment number at index ${i}:`, segment_numbers[i]);
                       segment_numbers[i] = i
                    }
                     //segment_numbers.sort((a:number, b: number) => a - b);
-                    console.log("new Segment Numbers:", segment_numbers);
+                    //console.log("new Segment Numbers:", segment_numbers);
                     setVideoSegments(prev => {
-                      console.log("Updating video segments with new segment numbers");
+                      //console.log("Updating video segments with new segment numbers");
                       const updatedSegments = prev.map((segment, index) => ({
                         ...segment,
                         segment_number: segment_numbers[index],
