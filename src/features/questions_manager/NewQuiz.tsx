@@ -39,7 +39,9 @@ const create_quiz = () => {
 
   
         return (
+            
             <div className='bg-bgColor1 text-textColor2'>
+              <button className='bg-bgColor2 m-3 p-1' onClick={create_quiz}>Save Quiz</button>
                 <div className='bg-bgColor1 text-textColor2 mb-2'>New Quiz</div>
                <div className='mx-10 text-textColor1 mb-2'>Name
                     <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={name}
@@ -54,7 +56,7 @@ const create_quiz = () => {
                     onChange={e => setVideoUrl(e.target.value)}></input>
                 </div>
                 <div className='bg-bgColor1 text-textColor2 mb-2'>Unit ID:  {props.unit_id}</div>
-                <button className='bg-bgColor2 m-3 p-1' onClick={create_quiz}>Create Quiz</button>
+                
             </div>
         )
 }

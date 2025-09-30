@@ -418,11 +418,7 @@ const deleteVideoSegment = async (id: string) => {
 
 
                  <div className='bg-bgColor2 text-textColor2 p-3'>
-                  <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
-                  onClick={() => setCreateNewVideoSegment(!createNewVideoSegment)}
-                  >
-                    {createNewVideoSegment ? 'Close New Quiz' : 'Create New Quiz'}
-                  </button>
+               
                   <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
                   onClick={() => {
                     // save all segment numbers to segmentNumbers state

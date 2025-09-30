@@ -77,35 +77,7 @@ const columns = [
   }),
   columnHelper.accessor('quiz_number', {
     header: () => <span className='flex items-center'>Quiz Number</span>,
-      cell: info => {
-          const initialValue = info.getValue();
-          const rowIndex = info.row.index; // Get the row index
-          const [value, setValue] = useState(initialValue);
-          const inputRef = useRef<HTMLInputElement>(null);
-          const onBlur = () => {
-            //console.log(`Updated cell value for ${info.column.id} in row ${info.row.index}: ${value}`);
-          setQuizzes(prev => {
-          const updatedSegments = [...prev];
-          updatedSegments[rowIndex] = {
-            ...updatedSegments[rowIndex],
-            quiz_number: value, // Update the segment_number
-          };
-          //console.log("Updated row:", updatedSegments[rowIndex]);
-          return updatedSegments;
-        });
-    
-          };
-          return (
-            <div className='flex items-center'>
-            <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-16 mx-1'
-            ref={inputRef} // Attach the ref to the input field
-              value={value}
-              onChange={e => setValue(e.target.value)}
-              onBlur={onBlur}
-            />
-            </div>
-          );
-        },
+    cell: info => info.getValue(),
   }),
   columnHelper.accessor('video_url', {
     header: () => <span className='flex items-center'>Video URL</span>,
@@ -240,6 +212,7 @@ const columns = [
    
     return (
       <div>
+          
           <div className='text-textColor1 p-2 flex flex-col justify-center text-xl mt-3 mb-3'>
                  <table className='table-auto border-separate border border-slate-400 ...'>
                    <thead className='bg-bgColor3 text-textColor1'>
@@ -272,19 +245,20 @@ const columns = [
                        ))}
                    </tbody>
                  </table>
+              
+          <div className='bg-bgColor2 text-textColor2 p-3'>
 
-                 <div className='bg-bgColor2 text-textColor2 p-3'>
-
-                  <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
-                  onClick={() => setCreateNewQuiz(!createNewQuiz)}
-                  >
-                    {createNewQuiz ? 'Close New Quiz' : 'Create New Quiz'}
-                  </button>
-                  { createNewQuiz &&
-                    <NewQuiz categoryId={params.categoryId || ''} sub_categoryId={params.sub_categoryId || ''} unit_id={params.unit_id || ''} parent_func={onQuizCreated} />
-                  }
-                    </div>
+          <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
+              onClick={() => setCreateNewQuiz(!createNewQuiz)}
+            >
+              {createNewQuiz ? 'Cancel' : 'Create New Quiz'}
+            </button>
+            {createNewQuiz &&
+              <NewQuiz categoryId={params.categoryId || ''} sub_categoryId={params.sub_categoryId || ''} unit_id={params.unit_id || ''} parent_func={onQuizCreated} />
+            }
+          </div>
             </div>
+          
             <Outlet />
             </div>
     )
