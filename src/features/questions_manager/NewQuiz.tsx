@@ -1,9 +1,5 @@
 import {  useState } from 'react'
-
-
 import { useNavigate } from 'react-router-dom';
-import { createQuiz } from '../services/list';
-import { useRootUrl } from '../../contexts/root_url';
 import { VideoSegmentProps } from './types';
 
 export interface NewQuizProps {
@@ -26,16 +22,11 @@ export default function NewQuiz(props: NewQuizProps) {
       const [name, setName] = useState<string>('')
       const [quizNumber, setQuizNumber] = useState<string | undefined>('')
       const [videoUrl, setVideoUrl] = useState<string | undefined>('')
-
-      const navigate = useNavigate();
-      //const props = useprops<{categoryId: string, sub_categoryId: string, unit_id: string }>();
-        //console.log("HUUUUU props =", props)
-
-      const [videoSegments, setVideoSegments] = useState<VideoSegmentProps[]>([{id: 1, duration: 0, segment_number: 0, question_numbers: '1', start_time: '0:00', end_time: '0:10', quizId: 0}])
+      const [videoSegments, setVideoSegments] = useState<VideoSegmentProps[]>([{duration: 0, segment_number: 0, question_numbers: '1', start_time: '0:00', end_time: '0:10', quizId: 0}])
 
 
 const create_quiz = () => {
-    console.log("create quiz new .........")
+    //console.log("create quiz new .........")
     let quiz_props = {
         name: name,
         quiz_number: quizNumber,
@@ -48,7 +39,6 @@ const create_quiz = () => {
 
     const add_video_segment = () => {
         const newSegment: VideoSegmentProps = {
-            id: videoSegments.length + 1,
             duration: 0,
             segment_number: 0,
             question_numbers: '1',
@@ -84,7 +74,7 @@ const create_quiz = () => {
                             {videoSegments.map((segment, index) => (
                              <li key={index} className="mb-2">
                              <div className="flex items-center gap-2">
-                               <span>Segment ID: {segment.id}</span>
+                              
                                <input
                                  className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-16 mx-1'
                                  type="text"

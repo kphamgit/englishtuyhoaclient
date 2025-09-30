@@ -109,6 +109,7 @@ const columns = [
     </button>
     )
   }),
+ 
 ]
 
 //router.delete("/:id", quizzes.delete);
@@ -235,7 +236,6 @@ const columns = [
                        ))}
                    </tbody>
                  </table>
-
 
                  <div className='bg-bgColor2 text-textColor2 p-3'>
                   <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'

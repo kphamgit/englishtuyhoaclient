@@ -147,9 +147,19 @@ export async function createUser(rootUrl: string, params: any) {
 }
 
 export async function updateQuiz(rootUrl: string, id: string | undefined, params: any) {
-   
+  // enclose params.videoSegments in the body of the put request
+
   const url = `${rootUrl}/api/quizzes/${id}`
- // console.log("HEEXZXXXXXX url", url)
+  console.log("list.ts updateQuiz, url", url)
+  const response = await axios.put(url, params)
+  return response
+}
+
+export async function updateVideoSegment(rootUrl: string, id: string | undefined, params: any) {
+  // enclose params.videoSegments in the body of the put request
+
+  const url = `${rootUrl}/api/video_segments/${id}`
+  console.log("up video_segments, url", url)
   const response = await axios.put(url, params)
   return response
 }

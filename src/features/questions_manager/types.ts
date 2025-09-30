@@ -3,7 +3,7 @@ export interface ColumnProps {
 }
 
 export interface VideoSegmentProps {
-    id: number,
+    id?: number,
     duration: number,
     segment_number: number,
     question_numbers: string,
