@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 //import { renumberQuestions } from '../services/list';
 import DataTable from './data-table';
 import { DataRowProps, QuestionProps } from './types';
+import SortableTable from '../components/tanstackTableSortable/SortableTable';
 
 interface QuizProps {
     id: string;
@@ -95,6 +96,8 @@ export default function ListQuestions(props:any) {
 
   return (
     <>
+      <SortableTable />
+
       <div className='text-textColor1 p-2 flex flex-row justify-center text-xl mt-3 mb-3'>
         <div className='mr-10'>Quiz: {quiz?.name} </div>
       </div>
