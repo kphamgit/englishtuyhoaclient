@@ -14,13 +14,24 @@ import { arrayMove, useSortable } from '@dnd-kit/sortable';
 
 import GenericSortableTable from './GenericSortableTable';
 
+export interface genericItemType {
+  itemId: string;
+  item_number: string;
+}
 
+export interface ShortQuizProps extends genericItemType {
+  name?: string;
+  video_url?: string;
+}
+
+/*
 export type ShortQuizProps = {
   itemId: string;
   name: string;
   quiz_number: string;
   video_url?: string;
 }
+*/
 
 const queryClient = new QueryClient();  
 
@@ -80,7 +91,7 @@ useEffect(() => {
       (unit.quizzes || []).map(quiz => ({
         itemId: quiz.id,
         name: quiz.name,
-        quiz_number: quiz.quiz_number.toString(),
+        item_number: quiz.quiz_number.toString(),
         video_url: quiz.video_url,
       }))
     );
@@ -179,7 +190,7 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
       cell: (info) => info.getValue(),
     },
     {
-      accessorKey: "quiz_number",
+      accessorKey: "item_number",
       header: "Quiz Number",
     },
     {
@@ -300,7 +311,7 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
    
   return (
     <>
-     <GenericSortableTable quiz_data = {quizzes} renumberedColumnId = "quiz_number" columns={columns} />
+     <GenericSortableTable input_data = {quizzes} columns={columns} />
      <Outlet />
     </>
   )

@@ -39,8 +39,7 @@ import { ShortQuizProps } from "./ListQuizzes";
 
 
   interface GenericTableProps {
-    quiz_data: ShortQuizProps[]; // Define the type of the data prop
-    renumberedColumnId: string; // optional column id to renumber after drag and drop
+    input_data: ShortQuizProps[]; // Define the type of the data prop
     columns: ColumnDef<ShortQuizProps>[]; // Dynamic column definitions
   }
 
@@ -70,18 +69,18 @@ const DraggableRow = ({ row }: { row: Row<ShortQuizProps> }) => {
 };
 
 // Table Component
-function GenericSortableTable({ quiz_data, renumberedColumnId, columns }: GenericTableProps) {
+function GenericSortableTable({ input_data, columns }: GenericTableProps) {
 
   useEffect(() => {
-    console.log("********************** quiz_data prop updated:", quiz_data);
-    setData(quiz_data);
+    //console.log("********************** quiz_data prop updated:", table_data);
+    setData(input_data);
   }
-  , [quiz_data]);
+  , [input_data]);
 
   const [data, setData] = React.useState<ShortQuizProps[]>([]);
 
   const dataIds = React.useMemo<UniqueIdentifier[]>(
-    () => (data ? data.map(({ itemId: quizId }) => quizId) : []),
+    () => (data ? data.map(({ itemId}) => itemId) : []),
     [data]
   );
 
@@ -92,9 +91,7 @@ function GenericSortableTable({ quiz_data, renumberedColumnId, columns }: Generi
     columns,
     getCoreRowModel: getCoreRowModel(),
     getRowId: (row) => row.itemId, //required because row indexes will change
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: true,
+   
   });
 
   // reorder rows after drag & drop
@@ -119,17 +116,17 @@ function GenericSortableTable({ quiz_data, renumberedColumnId, columns }: Generi
     // sort all item numbers in the specified column to be sequential starting from 1
     // item can be : quiz, question, unit....
     // corresponding item numbers: quiz_number, question_number, unit_number
-    console.log("Renumbering column id:", renumberedColumnId);
-    const sorted_numbers: string[] = getColumnValues(renumberedColumnId) as string[];
+   // console.log("Renumbering column id:", );
+    const sorted_numbers: string[] = getColumnValues('item_number') as string[];
     for (let i = 0; i < sorted_numbers.length; i++) {
       sorted_numbers[i] = (i + 1).toString();
     }
-    console.log("New Quiz Ids:", sorted_numbers);
+    console.log("sorted item numbers:", sorted_numbers);
  
     setData(prev => {
       const updatedRows = prev.map((row, index) => ({
         ...row,
-        quiz_number: sorted_numbers[index],
+        item_number: sorted_numbers[index],
       }));
       return updatedRows;
     });
