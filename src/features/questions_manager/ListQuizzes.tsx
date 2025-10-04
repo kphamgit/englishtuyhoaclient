@@ -15,8 +15,8 @@ import { arrayMove, useSortable } from '@dnd-kit/sortable';
 import GenericSortableTable from './GenericSortableTable';
 
 
-type ShortQuizProps = {
-  quizId: string;
+export type ShortQuizProps = {
+  itemId: string;
   name: string;
   quiz_number: string;
   video_url?: string;
@@ -78,7 +78,7 @@ useEffect(() => {
 
     setQuizzes(
       (unit.quizzes || []).map(quiz => ({
-        quizId: quiz.id,
+        itemId: quiz.id,
         name: quiz.name,
         quiz_number: quiz.quiz_number.toString(),
         video_url: quiz.video_url,
@@ -190,7 +190,7 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
       id: "edit",
       header: "Edit",
       cell: (info) => (
-        <Link className="italic text-blue-300" to={`edit_quiz/${info.row.original.quizId}`}>
+        <Link className="italic text-blue-300" to={`edit_quiz/${info.row.original.itemId}`}>
           Edit
         </Link>
       ),
@@ -199,7 +199,7 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
       accessorKey: "questions",
       header: "Questions",
       cell: info => (
-        <Link className='italic text-blue-300' to={`questions/${info.row.original.quizId}`}>Questions</Link>
+        <Link className='italic text-blue-300' to={`questions/${info.row.original.itemId}`}>Questions</Link>
       )
     },
     {
@@ -208,7 +208,7 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
       cell: (info) => (
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-          onClick={() => deleteQuiz(info.row.original.quizId)}
+          onClick={() => deleteQuiz(info.row.original.itemId)}
         >
           Delete
         </button>

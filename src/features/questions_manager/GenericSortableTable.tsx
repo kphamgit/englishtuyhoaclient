@@ -34,14 +34,9 @@ import {
 // needed for row & cell level scope DnD setup
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { ShortQuizProps } from "./ListQuizzes";
 
 
-export type ShortQuizProps = {
-    quizId: string;
-    name: string;
-    quiz_number: string;
-    video_url?: string;
-  }
 
   interface GenericTableProps {
     quiz_data: ShortQuizProps[]; // Define the type of the data prop
@@ -52,7 +47,7 @@ export type ShortQuizProps = {
 // Row Component
 const DraggableRow = ({ row }: { row: Row<ShortQuizProps> }) => {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
-    id: row.original.quizId,
+    id: row.original.itemId,
   });
 
   const style: CSSProperties = {
@@ -86,7 +81,7 @@ function GenericSortableTable({ quiz_data, renumberedColumnId, columns }: Generi
   const [data, setData] = React.useState<ShortQuizProps[]>([]);
 
   const dataIds = React.useMemo<UniqueIdentifier[]>(
-    () => (data ? data.map(({ quizId }) => quizId) : []),
+    () => (data ? data.map(({ itemId: quizId }) => quizId) : []),
     [data]
   );
 
@@ -96,7 +91,7 @@ function GenericSortableTable({ quiz_data, renumberedColumnId, columns }: Generi
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getRowId: (row) => row.quizId, //required because row indexes will change
+    getRowId: (row) => row.itemId, //required because row indexes will change
     debugTable: true,
     debugHeaders: true,
     debugColumns: true,
