@@ -34,33 +34,47 @@ import {
 // needed for row & cell level scope DnD setup
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ShortQuizProps } from "./ListQuizzes";
 
 
-
+/*
   interface GenericTableProps {
     input_data: ShortQuizProps[]; // Define the type of the data prop
     columns: ColumnDef<ShortQuizProps>[]; // Dynamic column definitions
   }
+*/
+
+/*
+generic type T can be any object type, e.g., ShortQuizProps, QuestionProps, UnitProps, etc.
+*/
+
+  interface GenericTableProps<T = any> {
+    input_data: T[]; // Use the generic type for the data array
+    columns: ColumnDef<T>[]; // Use the generic type for the column definitions
+    parent_notify_reset_item_numbers?: (combined: {itemId: string, item_number: string}[]) => void; // Optional callback prop
+  }
 
 // Row Component
-const DraggableRow = ({ row }: { row: Row<ShortQuizProps> }) => {
+interface DraggableRowProps<T> {
+  row: Row<T>; // Use the generic type for the row
+}
+
+const DraggableRow = <T,>({ row }: DraggableRowProps<T>) => {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
-    id: row.original.itemId,
+    id: (row.original as any).itemId, // Use `as any` or ensure `T` has `itemId`
   });
 
-  const style: CSSProperties = {
-    transform: CSS.Transform.toString(transform), //let dnd-kit do its thing
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform), // Let dnd-kit handle the transform
     transition: transition,
     opacity: isDragging ? 0.8 : 1,
     zIndex: isDragging ? 1 : 0,
     position: "relative",
   };
+
   return (
-    // connect row ref to dnd-kit, apply important styles
     <tr ref={setNodeRef} style={style}>
       {row.getVisibleCells().map((cell) => (
-        <td className="bg-bgColor2 text-textColor2 px-2 text-lg " key={cell.id}>
+        <td className="bg-bgColor2 text-textColor2 px-2 text-lg" key={cell.id}>
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
         </td>
       ))}
@@ -68,19 +82,27 @@ const DraggableRow = ({ row }: { row: Row<ShortQuizProps> }) => {
   );
 };
 
-// Table Component
-function GenericSortableTable({ input_data, columns }: GenericTableProps) {
 
+
+// Table Component
+  function GenericSortableTable<T>({ input_data, columns, parent_notify_reset_item_numbers }: GenericTableProps<T>) {
   useEffect(() => {
     //console.log("********************** quiz_data prop updated:", table_data);
     setData(input_data);
   }
   , [input_data]);
 
-  const [data, setData] = React.useState<ShortQuizProps[]>([]);
+  const [data, setData] = React.useState<T[]>([]);
+  
 
+  /*
   const dataIds = React.useMemo<UniqueIdentifier[]>(
     () => (data ? data.map(({ itemId}) => itemId) : []),
+    [data]
+  );
+  */
+  const dataIds = React.useMemo<UniqueIdentifier[]>(
+    () => (data ? data.map((row) => (row as any).itemId) : []), // Use `as any` or ensure T has itemId
     [data]
   );
 
@@ -90,7 +112,7 @@ function GenericSortableTable({ input_data, columns }: GenericTableProps) {
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getRowId: (row) => row.itemId, //required because row indexes will change
+    getRowId: (row) => (row as any).itemId, // Use `as any` or constrain T to ensure itemId exists
    
   });
 
@@ -117,12 +139,25 @@ function GenericSortableTable({ input_data, columns }: GenericTableProps) {
     // item can be : quiz, question, unit....
     // corresponding item numbers: quiz_number, question_number, unit_number
    // console.log("Renumbering column id:", );
+
+   const item_ids = getColumnValues('itemId') as string[];
+   console.log("item ids:", item_ids);
+
     const sorted_numbers: string[] = getColumnValues('item_number') as string[];
     for (let i = 0; i < sorted_numbers.length; i++) {
       sorted_numbers[i] = (i + 1).toString();
     }
     console.log("sorted item numbers:", sorted_numbers);
- 
+
+    // join item_ids and sorted_numbers into array of objects
+    const combined = item_ids.map((id, index) => ({
+      itemId: id,
+      item_number: sorted_numbers[index],
+    }));
+    console.log("combined item ids and numbers:", combined);
+
+
+    parent_notify_reset_item_numbers?.(combined); // notify parent component if callback prop is provided
     setData(prev => {
       const updatedRows = prev.map((row, index) => ({
         ...row,
@@ -190,7 +225,7 @@ function GenericSortableTable({ input_data, columns }: GenericTableProps) {
                   <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
                   onClick={reset_item_numbers}
                   >
-                    Renumber Quizzes
+                    Renumber Item
                  
     </button>
     </div>

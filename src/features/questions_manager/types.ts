@@ -76,7 +76,7 @@ export interface QuizProps {
   disabled?: boolean;
   video_url?: string | undefined;
   unitId: string;
-  question?: QuestionProps[]
+  questions?: QuestionProps[]
   video_segments?: VideoSegmentProps[] | undefined
 }
 

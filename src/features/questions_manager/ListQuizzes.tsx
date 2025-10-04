@@ -225,9 +225,38 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
         </button>
       ),
     },
+    {
+      id: "assign",
+      header: "Assign",
+      cell: (info) => (
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+          
+            onClick={() => alert(`/sub_categories/${params.sub_categoryId}/take_quiz/${info.row.original.itemId}` + " " + info.row.original.name)}
+          
+        >
+          Assign
+        </button>
+      ),
+    },
+    
   ],
   [] // No dependencies, so the columns are memoized once
 );
+
+/*
+  columnHelper.accessor('assign', {
+    header: () => <span className='flex items-center'></span>,
+    cell: info => (
+      <button
+      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+      onClick={() => alert(`/sub_categories/${params.sub_categoryId}/take_quiz/${info.row.original.id}` + " " + info.row.original.name)}
+    >
+      Assign
+    </button>
+    )
+  }),
+*/
 
 //router.delete("/:id", quizzes.delete);
 //https://www.englishtuyhoa.com/categories/4/sub_categories/9/edit_quiz/120
@@ -275,6 +304,13 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
     mutationFn: createQuiz,
     onSuccess: (data) => {
       console.log("Successfully created quiz:", data);
+      // update local state to include the new quiz
+      setQuizzes(prev => [...prev, {
+        itemId: data.id,
+        name: data.name,
+        item_number: data.quiz_number.toString(),
+        video_url: data.video_url,
+      }]);
       // Invalidate and refetch
       console.log("All queries in cache:", queryClient.getQueryCache().getAll());
       console.log("In mutate, Query key:", ['unit', params.unit_id]);
@@ -292,6 +328,8 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
         'Content-Type': 'application/json',
       },
     });
+     // Remove the deleted segment from local state
+    setQuizzes(prev => prev.filter(vs => vs.itemId !== quiz_id));
     return response.json();
   };
 
@@ -312,6 +350,17 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
   return (
     <>
      <GenericSortableTable input_data = {quizzes} columns={columns} />
+       <div className='bg-bgColor2 text-textColor2 p-3'>
+     
+               <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
+                   onClick={() => setCreateNewQuiz(!createNewQuiz)}
+                 >
+                   {createNewQuiz ? 'Cancel' : 'Create New Quiz'}
+                 </button>
+                 {createNewQuiz &&
+                   <NewQuiz categoryId={params.categoryId || ''} sub_categoryId={params.sub_categoryId || ''} unit_id={params.unit_id || ''} parent_func={onQuizCreated} />
+                 }
+               </div>
      <Outlet />
     </>
   )
