@@ -67,6 +67,28 @@ function Row({ row }: { row: any }) {
 
 // Table Component
 
+
+/*
+const table = useReactTable({
+      data: quizzes || [],
+      columns: columns,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      state: {
+        sorting: sorting,
+      },
+      onSortingChange: setSorting,
+     })
+*/
+
+/*
+export interface RowProps {
+  id: string;
+  fileName: string;
+  duration: string;
+}
+*/
+
 function Table({ data, setData, columns }: { data: RowProps[]; setData: (data: RowProps[], active: any, over: any) => void; columns: ColumnDef<RowProps>[] }) {
   const tableColumns = React.useMemo(() => [...columns], [columns]);
 

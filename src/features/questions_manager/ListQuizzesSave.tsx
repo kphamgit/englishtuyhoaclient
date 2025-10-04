@@ -1,9 +1,9 @@
 //import { useAxiosFetch } from '../components/services/useAxiosFetch';
 import { useAxiosFetch } from '../../hooks';
 //import { QuestionProps } from '../components/Question';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, Outlet, useNavigate, useParams } from 'react-router-dom';
-import { ColumnDef, createColumnHelper, getCoreRowModel, getSortedRowModel , SortingState} from '@tanstack/table-core';
+import { createColumnHelper, getCoreRowModel, getSortedRowModel , SortingState} from '@tanstack/table-core';
 import { flexRender, useReactTable } from '@tanstack/react-table';
 import { UnitProps } from './types';
 import NewQuiz, { CreateQuizProps } from './NewQuiz';
@@ -11,25 +11,17 @@ import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { useRootUrl } from '../../contexts/root_url';
 
 import { DndContext, closestCenter } from "@dnd-kit/core";
-//import QuizzesTable, { QuizColumnProps, QuizRowProps } from './QuizzesTable';
-import { arrayMove, useSortable } from '@dnd-kit/sortable';
-import SortableTable from '../components/tanstackTableSortable/SortableTable';
-import QuizzesTable from './QuizzesTable';
-import { ShortQuizProps } from './QuizzesTable';
-import GenericSortableTable from './GenericSortableTable';
-
-
 
 
 const queryClient = new QueryClient();  
 
 //{ id: string; question_number: number; format: number; content: string; answer_key: string; }[] | undefined' 
-export default function ListQuizzes(props:any) {
+export default function ListQuizzesSave(props:any) {
   const params = useParams<{ categoryId: string, sub_categoryId: string, unit_id: string}>();
   //console.log("***** params = ", params)
   //const url = `units/${params.unit_id}`;
   const [enabledFetchUnit, setEnabledFetchUnit] = useState(true)
-  const [quizzes, setQuizzes] = useState<ShortQuizProps[]>([])
+  const [quizzes, setQuizzes] = useState<any[]>([])
 
 const { rootUrl } = useRootUrl();
 
@@ -75,14 +67,7 @@ useEffect(() => {
 ]
     */
 
-    setQuizzes(
-      (unit.quizzes || []).map(quiz => ({
-        quizId: quiz.id,
-        name: quiz.name,
-        quiz_number: quiz.quiz_number.toString(),
-        video_url: quiz.video_url,
-      }))
-    );
+    setQuizzes(unit.quizzes || []);
     
   }
 }, [unit]);
@@ -96,7 +81,6 @@ const [sorting, setSorting] = useState<SortingState>([]);
 
  const columnHelper = createColumnHelper<any>();
 
- /*
 const columns = [
   columnHelper.accessor('id', {
     header: () => <span className='flex items-center'>Id</span>,
@@ -150,76 +134,22 @@ const columns = [
   }),
  
 ]
-*/
-
-const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
-  const { attributes, listeners } = useSortable({
-    id: rowId,
-  });
-  return (
-    // Alternatively, you could set these attributes on the rows themselves
-    <button {...attributes} {...listeners}>
-      🟰
-    </button>
-  );
-};
-
-const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
-  () => [
-    {
-      id: "drag-handle",
-      header: "Move",
-      cell: ({ row }) => <RowDragHandleCell rowId={row.id} />,
-      size: 60,
-    },
-    {
-      accessorKey: "name",
-      header: "Name",
-      cell: (info) => info.getValue(),
-    },
-    {
-      accessorKey: "quiz_number",
-      header: "Quiz Number",
-    },
-    {
-      accessorKey: "video_url",
-      header: "Video Url",
-    },
-    {
-      id: "edit",
-      header: "Edit",
-      cell: (info) => (
-        <Link className="italic text-blue-300" to={`edit_quiz/${info.row.original.quizId}`}>
-          Edit
-        </Link>
-      ),
-    },
-    {
-      accessorKey: "questions",
-      header: "Questions",
-      cell: info => (
-        <Link className='italic text-blue-300' to={`questions/${info.row.original.quizId}`}>Questions</Link>
-      )
-    },
-    {
-      id: "delete",
-      header: "Delete",
-      cell: (info) => (
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-          onClick={() => deleteQuiz(info.row.original.quizId)}
-        >
-          Delete
-        </button>
-      ),
-    },
-  ],
-  [] // No dependencies, so the columns are memoized once
-);
 
 //router.delete("/:id", quizzes.delete);
 //https://www.englishtuyhoa.com/categories/4/sub_categories/9/edit_quiz/120
 
+  const table = useReactTable({
+      data: quizzes || [],
+      columns: columns,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      state: {
+        sorting: sorting,
+      },
+      onSortingChange: setSorting,
+     })
+
+     console.log("table sorting state = ", table.getState().sorting)
      
      const createQuiz = async ({ name, quiz_number, video_url, unitId, video_segments }: CreateQuizProps) => {
       console.log("createQuiz called with:", { name, quiz_number, video_url, unitId, video_segments });
@@ -283,7 +213,6 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
     return response.json();
   };
 
-                /*
                      useEffect(() => {
                       // Retrieve all rows from the table
                       const rows = table.getRowModel().rows;
@@ -294,15 +223,60 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
                       console.log("Values of the 'id' column:", idColumnValues);
                       // sent to server to update ids of quizzes in this unit
                     }, [table, sorting]);
-                    */
 
    
-  return (
-    <>
-     <GenericSortableTable quiz_data = {quizzes} renumberedColumnId = "quiz_number" columns={columns} />
-     <Outlet />
-    </>
-  )
+    return (
+      <div>
+          
+          <div className='text-textColor1 p-2 flex flex-col justify-center text-xl mt-3 mb-3'>
+                 <table className='table-auto border-separate border border-slate-400 ...'>
+                   <thead className='bg-bgColor3 text-textColor1'>
+                     {table.getHeaderGroups().map(headerGroup => (
+                       <tr key={headerGroup.id}>
+                         {headerGroup.headers.map(header => (
+                        <th
+                        key={header.id}
+                        onClick={header.column.getToggleSortingHandler()}
+                        className="border border-slate-300 p-2"
+                      >
+                        <div>
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {header.column.getIsSorted() ? { asc: " ↑", desc: " ↓" }[header.column.getIsSorted() as "asc" | "desc"] : null}
+                        </div>
+                      </th>
+                         ))}
+                       </tr>
+                     ))}
+                   </thead>
+                   <tbody className='bg-bgColor1 text-textColor2'>
+                       {table.getRowModel().rows.map(row => (
+                         <tr key={row.id}>
+                           {row.getVisibleCells().map(cell => (
+                             <td key={cell.id} className='border border-slate-300 p-2'>
+                               {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                             </td>
+                           ))}
+                         </tr>
+                       ))}
+                   </tbody>
+                 </table>
+              
+          <div className='bg-bgColor2 text-textColor2 p-3'>
+
+          <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
+              onClick={() => setCreateNewQuiz(!createNewQuiz)}
+            >
+              {createNewQuiz ? 'Cancel' : 'Create New Quiz'}
+            </button>
+            {createNewQuiz &&
+              <NewQuiz categoryId={params.categoryId || ''} sub_categoryId={params.sub_categoryId || ''} unit_id={params.unit_id || ''} parent_func={onQuizCreated} />
+            }
+          </div>
+            </div>
+          
+            <Outlet />
+            </div>
+    )
       
 }
 
