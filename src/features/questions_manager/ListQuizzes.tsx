@@ -10,16 +10,17 @@ import NewQuiz, { CreateQuizProps } from './NewQuiz';
 import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { useRootUrl } from '../../contexts/root_url';
 
-import { DndContext, closestCenter } from "@dnd-kit/core";
-//import QuizzesTable, { QuizColumnProps, QuizRowProps } from './QuizzesTable';
 import { arrayMove, useSortable } from '@dnd-kit/sortable';
-import SortableTable from '../components/tanstackTableSortable/SortableTable';
-import QuizzesTable from './QuizzesTable';
-import { ShortQuizProps } from './QuizzesTable';
+
 import GenericSortableTable from './GenericSortableTable';
 
 
-
+type ShortQuizProps = {
+  quizId: string;
+  name: string;
+  quiz_number: string;
+  video_url?: string;
+}
 
 const queryClient = new QueryClient();  
 
