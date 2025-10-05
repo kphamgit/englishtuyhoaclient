@@ -384,7 +384,7 @@ const deleteVideoSegment = async (id: string) => {
       <div>
           <div className='text-textColor1 p-2 flex flex-col justify-center mt-3 mb-3'>
             <div className='mb-3'>Video Segments for Quiz ID: {quiz_id} </div>
-            <table className="table-auto border-collapse border border-gray-300">
+            <table className="bg-bgColor2 text-textColor2 table-auto border-collapse border border-gray-300">
                   <thead className='bg-bgColor3 text-textColor1'>
                     {table.getHeaderGroups().map(headerGroup => (
                       <tr key={headerGroup.id}>
@@ -403,11 +403,11 @@ const deleteVideoSegment = async (id: string) => {
                       </tr>
                     ))}
                   </thead>
-                   <tbody className='bg-bgColor1 text-textColor2'>
+                   <tbody className='bg-bgColor2 text-textColor2'>
                        {table.getRowModel().rows.map(row => (
                          <tr key={row.id}>
                            {row.getVisibleCells().map(cell => (
-                             <td key={cell.id} className='border border-slate-300 p-2'>
+                             <td key={cell.id} className='bg-bgColor2 border border-slate-300 p-2'>
                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
                              </td>
                            ))}

@@ -110,7 +110,19 @@ export default function QuestionCreator() {
             if (radioRef.current) {
                 //question_params = radioRef.current.addParams(question_params)
                 const radio_params = radioRef.current.getRadioTexts(question_params)
-                const my_params = {...question_params, radio_params}
+                console.log("hereerere radio_params=", radio_params)
+                /*
+{
+    "choice_1_text": "one",
+    "choice_2_text": "two",
+    "choice_3_text": "three",
+    "choice_4_text": "four"
+}
+                */
+                // combine radios_params into question content
+                const question_content = radio_params.choice_1_text + '/' + radio_params.choice_2_text + '/' +
+                    radio_params.choice_3_text + '/' + radio_params.choice_4_text
+                const my_params = {...question_params, content: question_content}
                 //console.log("MMMMMM radio_params=", res)
                 await createQuestion(rootUrl, my_params )
             }
@@ -120,7 +132,9 @@ export default function QuestionCreator() {
                 
                 //question_params = radioRef.current.addParams(question_params)
                 const checkbox_params = checkBoxRef.current.getCheckboxTexts(question_params)
-                const my_params = {...question_params, checkbox_params}
+                const question_content = checkbox_params.choice_1_text + '/' + checkbox_params.choice_2_text + '/' +
+                    checkbox_params.choice_3_text + '/' + checkbox_params.choice_4_text
+                const my_params = {...question_params, content: question_content}
                 //console.log("MMMMMM my_params=", my_params)
                 await createQuestion(rootUrl, my_params )
                 
@@ -154,7 +168,7 @@ export default function QuestionCreator() {
     //kpham: Javascript lesson: use dynamic key (i.e, format state variable) to index into formatConversion object
         return (
             <div className='bg-bgColor0'>
-                <div className='text-textColor1'>Create question</div>
+                <div className='text-textColor1'>In QuestionCreator: Create question</div>
                 <div className='text-textColor1 mx-10'>{format && formatConversion[format]} ({format})</div>
                  { instruction &&
                     <SimpleEditor initialContent={instruction} ref={editorRef} />

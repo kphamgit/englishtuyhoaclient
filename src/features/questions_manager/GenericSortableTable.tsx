@@ -47,20 +47,20 @@ import { CSS } from "@dnd-kit/utilities";
 generic type T can be any object type, e.g., ShortQuizProps, QuestionProps, UnitProps, etc.
 */
 
-  interface GenericTableProps<T = any> {
+interface GenericTableProps<T extends { itemId: string }> {
     input_data: T[]; // Use the generic type for the data array
     columns: ColumnDef<T>[]; // Use the generic type for the column definitions
     parent_notify_reset_item_numbers?: (combined: {itemId: string, item_number: string}[]) => void; // Optional callback prop
   }
 
 // Row Component
-interface DraggableRowProps<T> {
+interface DraggableRowProps<T extends { itemId: string }> {
   row: Row<T>; // Use the generic type for the row
 }
 
-const DraggableRow = <T,>({ row }: DraggableRowProps<T>) => {
+const DraggableRow = <T extends { itemId: string }>({ row }: DraggableRowProps<T>) => {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
-    id: (row.original as any).itemId, // Use `as any` or ensure `T` has `itemId`
+    id: row.original.itemId, // Use `as any` or ensure `T` has `itemId`
   });
 
   const style: React.CSSProperties = {
@@ -85,7 +85,11 @@ const DraggableRow = <T,>({ row }: DraggableRowProps<T>) => {
 
 
 // Table Component
-  function GenericSortableTable<T>({ input_data, columns, parent_notify_reset_item_numbers }: GenericTableProps<T>) {
+function GenericSortableTable<T extends { itemId: string }>({
+  input_data,
+  columns,
+  parent_notify_reset_item_numbers,
+}: GenericTableProps<T>) {
   useEffect(() => {
     //console.log("********************** quiz_data prop updated:", table_data);
     setData(input_data);
@@ -110,9 +114,20 @@ const DraggableRow = <T,>({ row }: DraggableRowProps<T>) => {
 
   const table = useReactTable({
     data,
-    columns,
+    columns: [...columns, {
+      id: "delete_generic",
+      header: "Delete",
+      cell: (info) => (
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+          onClick={() => console.log(info.row.original.itemId)}
+        >
+          Delete Generic
+        </button>
+      ),
+    } ] ,
     getCoreRowModel: getCoreRowModel(),
-    getRowId: (row) => (row as any).itemId, // Use `as any` or constrain T to ensure itemId exists
+    getRowId: (row) => row.itemId, // Use `as any` or constrain T to ensure itemId exists
    
   });
 

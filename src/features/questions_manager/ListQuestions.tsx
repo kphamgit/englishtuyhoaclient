@@ -22,8 +22,7 @@ import { create } from 'domain';
 interface ShortQuestionProps extends genericItemType{
   format: string
   content: string,
-  
-
+  video_segment_id?: string
 }
 
 const queryClient = new QueryClient();  
@@ -101,6 +100,7 @@ const { rootUrl } = useRootUrl();
 
     const deleteQuestion = async (question_id: string) => {
       console.log("deleteQuiz called with quiz_id:", question_id);
+      
       const response = await fetch(`${rootUrl}/api/questions/${question_id}`, {
         method: 'DELETE',
         headers: {
@@ -109,7 +109,9 @@ const { rootUrl } = useRootUrl();
       });
        // Remove the deleted segment from local state
       setQuestions(prev => prev.filter(vs => vs.itemId !== question_id));
+      console.log("%%%%%%% deleteQuestion response =", response)
       return response.json();
+      
     };
 /*
 const {data: unit} = useQuery({
@@ -230,6 +232,28 @@ const child_reset_item_numbers = (new_numbers: {itemId: string, item_number: str
   return response;
 
 }
+
+const updateQuestion = (question_id: string, video_segment_id: string) => {
+  console.log("updateQuestion called with question_id:", question_id, "video_segment_id:", video_segment_id);
+  
+  // get the video_segment_id f
+  const update_params = {
+    video_segment_id: video_segment_id
+  }
+  const response = fetch(`${rootUrl}/api/questions/${question_id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(update_params),
+  });
+  
+  //const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}/edit_question/${question_id}`
+  //console.log("updateQuestion navigate to url:", url);
+  //navigate(url)
+  //return response.json();
+};
+
 const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
   () => [
     {
@@ -254,13 +278,59 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
     {
       accessorKey: "content",
       header: "Content",
-    }, {
+    }, 
+    {
+      accessorKey: "video_segment_id",
+      header: "Video Segment ID",
+      cell: info => {
+        const initialValue = info.getValue() as string | undefined;
+        const rowIndex = info.row.index; // Get the row index
+        const [value, setValue] = useState(initialValue);
+        const inputRef = useRef<HTMLInputElement>(null);
+        const onBlur = () => {
+          //console.log(`Updated cell value for ${info.column.id} in row ${info.row.index}: ${value}`);
+        setQuestions(prev => {
+        const updatedSegments = [...prev];
+        updatedSegments[rowIndex] = {
+          ...updatedSegments[rowIndex],
+          video_segment_id: value, // Update the segment_number
+        };
+        //console.log("Updated row:", updatedSegments[rowIndex]);
+        return updatedSegments;
+      });
+  
+        };
+        return (
+          <div className='flex items-center'>
+          <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-16 mx-1'
+          ref={inputRef} // Attach the ref to the input field
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            onBlur={onBlur}
+          />
+          </div>
+        );
+      },
+    }, 
+    {
       id: "edit",
       header: "Edit",
       cell: (info) => (
         <Link className="italic text-blue-300" to={`edit_question/${info.row.original.itemId}`}>
           Edit
         </Link>
+      ),
+    },
+    {
+      id: "update",
+      header: "Update",
+      cell: (info) => (
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+          onClick={() => updateQuestion(info.row.original.itemId, info.row.original.video_segment_id || '')}
+        >
+          Update
+        </button>
       ),
     },
     {
@@ -309,10 +379,24 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
   [] // No dependencies, so the columns are memoized once
 );
 
-//router.delete("/:id", quizzes.delete);
-//https://www.englishtuyhoa.com/categories/4/sub_categories/9/edit_quiz/120
-
-     
+/*
+columnHelper.accessor('update_row', {
+    header: () => <span className='flex items-center'></span>,
+    cell: ({ row }) => (
+      <button
+      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+      onClick={(e) => {
+        // Trigger the onBlur event for the input field
+        //console.log(" inputElement exists, onBlur triggered", row.original)
+        //console.log(" event target", e.target)
+        updateVideoSegment(row.original, e)
+      }}
+    >
+      { row.original.id ? 'Update' : 'Save' }
+    </button>
+    ),
+  }),
+*/   
 
   const deleteQuiz = async (quiz_id: string) => {
     console.log("deleteQuiz called with quiz_id:", quiz_id);
@@ -372,6 +456,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
         ))}
       </select>
     </div>
+    <div className='bg-bgColor2 text-textColor2 mb-5  text-xl'>Quiz id: {quiz?.id}</div>
       <GenericSortableTable 
         input_data={questions} 
         columns={columns} 
