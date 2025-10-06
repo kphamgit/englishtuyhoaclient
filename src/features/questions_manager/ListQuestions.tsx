@@ -3,21 +3,15 @@ import { useAxiosFetch } from '../../hooks';
 //import { QuestionProps } from '../components/Question';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Outlet, useNavigate, useParams } from 'react-router-dom';
-import { ColumnDef, createColumnHelper, getCoreRowModel, getSortedRowModel , SortingState} from '@tanstack/table-core';
-import { flexRender, useReactTable } from '@tanstack/react-table';
-import { QuizProps, UnitProps } from './types';
-import NewQuiz, { CreateQuizProps } from './NewQuiz';
-import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
+import { ColumnDef, createColumnHelper , SortingState} from '@tanstack/table-core';
+import { QuizProps } from './types';
 import { useRootUrl } from '../../contexts/root_url';
 
-import { arrayMove, useSortable } from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
 
 import GenericSortableTable from './GenericSortableTable';
 import { genericItemType } from './ListQuizzes';
-import QuestionCreator from './QuestionCreator';
-import NewQuestion, { NewQuestionProps } from './NewQuestion';
-import { create } from 'domain';
-
+import NewQuestion from './NewQuestion';
 
 interface ShortQuestionProps extends genericItemType{
   format: string
@@ -25,7 +19,6 @@ interface ShortQuestionProps extends genericItemType{
   video_segment_id?: string
 }
 
-const queryClient = new QueryClient();  
 
 const formatOptions = [
   { value: "1", label: "Cloze" },
@@ -54,6 +47,10 @@ export default function ListQuestions(props:any) {
   const selectedFormat = useRef<string>("1")
   const navigate = useNavigate()
 
+  const [isModalVisible, setIsModalVisible] = useState(false); // State for modal visibility
+  const [modalContent, setModalContent] = useState<string | null>(null); // State for modal content
+
+
 const { rootUrl } = useRootUrl();
 
  const url = `/quizzes/${params.quiz_id}/get_questions`
@@ -74,7 +71,7 @@ const { rootUrl } = useRootUrl();
       }
     }, [quiz]);
 
-    const cloneQuestion = async (question_id: string) => {
+    const cloneQuestion = async (question_id: string, originals: any) => {
       console.log("cloneQuestion called with question_id:", question_id);
       const response = await fetch(`${rootUrl}/api/questions/${question_id}/clone`, {
         method: 'GET',
@@ -86,60 +83,60 @@ const { rootUrl } = useRootUrl();
       //setQuestions(prev => prev.filter(vs => vs.itemId !== question_id));
       // update the local state with the new cloned question
       const data = await response.json();
-      console.log("&&&&&&& cloneQuestion newQuestion =", data)
-      
+      //console.log("&&&&&&& cloneQuestion newQuestion =", data)
+      const new_question = data.new_question;
+      // add data.new_question to the originals array after the original question
+      // REMEMBER, have to use originals, not questions, to update the local state
+      const index = originals.findIndex((q : ShortQuestionProps)=> q.itemId === question_id);
+      if (index !== -1) {
+        const updatedQuestions = [
+          ...originals.slice(0, index + 1),
+          {
+            itemId: new_question.id,
+            item_number: new_question.question_number.toString(),
+            format: new_question.format.toString(),
+            content: new_question.content || 'content....',
+          },
+          ...originals.slice(index + 1),
+        ];
+        //console.log("Updated questions after cloning:", updatedQuestions);
+        setQuestions(updatedQuestions);
+      //
+      }
+      /*
       setQuestions(prev => [...prev, {
         itemId: data.new_question.id,
         item_number: data.new_question.question_number.toString(),
         format: data.new_question.format.toString(),
         content: data.new_question.content || 'content....',
       }]);
-      
+      */
+
       //return response.json();
     };
 
-    const deleteQuestion = async (question_id: string) => {
+    const deleteQuestion = async (question_id: string,  originals: ShortQuestionProps[]) => {
+      // for the use of originals, see cloneQuestion function
       console.log("deleteQuiz called with quiz_id:", question_id);
       
-      const response = await fetch(`${rootUrl}/api/questions/${question_id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-       // Remove the deleted segment from local state
-      setQuestions(prev => prev.filter(vs => vs.itemId !== question_id));
-      console.log("%%%%%%% deleteQuestion response =", response)
-      return response.json();
+    const response = await fetch(`${rootUrl}/api/questions/${question_id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.ok) {
+      console.log("Successfully deleted question with id:", question_id);
+      // Update the local state to remove the deleted question
+      const updatedQuestions = originals.filter(q => q.itemId !== question_id);
+      setQuestions(updatedQuestions);
+    } else {
+      console.error("Failed to delete question with id:", question_id);
+    }
+    return response.json();
+    
       
     };
-/*
-const {data: unit} = useQuery({
-  queryKey: ['unit', params.unit_id],
-  queryFn: async () => {
-    console.log("Fetching unit data for unit_id:", params.unit_id);
-    const url = `${rootUrl}/api/units/${params.unit_id}`;
-    //console.log("url =", url)
-    console.log("Query key:", ['unit', params.unit_id]);
-    
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json() as Promise<UnitProps>;
-  },
-  //enabled: !!params.unit_id, // Only run the query if unit_id is available
-  enabled:  !!params.unit_id, // Only run the query if unit_id is available
-  //staleTime: 5 * 60 * 1000, // 5 minutes
-  staleTime: 0  // 5 minutes
-  // if the query is accessed again within 5 minutes, 
-  // it will use the cached data
-  // if the query is accessed after 5 minutes, React Query will consider the data to be
-  // stale and will refetch it in the background
-});
-*/
-
-
 
 //const { data: unit, loading, error } = useAxiosFetch<UnitProps>({ url: url, method: 'get' })
 //console.log("***** quizzes = ", unit?.quizzes)
@@ -149,62 +146,6 @@ const [createNewQuestion, setCreateNewQuestion] = useState(false)
 const [sorting, setSorting] = useState<SortingState>([]);
 
  const columnHelper = createColumnHelper<any>();
-
- /*
-const columns = [
-  columnHelper.accessor('id', {
-    header: () => <span className='flex items-center'>Id</span>,
-    cell: info => info.getValue(),
-  }),
-  columnHelper.accessor('name', {
-    header: () => <span className='flex items-center'>Name</span>,
-    cell: info => info.getValue(),
-  }),
-  columnHelper.accessor('quiz_number', {
-    header: () => <span className='flex items-center'>Quiz Number</span>,
-    cell: info => info.getValue(),
-  }),
-  columnHelper.accessor('video_url', {
-    header: () => <span className='flex items-center'>Video URL</span>,
-    cell: info => info.getValue(),
-  }),
-  columnHelper.accessor('edit', {
-    header: () => <span className='flex items-center'>Edit</span>,
-    cell: info => (
-      <Link className='italic text-blue-300' to={`edit_quiz/${info.row.original.id}`}>Edit</Link>
-    )
-  }),
-  columnHelper.accessor('delete', {
-    header: () => <span className='flex items-center'>Delete</span>,
-    cell: info => (
-      <button
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-      onClick={() => deleteQuiz(info.row.original.id)}
-    >
-      Delete
-    </button>
-    )
-  }),
-  columnHelper.accessor('questions', {
-    header: () => <span className='flex items-center'>Questions</span>,
-    cell: info => (
-      <Link className='italic text-blue-300' to={`questions/${info.row.original.id}`}>Questions</Link>
-    )
-  }),
-  columnHelper.accessor('assign', {
-    header: () => <span className='flex items-center'></span>,
-    cell: info => (
-      <button
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-      onClick={() => alert(`/sub_categories/${params.sub_categoryId}/take_quiz/${info.row.original.id}` + " " + info.row.original.name)}
-    >
-      Assign
-    </button>
-    )
-  }),
- 
-]
-*/
 
 const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
   const { attributes, listeners } = useSortable({
@@ -227,7 +168,7 @@ const child_reset_item_numbers = (new_numbers: {itemId: string, item_number: str
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ new_numbers: new_numbers }),
+    body: JSON.stringify({ id_number_pairs: new_numbers }),
   })
   return response;
 
@@ -339,7 +280,12 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       cell: (info) => (
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-          onClick={() => deleteQuestion(info.row.original.itemId)}
+          onClick={() => { 
+            const originals = info.table.getRowModel().rows.map((row: any) => row.original);
+            console.log("cloneQuestion originals =", originals);
+            deleteQuestion( info.row.original.itemId, originals)
+          }
+        }
         >
           Delete
         </button>
@@ -351,7 +297,12 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       cell: (info) => (
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-          onClick={() => cloneQuestion(info.row.original.itemId)}
+          onClick={() => {
+            const originals = info.table.getRowModel().rows.map((row: any) => row.original);
+            console.log("cloneQuestion originals =", originals);
+            cloneQuestion(info.row.original.itemId, originals)
+          }
+          }
         >
           Clone
         </button>
@@ -368,6 +319,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
           onClick={() => {
               createQuestion(info.row.original.item_number)
             } 
+            
           }
         >
           Create
@@ -379,24 +331,6 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
   [] // No dependencies, so the columns are memoized once
 );
 
-/*
-columnHelper.accessor('update_row', {
-    header: () => <span className='flex items-center'></span>,
-    cell: ({ row }) => (
-      <button
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-      onClick={(e) => {
-        // Trigger the onBlur event for the input field
-        //console.log(" inputElement exists, onBlur triggered", row.original)
-        //console.log(" event target", e.target)
-        updateVideoSegment(row.original, e)
-      }}
-    >
-      { row.original.id ? 'Update' : 'Save' }
-    </button>
-    ),
-  }),
-*/   
 
   const deleteQuiz = async (quiz_id: string) => {
     console.log("deleteQuiz called with quiz_id:", quiz_id);
@@ -409,14 +343,25 @@ columnHelper.accessor('update_row', {
     return response.json();
   };
 
+  const closeModal = () => {
+    setIsModalVisible(false);
+    setModalContent(null);
+  };
+
   //<Route path="sub_categories/:sub_categoryId/list_questions/:quiz_id/create_question/:format/:last_question_number" element={<QuestionCreator
   const createQuestion = (current_question_id: string) => {
     console.log("createQuestion called with ^^^^^^^^^^^^^^ selectedFormat:", selectedFormat);
+
+    setModalContent(`Creating question with ID: ${current_question_id}`);
+    setIsModalVisible(true);
+
+    /*
     //console.log("createQuestion called with question_props:", question_props);
     const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}/create_question/${selectedFormat.current}/${current_question_id}`
    // console.log("createQuestion ******** navigate to url:", url);
     navigate(url)
-    //return response.json();
+    */
+    
   };
 
   /*
@@ -464,6 +409,11 @@ columnHelper.accessor('update_row', {
         />
       <div className='bg-bgColor2 text-textColor2 p-3'>
 
+      {isModalVisible && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <NewQuestion quiz_id={params.quiz_id || ""} content={modalContent || ""} onClose={closeModal} />
+        </div>
+      )}
       
       </div>
       <Outlet />

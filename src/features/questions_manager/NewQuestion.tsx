@@ -2,88 +2,52 @@ import { useEffect, useRef, useState } from 'react'
 import { EditorRef } from './tiptap_editor/SimpleEditor'
 import SimpleEditor from './tiptap_editor/SimpleEditor'
 import { useNavigate, useParams } from 'react-router-dom';
-//import { useAxiosFetch } from '../../hooks';
-//import { QuestionProps } from './types';
 import { createQuestion } from '../services/list';
 import NewCloze from './NewCloze';
-//import { EditButtonSelect } from './EditButtonSelect';
-//import EditWordScramble from './EditWordScramble';
 import { RadioComponentHandle } from './types';
 import NewRadio from './NewRadio';
-
 import { WordScrambleComponentHandle } from './types';
 import NewWordScramble from './NewWordScramble';
-//import NewButtonCloze, { ButtonClozeComponentHandle } from './NewButtonCloze';
 import NewButtonCloze, { ButtonClozeComponentHandle }  from './NewButtonCloze';
 import NewCheckbox, { NewCheckboxComponentHandle } from './NewCheckbox';
 import { useRootUrl } from '../../contexts/root_url';
 
-
-export type NewQuestionProps = {
-    categoryId: string, 
-    sub_categoryId: string, 
-    unit_id: string, 
-    quiz_id: string, 
-    format: string,
-    last_question_number?: string
-}
-
-export default function NewQuestion({
-    categoryId,
-    sub_categoryId,
-    unit_id,
-    quiz_id,
-    format: initialFormat,
-    last_question_number,
-  }: NewQuestionProps) {
-
-      const [format, setFormat] = useState<string>()
-      const [prompt, setPrompt] = useState<string>('')
-      const [audioSrc, setAudioSrc] = useState('')
-      const [audioStr, setAudioStr] = useState('')
-      const [questionContent, setQuestionContent] = useState('')
-      const [questionNumber, setQuestionNumber] = useState('')
-      const [answerKey, setAnswerKey] = useState('')
-      const [timeLimit, setTimeLimit] = useState('30000')
-      const [score, setScore] = useState<number>()
-      const [instruction, setInstruction] = useState<string>('instruction')
-      const [help1, setHelp1] = useState(null)
-      const [display_instruction, setDisplayInstruction] = useState<boolean>(false)
-
-      const {rootUrl} = useRootUrl();
-      //const [help2, setHelp2] = useState(null)
-      //const [radioContent, setRadioContent] = useState<RadioProps | undefined>()
-      //const [wordScrambleDirection, setwordScrambleDirection] = useState<string>('');
-
+interface NewQuestionProps {
+    quiz_id: string;
+    content: string;
+    onClose: () => void;
+  }
+  
+  const NewQuestion: React.FC<NewQuestionProps> = ({ quiz_id, content, onClose }) => {
+     const [format, setFormat] = useState<string>()
+          const [prompt, setPrompt] = useState<string>('')
+          const [audioSrc, setAudioSrc] = useState('')
+          const [audioStr, setAudioStr] = useState('')
+          const [questionContent, setQuestionContent] = useState('')
+          const [questionNumber, setQuestionNumber] = useState('')
+          const [answerKey, setAnswerKey] = useState('')
+          const [timeLimit, setTimeLimit] = useState('30000')
+          const [score, setScore] = useState<number>()
+          const [instruction, setInstruction] = useState<string>('instruction')
+          const [help1, setHelp1] = useState(null)
+          const [display_instruction, setDisplayInstruction] = useState<boolean>(false)
+    
+           
       const editorRef = useRef<EditorRef>(null)
-
-      //kpham Typescript lesson: learned how to type an object as a dictionary 12/16/2024
-      const formatConversion: { [key: string]: string } = {"1": 'Cloze', "2": "Button Cloze Select", "3": 'Button Select', 
-        "4": "Radio ",  "5": "Checkbox", "6": "Word Scramble", "7": "Speech Recognition", "8": "Word Select",
-        "9": "Recording", "10": "Drop Down", "11": "Letter Cloze",
-      }
-
-      //kpham: Javascript lesson: use dynamic key to index into formatConversion object (a dictionary )
-      //the following snippet prints out the string "Cloze"
-   //const tname = "1"
-      //console.log("FFFFFFFF ", formatConversion[tname] )
-     
       const radioRef = useRef<RadioComponentHandle>(null)
       const checkBoxRef = useRef<NewCheckboxComponentHandle>(null)
       const buttonClozeRef = useRef<ButtonClozeComponentHandle>(null)
       const wordScrambleRef = useRef<WordScrambleComponentHandle>(null)
 
-      const navigate = useNavigate();
-   
-    useEffect(() => {
-       //increment params.last_question_number by 1
-       setQuestionNumber((parseInt(last_question_number || '0') + 1).toString())
-       setFormat(format)
-       
-    }, [format, last_question_number])
+      const {rootUrl} = useRootUrl();
 
-    //this function is called when user selects a radio button
-    const set_answer_key = (answer_key: string) => {
+        //kpham Typescript lesson: learned how to type an object as a dictionary 12/16/2024
+        const formatConversion: { [key: string]: string } = {"1": 'Cloze', "2": "Button Cloze Select", "3": 'Button Select', 
+            "4": "Radio ",  "5": "Checkbox", "6": "Word Scramble", "7": "Speech Recognition", "8": "Word Select",
+            "9": "Recording", "10": "Drop Down", "11": "Letter Cloze",
+        }
+
+      const set_answer_key = (answer_key: string) => {
         //console.log("********** in set_answer_key ", answer_key)
         setAnswerKey(answer_key)
     }
@@ -119,7 +83,19 @@ export default function NewQuestion({
             if (radioRef.current) {
                 //question_params = radioRef.current.addParams(question_params)
                 const radio_params = radioRef.current.getRadioTexts(question_params)
-                const my_params = {...question_params, radio_params}
+                console.log("hereerere radio_params=", radio_params)
+                /*
+{
+    "choice_1_text": "one",
+    "choice_2_text": "two",
+    "choice_3_text": "three",
+    "choice_4_text": "four"
+}
+                */
+                // combine radios_params into question content
+                const question_content = radio_params.choice_1_text + '/' + radio_params.choice_2_text + '/' +
+                    radio_params.choice_3_text + '/' + radio_params.choice_4_text
+                const my_params = {...question_params, content: question_content}
                 //console.log("MMMMMM radio_params=", res)
                 await createQuestion(rootUrl, my_params )
             }
@@ -129,7 +105,9 @@ export default function NewQuestion({
                 
                 //question_params = radioRef.current.addParams(question_params)
                 const checkbox_params = checkBoxRef.current.getCheckboxTexts(question_params)
-                const my_params = {...question_params, checkbox_params}
+                const question_content = checkbox_params.choice_1_text + '/' + checkbox_params.choice_2_text + '/' +
+                    checkbox_params.choice_3_text + '/' + checkbox_params.choice_4_text
+                const my_params = {...question_params, content: question_content}
                 //console.log("MMMMMM my_params=", my_params)
                 await createQuestion(rootUrl, my_params )
                 
@@ -145,25 +123,35 @@ export default function NewQuestion({
         else {
                 await createQuestion(rootUrl, question_params)
         }
-        const url = `/categories/${categoryId}/sub_categories/${sub_categoryId}/list_quizzes/${unit_id}/questions/${quiz_id}`
-        navigate(url)
+        //const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+        //navigate(url)
         
     }
-    
+
     const handleCancel = () => {
-        const url = `/categories/${categoryId}/sub_categories/${sub_categoryId}/list_quizzes/${unit_id}/questions/${quiz_id}`
-        navigate(url)
+       // const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+        //navigate(url)
     }
 
     const insertSlashesInContent = () => {
         let new_content = questionContent.replace(/ /g, '/')
         setQuestionContent(new_content)
     }
-// <SimpleEditor initialContent={instruction} ref={editorRef} />
-    //kpham: Javascript lesson: use dynamic key (i.e, format state variable) to index into formatConversion object
-        return (
-            <div className='bg-bgColor0'>
-                <div className='text-textColor1'>Create question</div>
+
+    return (
+      <div className="bg-bgColor2 text-textColor2 p-5 rounded shadow-lg w-1/3">
+        <h3 className="text-xl font-bold mb-4">Create Question, Quiz Id: {quiz_id}</h3>
+        <p>{content}</p>
+        <div className="flex justify-end mt-4">
+          <button
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            onClick={onClose}
+          >
+            Close
+          </button>
+        </div>
+
+            <div className='flex flex-col bg-bgColor1 text-textColor2'>
                 <div className='text-textColor1 mx-10'>{format && formatConversion[format]} ({format})</div>
                  { instruction &&
                     <SimpleEditor initialContent={instruction} ref={editorRef} />
@@ -211,9 +199,7 @@ export default function NewQuestion({
 
                 }
                 </div>
-                {format === "6" &&
-                    <button onClick={insertSlashesInContent} className='bg-bgColor3 text-textColor3 p-1 rounded-md'>Inser slashes</button>
-                }
+              
                 </div>
                 <div className='mx-10 text-textColor1 mb-2'>Answer Key
                     <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={answerKey}
@@ -239,5 +225,10 @@ export default function NewQuestion({
                     <NewWordScramble  ref={wordScrambleRef}/>
                 }
             </div>
-            )
-}
+            
+
+      </div>
+    );
+  };
+
+  export default NewQuestion;
