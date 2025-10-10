@@ -237,7 +237,7 @@ function GenericSortableTable<T extends { itemId: string }>({
         
       </div>
     </DndContext>
-                  <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
+                  <button className='text-textColor1 bg-bgColor1 rounded-lg px-5 pt-3 mt-2'
                   onClick={reset_item_numbers}
                   >
                     Renumber Item

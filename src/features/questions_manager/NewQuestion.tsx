@@ -34,8 +34,11 @@ interface NewQuestionProps {
           const [audioSrc, setAudioSrc] = useState('')
           const [audioStr, setAudioStr] = useState('')
           const [questionContent, setQuestionContent] = useState('')
+         
           const {question_number, format, quiz_has_video, quiz_id} = modal_content
           
+          const [questionNumber, setQuestionNumber] = useState<string>(question_number ? String(question_number) : '') 
+
          // const [questionNumber, setQuestionNumber] = useState({
            // question_number: content ? parseInt(content) + 1 : 1
          // })
@@ -70,10 +73,16 @@ interface NewQuestionProps {
     }
 
     const create_question = async () => {    
+        // validate inputs
+        // validate questionNumber 
+        if (!questionNumber || isNaN(Number(questionNumber))) {
+            alert("Please enter a valid question number")
+            return
+        }
         let new_question_id ;
         
         let question_params = {
-            question_number: question_number,
+            question_number: questionNumber,
             format: format,
             instruction: editorRef.current?.get_content(),
             display_instruction: display_instruction,
@@ -89,7 +98,7 @@ interface NewQuestionProps {
             quiz_id: quiz_id
         }
 
-        console.log("********** question_params to create=", question_params)
+        //console.log("********** question_params to create=", question_params)
 
         if (format === "2") {  
             //console.log("buttonClozeRef.current=", buttonClozeRef.current)
@@ -100,7 +109,7 @@ interface NewQuestionProps {
                 //console.log("MMMMMM my_params=", my_params)
                 const response = await createQuestion(rootUrl, my_params )
                 if (response) {
-                    console.log("button cloze question created ok")
+                   // console.log("button cloze question created ok")
                     new_question_id = response.data.id
                 }
             }
@@ -109,7 +118,7 @@ interface NewQuestionProps {
             if (radioRef.current) {
                 //question_params = radioRef.current.addParams(question_params)
                 const radio_params = radioRef.current.getRadioTexts(question_params)
-                console.log("hereerere radio_params=", radio_params)
+                //console.log("hereerere radio_params=", radio_params)
                 /*
 {
     "choice_1_text": "one",
@@ -125,7 +134,7 @@ interface NewQuestionProps {
                 //console.log("MMMMMM radio_params=", res)
                 const response = await createQuestion(rootUrl, my_params )
                 if (response) {
-                    console.log("button cloze question created ok")
+                   // console.log("button cloze question created ok")
                     new_question_id = response.data.id
                 }
             }
@@ -141,7 +150,7 @@ interface NewQuestionProps {
                 //console.log("MMMMMM my_params=", my_params)
                 const response = await createQuestion(rootUrl, my_params )
                 if (response) {
-                    console.log("button cloze question created ok")
+                    //console.log("button cloze question created ok")
                     new_question_id = response.data.id
                 }
                 
@@ -153,7 +162,7 @@ interface NewQuestionProps {
                 //console.log("MMMMMM radio_params=", res)
                 const response = await createQuestion(rootUrl, my_params )
                 if (response) {
-                    console.log("button cloze question created ok")
+                    //console.log("button cloze question created ok")
                     new_question_id = response.data.id
                 }
             }
@@ -162,18 +171,16 @@ interface NewQuestionProps {
                 //await createQuestion(rootUrl, question_params)
                 const response = await createQuestion(rootUrl, question_params )
                 if (response) {
-                    console.log(" cloze question created ok")
-                    console.log(" ********* response.data=", response.data)   
+                    //console.log(" cloze question created ok")
+                    //console.log(" ********* response.data=", response.data)   
                     new_question_id = response.data.id
                 }
         }
-        console.log("create_question **********  question created, videoSegmentId=", videoSegmentId)
-        console.log(" calling onClose ... quiz_has_video=", quiz_has_video);
-        console.log(" calling onClose ... new_question_id=", new_question_id);
+   
         onClose({ 
             action: 'new',
             itemId: new_question_id,
-            item_number: question_number,
+            item_number: questionNumber !== undefined ? String(questionNumber) : undefined,
             format: format,
             video_segment_id: quiz_has_video ? String(videoSegmentId) : undefined,
          })
@@ -214,8 +221,10 @@ interface NewQuestionProps {
                     <button className='bg-bgColor3 text-textColor1 m-3 p-1' onClick={create_question}>Create question</button>
                     <button className='bg-bgColor2 m-3 p-1 text-white' onClick={handleCancel}>Cancel</button>
                 </div>
+       
                 <div className='mx-10 text-textColor1 mb-2'>Question Number
-                   { question_number}
+                    <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={questionNumber}
+                    onChange={e => setQuestionNumber(e.target.value)}></input>
                 </div>
 
                 <div className='mx-10 bg-bgColor1 text-textColor1 mb-2'>Display Instruction

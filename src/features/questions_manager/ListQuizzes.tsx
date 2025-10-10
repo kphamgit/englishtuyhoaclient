@@ -349,19 +349,19 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
    
   return (
     <>
-     <GenericSortableTable input_data = {quizzes} columns={columns} />
-       <div className='bg-bgColor2 text-textColor2 p-3'>
-     
-               <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
-                   onClick={() => setCreateNewQuiz(!createNewQuiz)}
-                 >
-                   {createNewQuiz ? 'Cancel' : 'Create New Quiz'}
-                 </button>
-                 {createNewQuiz &&
-                   <NewQuiz categoryId={params.categoryId || ''} sub_categoryId={params.sub_categoryId || ''} unit_id={params.unit_id || ''} parent_func={onQuizCreated} />
-                 }
-               </div>
-     <Outlet />
+      <GenericSortableTable input_data={quizzes} columns={columns} />
+      <div className='bg-bgColor2 text-textColor2 p-3'>
+
+        <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
+          onClick={() => setCreateNewQuiz(!createNewQuiz)}
+        >
+          {createNewQuiz ? 'Cancel' : 'Create New Quiz'}
+        </button>
+        {createNewQuiz &&
+          <NewQuiz categoryId={params.categoryId || ''} sub_categoryId={params.sub_categoryId || ''} unit_id={params.unit_id || ''} parent_func={onQuizCreated} />
+        }
+      </div>
+      <Outlet />
     </>
   )
       

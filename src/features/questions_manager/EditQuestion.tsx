@@ -231,7 +231,7 @@ quiz_has_video: boolean;
                 })
         }
 
-        onClose({action: 'edit', video_segment_id: videoSegmentId?.toString()});
+        onClose({action: 'edit',  video_segment_id: videoSegmentId?.toString(), content: questionContent, answer_key: answerKey});
         
     }
     
@@ -277,7 +277,7 @@ quiz_has_video: boolean;
                 </div>
 
                 <div className='mx-10 text-textColor1 mb-2'>Audio text
-                    <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={audioStr}
+                    <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={audioStr || ""}
                     onChange={e => setAudioStr(e.target.value)}></input>
                 </div>
 
