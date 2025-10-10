@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { EditorRef } from './tiptap_editor/SimpleEditor'
 import SimpleEditor from './tiptap_editor/SimpleEditor'
-import { useNavigate, useParams } from 'react-router-dom';
 import { createQuestion } from '../services/list';
 import NewCloze from './NewCloze';
 import { RadioComponentHandle } from './types';
@@ -12,25 +11,43 @@ import NewButtonCloze, { ButtonClozeComponentHandle }  from './NewButtonCloze';
 import NewCheckbox, { NewCheckboxComponentHandle } from './NewCheckbox';
 import { useRootUrl } from '../../contexts/root_url';
 
+import { CloseModalProps, NewModalContentProps } from './ListQuestions';
+
+//export interface CloseNewModalProps {
+   // video_segment_id?: string
+ // }
+
 interface NewQuestionProps {
-    quiz_id: string;
-    content: string;
-    onClose: () => void;
+ 
+   // format: string;
+   //quiz_id: string;
+   // quiz_has_video: boolean;
+    modal_content: NewModalContentProps;
+    onClose: (params: CloseModalProps) => void;
   }
   
-  const NewQuestion: React.FC<NewQuestionProps> = ({ quiz_id, content, onClose }) => {
-     const [format, setFormat] = useState<string>()
+  //const NewQuestion: React.FC<NewQuestionProps> = ({format, quiz_id, quiz_has_video, content, onClose }) => {
+    const NewQuestion: React.FC<NewQuestionProps> = ({ modal_content, onClose }) => {
+    // content is the current question number
+    
           const [prompt, setPrompt] = useState<string>('')
           const [audioSrc, setAudioSrc] = useState('')
           const [audioStr, setAudioStr] = useState('')
           const [questionContent, setQuestionContent] = useState('')
-          const [questionNumber, setQuestionNumber] = useState('')
+          const {question_number, format, quiz_has_video, quiz_id} = modal_content
+          
+         // const [questionNumber, setQuestionNumber] = useState({
+           // question_number: content ? parseInt(content) + 1 : 1
+         // })
           const [answerKey, setAnswerKey] = useState('')
           const [timeLimit, setTimeLimit] = useState('30000')
           const [score, setScore] = useState<number>()
           const [instruction, setInstruction] = useState<string>('instruction')
           const [help1, setHelp1] = useState(null)
           const [display_instruction, setDisplayInstruction] = useState<boolean>(false)
+
+          //for video quiz questions only
+          const [videoSegmentId, setVideoSegmentId] = useState<number>(0)
     
            
       const editorRef = useRef<EditorRef>(null)
@@ -52,9 +69,11 @@ interface NewQuestionProps {
         setAnswerKey(answer_key)
     }
 
-    const create_question = async () => {      
+    const create_question = async () => {    
+        let new_question_id ;
+        
         let question_params = {
-            question_number: questionNumber,
+            question_number: question_number,
             format: format,
             instruction: editorRef.current?.get_content(),
             display_instruction: display_instruction,
@@ -63,11 +82,14 @@ interface NewQuestionProps {
             audio_str: audioStr,
             content: questionContent,
             answer_key: answerKey,
+            videoSegmentId: quiz_has_video ? videoSegmentId : undefined,
             timeout: timeLimit,
             score: score,
             help1: help1,
             quiz_id: quiz_id
         }
+
+        console.log("********** question_params to create=", question_params)
 
         if (format === "2") {  
             //console.log("buttonClozeRef.current=", buttonClozeRef.current)
@@ -76,7 +98,11 @@ interface NewQuestionProps {
                 const button_cloze_options = buttonClozeRef.current?.getChoices()
                 const my_params = {...question_params, button_cloze_options}
                 //console.log("MMMMMM my_params=", my_params)
-                await createQuestion(rootUrl, my_params )
+                const response = await createQuestion(rootUrl, my_params )
+                if (response) {
+                    console.log("button cloze question created ok")
+                    new_question_id = response.data.id
+                }
             }
         }
         else if (format === "4") {    //add parameters for radio questions
@@ -97,7 +123,11 @@ interface NewQuestionProps {
                     radio_params.choice_3_text + '/' + radio_params.choice_4_text
                 const my_params = {...question_params, content: question_content}
                 //console.log("MMMMMM radio_params=", res)
-                await createQuestion(rootUrl, my_params )
+                const response = await createQuestion(rootUrl, my_params )
+                if (response) {
+                    console.log("button cloze question created ok")
+                    new_question_id = response.data.id
+                }
             }
         }
         else if (format === "5") {    //add parameters for radio questions
@@ -109,7 +139,11 @@ interface NewQuestionProps {
                     checkbox_params.choice_3_text + '/' + checkbox_params.choice_4_text
                 const my_params = {...question_params, content: question_content}
                 //console.log("MMMMMM my_params=", my_params)
-                await createQuestion(rootUrl, my_params )
+                const response = await createQuestion(rootUrl, my_params )
+                if (response) {
+                    console.log("button cloze question created ok")
+                    new_question_id = response.data.id
+                }
                 
             }
         }
@@ -117,12 +151,32 @@ interface NewQuestionProps {
                 if (wordScrambleRef.current) {
                 const my_params = {...question_params,  words_scramble_direction: wordScrambleRef.current.getDirection()}
                 //console.log("MMMMMM radio_params=", res)
-                await createQuestion(rootUrl, my_params )
+                const response = await createQuestion(rootUrl, my_params )
+                if (response) {
+                    console.log("button cloze question created ok")
+                    new_question_id = response.data.id
+                }
             }
         }
         else {
-                await createQuestion(rootUrl, question_params)
+                //await createQuestion(rootUrl, question_params)
+                const response = await createQuestion(rootUrl, question_params )
+                if (response) {
+                    console.log(" cloze question created ok")
+                    console.log(" ********* response.data=", response.data)   
+                    new_question_id = response.data.id
+                }
         }
+        console.log("create_question **********  question created, videoSegmentId=", videoSegmentId)
+        console.log(" calling onClose ... quiz_has_video=", quiz_has_video);
+        console.log(" calling onClose ... new_question_id=", new_question_id);
+        onClose({ 
+            action: 'new',
+            itemId: new_question_id,
+            item_number: question_number,
+            format: format,
+            video_segment_id: quiz_has_video ? String(videoSegmentId) : undefined,
+         })
         //const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
         //navigate(url)
         
@@ -131,6 +185,7 @@ interface NewQuestionProps {
     const handleCancel = () => {
        // const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
         //navigate(url)
+        onClose({ action: 'cancel' })
     }
 
     const insertSlashesInContent = () => {
@@ -138,21 +193,20 @@ interface NewQuestionProps {
         setQuestionContent(new_content)
     }
 
+    /*
+ <div className='mx-10 text-textColor1 mb-2'>Question Number
+                    <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={questionNumber}
+                    onChange={e => setQuestionNumber(e.target.value)}></input>
+                </div>
+    */
+
     return (
-      <div className="bg-bgColor2 text-textColor2 p-5 rounded shadow-lg w-1/3">
-        <h3 className="text-xl font-bold mb-4">Create Question, Quiz Id: {quiz_id}</h3>
-        <p>{content}</p>
-        <div className="flex justify-end mt-4">
-          <button
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-            onClick={onClose}
-          >
-            Close
-          </button>
-        </div>
+      <div className="bg-bgColor2 text-textColor2 rounded shadow-lg w-auto p-50">
+           
+        
 
             <div className='flex flex-col bg-bgColor1 text-textColor2'>
-                <div className='text-textColor1 mx-10'>{format && formatConversion[format]} ({format})</div>
+                <div className='text-textColor1 text-lg mx-10 my-5'>New Question, format: {format && formatConversion[format]} ({format})</div>
                  { instruction &&
                     <SimpleEditor initialContent={instruction} ref={editorRef} />
                  }
@@ -161,8 +215,7 @@ interface NewQuestionProps {
                     <button className='bg-bgColor2 m-3 p-1 text-white' onClick={handleCancel}>Cancel</button>
                 </div>
                 <div className='mx-10 text-textColor1 mb-2'>Question Number
-                    <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={questionNumber}
-                    onChange={e => setQuestionNumber(e.target.value)}></input>
+                   { question_number}
                 </div>
 
                 <div className='mx-10 bg-bgColor1 text-textColor1 mb-2'>Display Instruction
@@ -205,8 +258,15 @@ interface NewQuestionProps {
                     <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={answerKey}
                     onChange={e => setAnswerKey(e.target.value)}></input>
                 </div>
-                <div className='mx-10 text-textColor1 mb-2'>Time Limit
-                    <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={timeLimit}
+                <div className='mx-10 text-textColor1 mb-2'>Video Segment ID
+                { quiz_has_video &&
+                    <input className='mx-10 text-textColor2 mb-2 bg-bgColor4' type="number" value={videoSegmentId} 
+                    onChange={e => setVideoSegmentId(Number(e.target.value))}></input>
+                }
+                Starts with 0
+                </div>
+                <div className='mx-10 bg-bgColor2 text-textColor2 mb-2'>Time Limit
+                    <input className='bg-bgColor4 px-2 text-lg text-textColor2 rounded-md w-4/12 mx-1' type="text" value={timeLimit}
                     onChange={e => setTimeLimit(e.target.value)}></input>
                 </div>
                 { (format === "1" || format === "10") && 

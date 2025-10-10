@@ -12,12 +12,28 @@ import { useSortable } from '@dnd-kit/sortable';
 import GenericSortableTable from './GenericSortableTable';
 import { genericItemType } from './ListQuizzes';
 import NewQuestion from './NewQuestion';
+import EditQuestion from './EditQuestion';
+import { pre } from 'framer-motion/client';
 
 interface ShortQuestionProps extends genericItemType{
   format: string
   content: string,
   video_segment_id?: string
 }
+
+export interface CloseModalProps {
+  action: "edit" | "new" | "cancel",
+  video_segment_id?: string,
+  itemId?: string,
+  item_number?: string,
+  format?: string,
+}
+
+/*
+  itemId: "new", // temporary id, will be replaced when the page is refreshed
+          item_number: new_question_number,
+          format: selectedFormat.current,
+*/
 
 
 const formatOptions = [
@@ -34,12 +50,26 @@ const formatOptions = [
   { value: "11", label: "Letter Cloze" },
 ];
 
+export interface NewModalContentProps {
+  quiz_has_video: boolean;
+  format: string;
+  quiz_id: string;
+  question_number: string;
+}
+
+export interface EditModalContentProps {
+  quiz_has_video: boolean;
+  question_id: string;
+  format: string;
+  question_number: string;
+  video_segment_id?: string;
+}
 
 //{ id: string; question_number: number; format: number; content: string; answer_key: string; }[] | undefined' 
 export default function ListQuestions(props:any) {
   //<a class="italic text-blue-300" href="/categories/4/sub_categories/9/list_quizzes/27/questions/135">Questions</a>
   const params = useParams<{ categoryId: string, sub_categoryId: string, unit_id: string, quiz_id: string}>();
-  console.log("***************** params = ", params)
+  //console.log("***************** params = ", params)
   //const url = `units/${params.unit_id}`;
   const [enabledFetchUnit, setEnabledFetchUnit] = useState(true)
   const [questions, setQuestions] = useState<ShortQuestionProps[]>([])
@@ -47,26 +77,40 @@ export default function ListQuestions(props:any) {
   const selectedFormat = useRef<string>("1")
   const navigate = useNavigate()
 
-  const [isModalVisible, setIsModalVisible] = useState(false); // State for modal visibility
-  const [modalContent, setModalContent] = useState<string | null>(null); // State for modal content
+  const [isModalNewVisible, setIsModalNewVisible] = useState(false); // State for modal visibility
+  const [isModalEditVisible, setIsModalEditVisible] = useState(false); // State for modal visibility
+  //const [newModalContent, setNewModalContent] = useState<string | null>(null); // State for modal content
+  const [newModalContent, setNewModalContent] = useState<NewModalContentProps | null>(null); // State for modal content
 
+  const [editModalContent, setEditModalContent] = useState<EditModalContentProps | null>(null);
+
+
+  const formatConversion: { [key: string]: string } = {"1": 'Cloze', "2": "Button Cloze Select", "3": 'Button Select', 
+    "4": "Radio ",  "5": "Checkbox", "6": "Word Scramble", "7": "Speech Recognition", "8": "Word Select",
+    "9": "Recording", "10": "Drop Down", "11": "Letter Cloze",
+}
 
 const { rootUrl } = useRootUrl();
 
  const url = `/quizzes/${params.quiz_id}/get_questions`
  const { data: quiz } = useAxiosFetch<QuizProps>({ url: url, method: 'get' })
 
- console.log("LIST question ***** quiz = ", quiz)
-
   useEffect(() => {
       if (quiz && quiz.questions) {
-        const shortQuestions: ShortQuestionProps[] = quiz.questions.map(({ id, format, question_number }) => ({
-          itemId: id,
-          item_number: question_number.toString(),
-          format: format.toString(),
-          content: "content....",
-        }));
-        console.log("UUUUUUU shortQuestions = ", shortQuestions)
+        
+        const shortQuestions: ShortQuestionProps[] = quiz.questions.map(({ id, format, question_number, videoSegmentId }) => {
+          // Debugging: Log each parameter
+          //console.log("Mapping question:", { id, format, question_number, videoSegmentId });
+        
+          return {
+            itemId: id,
+            item_number: question_number.toString(),
+            format: format.toString(),
+            content: "content....",
+            video_segment_id: videoSegmentId?.toString(), // Optional chaining for cleaner code
+          };
+        });
+        //console.log("UUUUUUU shortQuestions = ", shortQuestions)
         setQuestions(shortQuestions);
       }
     }, [quiz]);
@@ -83,7 +127,7 @@ const { rootUrl } = useRootUrl();
       //setQuestions(prev => prev.filter(vs => vs.itemId !== question_id));
       // update the local state with the new cloned question
       const data = await response.json();
-      //console.log("&&&&&&& cloneQuestion newQuestion =", data)
+
       const new_question = data.new_question;
       // add data.new_question to the originals array after the original question
       // REMEMBER, have to use originals, not questions, to update the local state
@@ -99,7 +143,7 @@ const { rootUrl } = useRootUrl();
           },
           ...originals.slice(index + 1),
         ];
-        //console.log("Updated questions after cloning:", updatedQuestions);
+       
         setQuestions(updatedQuestions);
       //
       }
@@ -141,11 +185,6 @@ const { rootUrl } = useRootUrl();
 //const { data: unit, loading, error } = useAxiosFetch<UnitProps>({ url: url, method: 'get' })
 //console.log("***** quizzes = ", unit?.quizzes)
 
-const [createNewQuestion, setCreateNewQuestion] = useState(false)
-
-const [sorting, setSorting] = useState<SortingState>([]);
-
- const columnHelper = createColumnHelper<any>();
 
 const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
   const { attributes, listeners } = useSortable({
@@ -173,27 +212,9 @@ const child_reset_item_numbers = (new_numbers: {itemId: string, item_number: str
   return response;
 
 }
-
-const updateQuestion = (question_id: string, video_segment_id: string) => {
-  console.log("updateQuestion called with question_id:", question_id, "video_segment_id:", video_segment_id);
-  
-  // get the video_segment_id f
-  const update_params = {
-    video_segment_id: video_segment_id
-  }
-  const response = fetch(`${rootUrl}/api/questions/${question_id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(update_params),
-  });
-  
-  //const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}/edit_question/${question_id}`
-  //console.log("updateQuestion navigate to url:", url);
-  //navigate(url)
-  //return response.json();
-};
+/*
+ formatConversion[format]
+*/
 
 const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
   () => [
@@ -215,6 +236,10 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
     {
       accessorKey: "format",
       header: "Format",
+      cell: (info) => (
+        <span>{formatConversion[info.getValue() as string]}</span>
+       
+      ),
     },
     {
       accessorKey: "content",
@@ -224,56 +249,29 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       accessorKey: "video_segment_id",
       header: "Video Segment ID",
       cell: info => {
-        const initialValue = info.getValue() as string | undefined;
-        const rowIndex = info.row.index; // Get the row index
-        const [value, setValue] = useState(initialValue);
-        const inputRef = useRef<HTMLInputElement>(null);
-        const onBlur = () => {
-          //console.log(`Updated cell value for ${info.column.id} in row ${info.row.index}: ${value}`);
-        setQuestions(prev => {
-        const updatedSegments = [...prev];
-        updatedSegments[rowIndex] = {
-          ...updatedSegments[rowIndex],
-          video_segment_id: value, // Update the segment_number
-        };
-        //console.log("Updated row:", updatedSegments[rowIndex]);
-        return updatedSegments;
-      });
-  
-        };
-        return (
-          <div className='flex items-center'>
-          <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-16 mx-1'
-          ref={inputRef} // Attach the ref to the input field
-            value={value}
-            onChange={e => setValue(e.target.value)}
-            onBlur={onBlur}
-          />
-          </div>
-        );
+        return info.getValue()
       },
     }, 
     {
       id: "edit",
       header: "Edit",
       cell: (info) => (
-        <Link className="italic text-blue-300" to={`edit_question/${info.row.original.itemId}`}>
-          Edit
-        </Link>
-      ),
-    },
-    {
-      id: "update",
-      header: "Update",
-      cell: (info) => (
+        <>
+       
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-          onClick={() => updateQuestion(info.row.original.itemId, info.row.original.video_segment_id || '')}
+          onClick={() => {
+              editQuestion(info.row.original.itemId, info.row.original.item_number)
+            } 
+            
+          }
         >
-          Update
+          Edit
         </button>
+        </>
       ),
     },
+  
     {
       id: "delete",
       header: "Delete",
@@ -343,27 +341,92 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
     return response.json();
   };
 
-  const closeModal = () => {
-    setIsModalVisible(false);
-    setModalContent(null);
+  const closeModal = (params: CloseModalProps) => {
+    if (params.action === "cancel") {
+      setIsModalEditVisible(false);
+      setIsModalNewVisible(false);
+      setEditModalContent(null);
+      setNewModalContent(null);
+      return;
+    }
+
+    if (isModalEditVisible) {
+      console.log(" closeModal params = ", params)
+      setIsModalEditVisible(false);
+      setEditModalContent(null);
+      //update the questions table to reflect any changes made in the edit modal
+      // first, look for the row that was edited
+      
+      const updatedQuestions = questions.map(q => 
+        {
+          console.log("q.itemId =", q.itemId, " editModalContent?.question_id =", editModalContent?.question_id)
+        if (q.itemId === editModalContent?.question_id) {
+          return {
+            ...q,
+             video_segment_id: params.video_segment_id, // 
+          };
+        }
+        return q;
+      }); 
+      
+      console.log("updatedQuestions =", updatedQuestions)
+      setQuestions(updatedQuestions);
+     
+      return;
+    }
+    if (isModalNewVisible) {
+      setIsModalNewVisible(false);
+      setNewModalContent(null);
+      // add a new question to the questions table to reflect any changes made in the new modal
+      if (params.video_segment_id) {
+        // only add if there is a video segment id
+        //const new_question_number = (questions.length + 1).toString();
+        const new_question: ShortQuestionProps = {
+          itemId: params.itemId || "temporary_id", // temporary id, will be replaced when the page is refreshed
+          item_number: params.item_number || "0", // Default to "0" if undefined
+          format: params.format || "1", // Default to "1" if undefined
+          content: "content....",
+          video_segment_id: params.video_segment_id,
+        };
+        setQuestions([...questions, new_question]);
+      }
+      setIsModalNewVisible(false);
+      setNewModalContent(null);
+      return;
+    }
+
+    /*
+  // Update the local state to remove the deleted question
+      const updatedQuestions = originals.filter(q => q.itemId !== question_id);
+      setQuestions(updatedQuestions);
+    */
+
+ 
   };
 
   //<Route path="sub_categories/:sub_categoryId/list_questions/:quiz_id/create_question/:format/:last_question_number" element={<QuestionCreator
-  const createQuestion = (current_question_id: string) => {
+  const createQuestion = (current_question_number: string) => {
     console.log("createQuestion called with ^^^^^^^^^^^^^^ selectedFormat:", selectedFormat);
 
-    setModalContent(`Creating question with ID: ${current_question_id}`);
-    setIsModalVisible(true);
-
-    /*
-    //console.log("createQuestion called with question_props:", question_props);
-    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_questions/${params.quiz_id}/create_question/${selectedFormat.current}/${current_question_id}`
-   // console.log("createQuestion ******** navigate to url:", url);
-    navigate(url)
-    */
+    setNewModalContent({ 
+      question_number: (parseInt(current_question_number) + 1).toString(), 
+      quiz_has_video: !!(quiz?.video_url && quiz.video_url.length > 0), 
+      format: selectedFormat.current, 
+      quiz_id: params.quiz_id || ""});
+    
+      setIsModalNewVisible(true);
     
   };
 
+  const editQuestion = (current_question_id: string, current_question_number: string) => {
+    console.log("createQuestion called with ^^^^^^^^^^^^^^ selectedFormat:", selectedFormat);
+
+    setEditModalContent({question_id: current_question_id,
+        format: selectedFormat.current, 
+        question_number: current_question_number, 
+        quiz_has_video: !!(quiz?.video_url && quiz.video_url.length > 0),});
+    setIsModalEditVisible(true);
+  }
   /*
 {
     "categoryId": "10",
@@ -409,9 +472,17 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
         />
       <div className='bg-bgColor2 text-textColor2 p-3'>
 
-      {isModalVisible && (
+      {isModalNewVisible && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <NewQuestion quiz_id={params.quiz_id || ""} content={modalContent || ""} onClose={closeModal} />
+          <NewQuestion 
+           modal_content={newModalContent!} onClose={closeModal} />
+        </div>
+      )}
+     
+          {isModalEditVisible && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <EditQuestion 
+           modal_content={editModalContent!} onClose={closeModal} />
         </div>
       )}
       
@@ -422,12 +493,21 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       
 }
 
+/*
+
+*/
+
 //categories/4/sub_categories/9/list_quizzes/27/questions/120/edit_question/2492
 
 ///categories/10/sub_categories/24/list_quizzes/71/questions/310/sub_categories/24/list_questions/310/create_question/1/1"
 // <DataTable columns={columns} data={data} />
 
 /*
+
+ <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <EditQuestion  modal_content={editModalConten} onClose={() => setIsEditModalVisible(false)} />
+        </div>
+
   <button
           className="text-textColor1 bg-bgColor1 rounded-lg p-2 m-2"
           onClick={() => {

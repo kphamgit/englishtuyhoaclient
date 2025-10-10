@@ -91,7 +91,7 @@ function GenericSortableTable<T extends { itemId: string }>({
   parent_notify_reset_item_numbers,
 }: GenericTableProps<T>) {
   useEffect(() => {
-    //console.log("********************** quiz_data prop updated:", table_data);
+    //console.log("GenericSortableTable ***** input data  updated:", input_data);
     setData(input_data);
   }
   , [input_data]);
@@ -156,20 +156,20 @@ function GenericSortableTable<T extends { itemId: string }>({
    // console.log("Renumbering column id:", );
 
    const item_ids = getColumnValues('itemId') as string[];
-   console.log("item ids:", item_ids);
+   //console.log("item ids:", item_ids);
 
     const sorted_numbers: string[] = getColumnValues('item_number') as string[];
     for (let i = 0; i < sorted_numbers.length; i++) {
       sorted_numbers[i] = (i + 1).toString();
     }
-    console.log("sorted item numbers:", sorted_numbers);
+    //console.log("sorted item numbers:", sorted_numbers);
 
     // join item_ids and sorted_numbers into array of objects
     const combined = item_ids.map((id, index) => ({
       itemId: id,
       item_number: sorted_numbers[index],
     }));
-    console.log("combined item ids and numbers:", combined);
+   // console.log("combined item ids and numbers:", combined);
 
 
     parent_notify_reset_item_numbers?.(combined); // notify parent component if callback prop is provided

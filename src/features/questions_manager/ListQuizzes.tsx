@@ -50,10 +50,10 @@ const { rootUrl } = useRootUrl();
 const {data: unit} = useQuery({
   queryKey: ['unit', params.unit_id],
   queryFn: async () => {
-    console.log("Fetching unit data for unit_id:", params.unit_id);
+    //console.log("Fetching unit data for unit_id:", params.unit_id);
     const url = `${rootUrl}/api/units/${params.unit_id}`;
     //console.log("url =", url)
-    console.log("Query key:", ['unit', params.unit_id]);
+   // console.log("Query key:", ['unit', params.unit_id]);
     
     const response = await fetch(url);
     if (!response.ok) {
@@ -73,7 +73,7 @@ const {data: unit} = useQuery({
 
 useEffect(() => {
   if (unit) {
-    console.log("Unit data updated:", unit);
+    //console.log("Unit data updated:", unit);
     /*
 [
     {

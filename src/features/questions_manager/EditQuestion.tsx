@@ -18,12 +18,33 @@ import EditButtonCloze from './EditButtonCloze';
 import { NewCheckboxComponentHandle } from './NewCheckbox';
 import EditCheckbox from './EditCheckbox';
 import { useRootUrl } from '../../contexts/root_url';
+import { EditModalContentProps } from './ListQuestions';
+import { CloseModalProps } from './ListQuestions';
+
+interface EditQuestionProps {
+    modal_content: EditModalContentProps;
+    onClose: (params: CloseModalProps) => void;
+  }
+  
+  /*
+quiz_has_video: boolean;
+  format: string;
+  quiz_id: string;
+  question_number: string;
+  onClose: () => void;
+  */
 
 
-export default function QuestionEditor(props: any) {
+//export default function EditQuestion({ question_id, video_segment_id, onClose }: EditQuestionProps) {
+//export default function EditQuestion( props: EditModalContentProps ) {
+//export default function EditQuestion( { modal_content,  onClose }: EditQuestionProps ) {
+    const EditQuestion: React.FC<EditQuestionProps> = ({ modal_content, onClose }) => {
+//export default function EditQuestion(props: any) {
+      //const [format, setFormat] = useState<string>()
+      //const [questionNumber, setQuestionNumber] = useState<number>()
+      const  {question_id, question_number,  format, quiz_has_video } = modal_content
 
-      const [format, setFormat] = useState<string>()
-      const [questionNumber, setQuestionNumber] = useState<number>()
+      const [videoSegmentId, setVideoSegmentId] = useState<number | undefined>(undefined)
       const [prompt, setPrompt] = useState<string>('null')
       const [audioSrc, setAudioSrc] = useState('')
       const [audioStr, setAudioStr] = useState('')
@@ -58,11 +79,19 @@ export default function QuestionEditor(props: any) {
       const editorRef = useRef<EditorRef>(null)
 
       const navigate = useNavigate();
-      const params = useParams<{categoryId: string, sub_categoryId: string, unit_id: string,  quiz_id: string, question_id: string}>();
+      /*
+      const params = useParams<{
+        categoryId: string, 
+        sub_categoryId: string, 
+        unit_id: string,  
+        quiz_id: string, 
+        question_id: string}>();
      // console.log("MMMMNNNNNNN question editor:  params", params)
+     */
+
       const {rootUrl} = useRootUrl();
 
-      const url = `/questions/${params.question_id}`
+      const url = `/questions/${question_id}`
       //console.log("url ", url)
       const { data: question, loading, error } =
           useAxiosFetch<QuestionProps>({ url: url, method: 'get' })
@@ -71,8 +100,8 @@ export default function QuestionEditor(props: any) {
     useEffect(() => {
         if (question) {
         //console.log("HEEEHWWWHWWWWwwww.......... question:", question)
-        setFormat(question.format.toString())
-        setQuestionNumber(question.question_number)
+        //setFormat(question.format.toString())
+        
         //console.log("here question instrcution", question.instruction)
         //console.log("here question instrcution LENGTH=", question.instruction.length)
         if (question.instruction.length > 0) {
@@ -90,6 +119,7 @@ export default function QuestionEditor(props: any) {
         setAnswerKey(question.answer_key)
         setTimeLimit(question.timeout.toString())
         setScore(question.score)
+        setVideoSegmentId(question?.videoSegmentId || 0)
         
         //if (question.radio != null) {
            // setRadioContent(question.content ? question.radio : undefined)
@@ -115,7 +145,7 @@ export default function QuestionEditor(props: any) {
 
     const update_question = () => {
         let question_params = {
-            format: format,
+           
             instruction: editorRef.current?.get_content(),
             display_instruction: display_instruction,
             prompt: prompt,
@@ -125,7 +155,8 @@ export default function QuestionEditor(props: any) {
             answer_key: answerKey,
             timeout: timeLimit,
             score: score,
-            help1: help1
+            help1: help1,
+            videoSegmentId: videoSegmentId
         }
         
         if (format === "2") {  
@@ -139,8 +170,8 @@ export default function QuestionEditor(props: any) {
                 
                 updateQuestion(rootUrl, question?.id, {...question_params, button_cloze_options} )
                 .then(response => {
-                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
-                    navigate(url)
+                    //const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+                   // navigate(url)
                  })
                     
                  //button_cloze_options: { button_cloze_choices: 'choice1/choice2/choice3' }
@@ -158,8 +189,8 @@ export default function QuestionEditor(props: any) {
                 
                 updateQuestion(rootUrl, question?.id, my_params )
                 .then(response => {
-                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
-                    navigate(url)
+                   //const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+                   // navigate(url)
                  })
                  
             }
@@ -173,8 +204,8 @@ export default function QuestionEditor(props: any) {
                 //console.log("MMMMMM my_params=", my_params)
                 updateQuestion(rootUrl, question?.id, my_params)
                     .then(response => {
-                        const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
-                        navigate(url)
+                       // const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+                       // navigate(url)
                     })
 
             }
@@ -185,27 +216,30 @@ export default function QuestionEditor(props: any) {
                 //console.log("MMMMMM radio_params=", res)
                 updateQuestion(rootUrl, question?.id, my_params )
                 .then(response => {
-                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
-                    navigate(url)
+                   // const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+                   // navigate(url)
                  })
             }
         }
         else {
            // console.log("Update question!!!")
-            updateQuestion(rootUrl, params.question_id, question_params)
+            updateQuestion(rootUrl, question_id, question_params)
                 .then(response => {
-                    const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+                   // const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
                     //console.log("XXXXX UTL", url)
-                    navigate(url)
+                   // navigate(url)
                 })
         }
+
+        onClose({action: 'edit', video_segment_id: videoSegmentId?.toString()});
         
     }
     
     const handleCancel = () => {
-        const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
+        //const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
         //console.log("XXXXX UTL", url)
-        navigate(url)
+        //navigate(url)
+        onClose({action: 'cancel'});
     }
 
     const insertSlashesInContent = () => {
@@ -216,9 +250,9 @@ export default function QuestionEditor(props: any) {
     // <SimpleEditor initialContent={instruction} ref={editorRef} />
     //kpham: Javascript lesson: use dynamic key (i.e, format state variable) to index into formatConversion object
         return (
-            <div className='bg-bgColor1'>
-                <div>EDITOR........</div>
-                <div className='mx-10 text-textColor1'>Question: {question?.question_number}
+            <div className='bg-bgColor1 p-10'>
+                <div className='text-xl'>Edit</div>
+                <div className='mx-10 text-textColor1 mb-4'>Question: {question?.question_number}
                 <span className='mx-2 text-textColor1'>{format && formatConversion[format]} ({format}) </span>
                 </div>
                  { instruction &&
@@ -269,6 +303,18 @@ export default function QuestionEditor(props: any) {
                 }
                 </div>
 
+                <div className='mx-10 text-textColor1 mb-2'>Video Segment ID
+                { quiz_has_video &&
+                   <input
+                   className="mx-10 text-textColor2 mb-2 bg-bgColor4"
+                   type="number"
+                   value={videoSegmentId}
+                   onChange={(e) => setVideoSegmentId(Number(e.target.value))}
+                 />
+                }
+                Starts with 0
+                </div>
+
                 <div className='mx-10 text-textColor1 mb-2'>Answer Key
                     <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={answerKey}
                     onChange={e => setAnswerKey(e.target.value)}></input>
@@ -303,4 +349,7 @@ export default function QuestionEditor(props: any) {
             </div>
             )
 }
+
+
+export default EditQuestion;
 
