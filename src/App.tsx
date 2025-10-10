@@ -34,8 +34,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const Home = lazy(() => import("./home_page/components/Home"))
 
 const CategoryPage = lazy(() => import("./home_page/components/CategoryPage"))
-const QuestionEditor = lazy(() => import("./features/questions_manager/QuestionEditor"))
-const QuestionCreator = lazy(() => import("./features/questions_manager/QuestionCreator"))
 const QuizAttemptsManager = lazy(() => import("./features/components/QuizAttemptsManager"))
 const SocketContextComponent = lazy(() => import("./contexts/socket_context/Component"))
 const S3ObjectsManager = lazy(() => import("./features/components/S3ObjectsManager"))
@@ -102,11 +100,9 @@ function App() {
                   </Route>
                   <Route path="sub_categories/:sub_categoryId/edit" element={<EditSubCategory />} />
                   <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/edit_quiz/:quiz_id" element={<QuizEditor />} />
-                  <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/questions/:quiz_id/edit_question/:question_id" element={<QuestionEditor />} />
-                  <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/questions/:quiz_id/take_question/:question_number" element={<QuestionEditor />} />
                   <Route path="sub_categories/:sub_categoryId/create_unit" element={<NewUnit />} />
                   <Route path="sub_categories/:sub_categoryId/edit_unit/:unit_id" element={<UnitEditor />} />
-                  <Route path="sub_categories/:sub_categoryId/list_questions/:quiz_id/create_question/:format/:last_question_number" element={<QuestionCreator />} />
+
                 </Route>
                 <Route path="/new_category" element={<NewCategory />} ></Route>
                 <Route path="/utils" element={<Utils />} >
