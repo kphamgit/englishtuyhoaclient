@@ -71,12 +71,11 @@ export default function ListQuestions(props:any) {
   const params = useParams<{ categoryId: string, sub_categoryId: string, unit_id: string, quiz_id: string}>();
   //console.log("***************** params = ", params)
   //const url = `units/${params.unit_id}`;
-  const [enabledFetchUnit, setEnabledFetchUnit] = useState(true)
+  
   const [questions, setQuestions] = useState<ShortQuestionProps[]>([])
   //const [selectedFormat, setSelectedFormat] = useState<string>("1"); // State for dropdown selection
   const selectedFormat = useRef<string>("1")
-  const navigate = useNavigate()
-
+  
   const [isModalNewVisible, setIsModalNewVisible] = useState(false); // State for modal visibility
   const [isModalEditVisible, setIsModalEditVisible] = useState(false); // State for modal visibility
   //const [newModalContent, setNewModalContent] = useState<string | null>(null); // State for modal content
@@ -84,6 +83,7 @@ export default function ListQuestions(props:any) {
 
   const [editModalContent, setEditModalContent] = useState<EditModalContentProps | null>(null);
 
+  const [isVideoQuiz, setIsVideoQuiz] = useState<boolean>(false);
 
   const formatConversion: { [key: string]: string } = {"1": 'Cloze', "2": "Button Cloze Select", "3": 'Button Select', 
     "4": "Radio ",  "5": "Checkbox", "6": "Word Scramble", "7": "Speech Recognition", "8": "Word Select",
@@ -93,8 +93,38 @@ export default function ListQuestions(props:any) {
 const { rootUrl } = useRootUrl();
 
  const url = `/quizzes/${params.quiz_id}/get_questions`
- const { data: quiz } = useAxiosFetch<QuizProps>({ url: url, method: 'get' })
+ //const { data: quiz } = useAxiosFetch<QuizProps>({ url: url, method: 'get' })
 
+
+  useEffect(() => {
+    // fetch questions on component load using fetch utility
+    fetch(`${rootUrl}/api/quizzes/${params.quiz_id}/get_questions`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      //console.log("Fetched questions data = ", data)
+      setIsVideoQuiz(!!(data.video_url && data.video_url.length > 0));
+      const shortQuestions: ShortQuestionProps[] = data.questions.map(({ id, format, question_number, videoSegmentId }: any) => {
+        return {
+          itemId: id,
+          item_number: question_number.toString(),
+          format: format.toString(),
+          content: "content....",
+          video_segment_id: videoSegmentId?.toString(), // Optional chaining for cleaner code
+        };
+      });
+      setQuestions(shortQuestions);
+    })
+    .catch(error => {
+      console.error("Error fetching questions: ", error);
+    });
+  }, [params.quiz_id, rootUrl]);
+
+ /*
   useEffect(() => {
       if (quiz && quiz.questions) {
         
@@ -114,6 +144,7 @@ const { rootUrl } = useRootUrl();
         setQuestions(shortQuestions);
       }
     }, [quiz]);
+    */
 
     const cloneQuestion = async (question_id: string, originals: any) => {
       console.log("cloneQuestion called with question_id:", question_id);
@@ -280,7 +311,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
           onClick={() => { 
             const originals = info.table.getRowModel().rows.map((row: any) => row.original);
-            console.log("cloneQuestion originals =", originals);
+            //console.log("cloneQuestion originals =", originals);
             deleteQuestion( info.row.original.itemId, originals)
           }
         }
@@ -359,7 +390,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       
       const updatedQuestions = questions.map(q => 
         {
-          console.log("q.itemId =", q.itemId, " editModalContent?.question_id =", editModalContent?.question_id)
+          //console.log("q.itemId =", q.itemId, " editModalContent?.question_id =", editModalContent?.question_id)
         if (q.itemId === editModalContent?.question_id) {
           return {
             ...q,
@@ -406,11 +437,11 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
 
   //<Route path="sub_categories/:sub_categoryId/list_questions/:quiz_id/create_question/:format/:last_question_number" element={<QuestionCreator
   const createQuestion = (current_question_number: string) => {
-    console.log("createQuestion called with ^^^^^^^^^^^^^^ selectedFormat:", selectedFormat);
+    //console.log("createQuestion called with ^^^^^^^^^^^^^^ selectedFormat:", selectedFormat);
 
     setNewModalContent({ 
       question_number: (parseInt(current_question_number) + 1).toString(), 
-      quiz_has_video: !!(quiz?.video_url && quiz.video_url.length > 0), 
+      quiz_has_video: isVideoQuiz,
       format: selectedFormat.current, 
       quiz_id: params.quiz_id || ""});
     
@@ -424,7 +455,9 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
     setEditModalContent({question_id: current_question_id,
         format: selectedFormat.current, 
         question_number: current_question_number, 
-        quiz_has_video: !!(quiz?.video_url && quiz.video_url.length > 0),});
+        quiz_has_video: isVideoQuiz
+      
+      });
     setIsModalEditVisible(true);
   }
   /*
@@ -448,7 +481,8 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
 
   return (
     <>
-    <div className='bg-bgColor2 text-textColor2'>Selected fornat: {selectedFormat.current}</div>
+   
+    <div className='bg-bgColor1 text-textColor1'>Video Quiz? {isVideoQuiz.toString()}</div>
     <div className='bg-bgColor2 text-textColor1 p-2 flex flex-row justify-center text-xl mt-3 mb-3'>
     <select
         id="formatDropdown"
@@ -464,7 +498,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
         ))}
       </select>
     </div>
-    <div className='bg-bgColor2 text-textColor2 mb-5  text-xl'>Quiz id: {quiz?.id}</div>
+    
       <GenericSortableTable 
         input_data={questions} 
         columns={columns} 
