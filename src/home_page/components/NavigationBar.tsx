@@ -26,7 +26,6 @@ interface SubCategory {
 export function NavigationBar(props: any) {
     
     const user = useAppSelector(state => state.user.value)
-    const { data: categories, loading, error } = useAxiosFetch<Category[]>({ url: '/categories', method: 'get' });
     const { darkTheme, toggleTheme } = useContext(ThemeContext) as ThemeContextInterface;
     const navigate = useNavigate();
 
@@ -54,39 +53,21 @@ export function NavigationBar(props: any) {
            </div>
           </div>
              <div className="flex flex-row p-0 gap-1 justify-center bg-bgColor">
-              {categories?.map((category:any) => (
-                <div key={category.id} className='flex flex-row'>
-                  <NavLink
-                    to={`/categories/${category.id}`}
-                    className={({ isActive }) => {
-                      return isActive ? 'text-textColor1 bg-navCatButtonBgActive text-lg p-2 rounded-t-md' : 'rounded-md text-lg text-textColor1 bg-navCatButtonBgInActive p-2 hover:bg-navCatButtonBgInHover';
-                    }}
-                  >
-                    {category.name}
-                  </NavLink>
-                  <NavLink
-                    to={`/categories/${category.id}/edit_category`}
-                    className={({ isActive }) => {
-                      return isActive ? 'text-textColor1 bg-navCatButtonBgActive text-lg p-0 rounded-t-md' : 'rounded-md text-lg text-textColor1 bg-navCatButtonBgInActive p-2 hover:bg-navCatButtonBgInHover';
-                    }}
-                  >
-                    (E)
-                  </NavLink>
-                </div>
-              ))}
-               <div className='text-textColor1 bg-bgColor1 p-2'>
-                <NavLink
-                    to={`/new_category`}
-                  >
-                    New Category
-                </NavLink>
-               </div>
+
                <div className='text-textColor1 bg-bgColor1 p-2'>
                 <NavLink
                     to={`/utils`}
                   >
                     Utils
                 </NavLink>
+                </div>
+                <div className='text-textColor1 bg-bgColor1 p-2'>
+                <NavLink
+                    to={`/categories`}
+                  >
+                    Categories
+                </NavLink>
+                
                </div>
             </div>
            

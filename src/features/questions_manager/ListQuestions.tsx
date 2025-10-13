@@ -2,21 +2,20 @@
 import { useAxiosFetch } from '../../hooks';
 //import { QuestionProps } from '../components/Question';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, Outlet, useNavigate, useParams } from 'react-router-dom';
-import { ColumnDef, createColumnHelper , SortingState} from '@tanstack/table-core';
-import { QuizProps } from './types';
+import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
+import { ColumnDef} from '@tanstack/table-core';
+
 import { useRootUrl } from '../../contexts/root_url';
 
 import { useSortable } from '@dnd-kit/sortable';
 
-import GenericSortableTable from './GenericSortableTable';
-import { genericItemType } from './ListQuizzes';
+import GenericSortableTable, { genericItemType } from './GenericSortableTable';
+
 import NewQuestion from './NewQuestion';
 import EditQuestion from './EditQuestion';
-import { a, animate } from 'framer-motion/client';
 
 
-interface ShortQuestionProps extends genericItemType{
+interface ShortQuestionProps extends genericItemType {
   format: string
   content: string,
   video_segment_id?: string
@@ -72,9 +71,18 @@ export interface EditModalContentProps {
 //{ id: string; question_number: number; format: number; content: string; answer_key: string; }[] | undefined' 
 export default function ListQuestions(props:any) {
   //<a class="italic text-blue-300" href="/categories/4/sub_categories/9/list_quizzes/27/questions/135">Questions</a>
-  const params = useParams<{ categoryId: string, sub_categoryId: string, unit_id: string, quiz_id: string}>();
-  //console.log("***************** params = ", params)
+  const params = useParams<{ categoryId: string, sub_categoryId: string, unitId: string, quizId: string}>();
+  //console.log(" ListQuestions ***************** params = ", params)
   //const url = `units/${params.unit_id}`;
+  /*
+{
+    "categoryId": "1",
+    "sub_categoryId": "6",
+    "unitId": "65",
+    "quizId": "231"
+}
+  */
+
   
   const [questions, setQuestions] = useState<ShortQuestionProps[]>([])
   //const [selectedFormat, setSelectedFormat] = useState<string>("1"); // State for dropdown selection
@@ -90,6 +98,15 @@ export default function ListQuestions(props:any) {
   const [isVideoQuiz, setIsVideoQuiz] = useState<boolean>(false);
   
 
+   const [quizLink, setQuizLink] = useState<string>('');
+
+   const [unitLink, setUnitLink] = useState<string>('');
+
+   const [subCategoryLink, setSubCategoryLink] = useState<string>('');
+
+   const [quizName, setQuizName] = useState<string>('');
+   const [quizNumber, setQuizNumber] = useState<string>('');
+
   const formatConversion: { [key: string]: string } = {"1": 'Cloze', "2": "Button Cloze Select", "3": 'Button Select', 
     "4": "Radio ",  "5": "Checkbox", "6": "Word Scramble", "7": "Speech Recognition", "8": "Word Select",
     "9": "Recording", "10": "Drop Down", "11": "Letter Cloze",
@@ -97,13 +114,22 @@ export default function ListQuestions(props:any) {
 
 const { rootUrl } = useRootUrl();
 
- const url = `/quizzes/${params.quiz_id}/get_questions`
- //const { data: quiz } = useAxiosFetch<QuizProps>({ url: url, method: 'get' })
+ const location = useLocation(); // Get the location object
+     const queryParams = new URLSearchParams(location.search); // Pars
+
+     const categoryFilter = queryParams.get('category');
+     //console.log("ListQuestions:  categoryFilter=", categoryFilter);
+    
+     const subCategoryFilter = queryParams.get('sub_category');
+      //console.log("ListQuestions:  subCategoryFilter=", subCategoryFilter);
+
+      const unitFilter = queryParams.get('unit');
+      //console.log("ListQuestions:  unitFilter=", unitFilter);
 
 
   useEffect(() => {
     // fetch questions on component load using fetch utility
-    fetch(`${rootUrl}/api/quizzes/${params.quiz_id}/get_questions`, {
+    fetch(`${rootUrl}/api/quizzes/${params.quizId}/get_questions`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -112,6 +138,12 @@ const { rootUrl } = useRootUrl();
     .then(response => response.json())
     .then(data => {
       //console.log("Fetched questions data = ", data)
+
+      setQuizName(data.name || '');
+      setQuizNumber(data.quiz_number ? data.quiz_number.toString() : '');
+      setQuizLink(`/${params.categoryId}/list_sub_categories/${params.sub_categoryId}/list_units/${params.unitId}/list_quizzes?category=${categoryFilter}&sub_category=${subCategoryFilter}&unit=${unitFilter}`);
+      setUnitLink(`/${params.categoryId}/list_sub_categories/${params.sub_categoryId}/list_units?category=${categoryFilter}&sub_category=${subCategoryFilter}`);
+      setSubCategoryLink(`/${params.categoryId}/list_sub_categories?category=${categoryFilter}`);
       setIsVideoQuiz(!!(data.video_url && data.video_url.length > 0));
       const shortQuestions: ShortQuestionProps[] = data.questions.map(({ id, format, question_number, content, answer_key, videoSegmentId }: any) => {
         return {
@@ -128,29 +160,7 @@ const { rootUrl } = useRootUrl();
     .catch(error => {
       console.error("Error fetching questions: ", error);
     });
-  }, [params.quiz_id, rootUrl]);
-
- /*
-  useEffect(() => {
-      if (quiz && quiz.questions) {
-        
-        const shortQuestions: ShortQuestionProps[] = quiz.questions.map(({ id, format, question_number, videoSegmentId }) => {
-          // Debugging: Log each parameter
-          //console.log("Mapping question:", { id, format, question_number, videoSegmentId });
-        
-          return {
-            itemId: id,
-            item_number: question_number.toString(),
-            format: format.toString(),
-            content: "content....",
-            video_segment_id: videoSegmentId?.toString(), // Optional chaining for cleaner code
-          };
-        });
-        //console.log("UUUUUUU shortQuestions = ", shortQuestions)
-        setQuestions(shortQuestions);
-      }
-    }, [quiz]);
-    */
+  }, [params.quizId, rootUrl]);
 
     const cloneQuestion = async (question_id: string, originals: any) => {
       //console.log("cloneQuestion called with question_id:", question_id);
@@ -187,16 +197,7 @@ const { rootUrl } = useRootUrl();
         })));
       //
       }
-      /*
-      setQuestions(prev => [...prev, {
-        itemId: data.new_question.id,
-        item_number: data.new_question.question_number.toString(),
-        format: data.new_question.format.toString(),
-        content: data.new_question.content || 'content....',
-      }]);
-      */
-
-      //return response.json();
+   
     };
 
     const deleteQuestion = async (question_id: string,  originals: ShortQuestionProps[]) => {
@@ -241,7 +242,7 @@ const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
   );
 };
 
-const child_reset_item_numbers = (new_numbers: {itemId: string, item_number: string}[]) => {
+const child_reset_item_numbers = (new_numbers: {itemId: string, item_number: number}[]) => {
   //console.log("test_function called value =", value)
   //console.log("child_reset_item_numbers called new_numbers =", new_numbers)
   // use fetch api to post new_numbers to backend /api/questions/renumber',
@@ -444,7 +445,7 @@ videoSegmentId?.toString(), content: questionContent, answer_key: answerKey});
         //const new_question_number = (questions.length + 1).toString();
         const new_question: ShortQuestionProps = {
           itemId: params.itemId || "temporary_id", // temporary id, will be replaced when the page is refreshed
-          item_number: params.item_number || "0", // Default to "0" if undefined
+          item_number: parseInt(params.item_number || "0"), // Default to "0" if undefined
           format: params.format || "1", // Default to "1" if undefined
           content: "content....",
           video_segment_id: params.video_segment_id,
@@ -479,52 +480,56 @@ videoSegmentId?.toString(), content: questionContent, answer_key: answerKey});
   };
 
   //<Route path="sub_categories/:sub_categoryId/list_questions/:quiz_id/create_question/:format/:last_question_number" element={<QuestionCreator
-  const createQuestionFromRow = (current_question_number: string) => {
+  const createQuestionFromRow = (current_question_number: number) => {
     //console.log("createQuestion called with ^^^^^^^^^^^^^^ selectedFormat:", selectedFormat);
 
     setNewModalContent({ 
-      question_number: (parseInt(current_question_number) + 1).toString(), 
+      question_number: (current_question_number + 1).toString(), 
       quiz_has_video: isVideoQuiz,
       format: selectedFormat.current, 
-      quiz_id: params.quiz_id || ""});
+      quiz_id: params.quizId || ""});
     
       setIsModalNewVisible(true);
     
   };
 
-  const editQuestion = (current_question_id: string, current_question_number: string) => {
+  const editQuestion = (current_question_id: string, current_question_number: number) => {
     //console.log("createQuestion called with ^^^^^^^^^^^^^^ selectedFormat:", selectedFormat);
 
     setEditModalContent({question_id: current_question_id,
         format: selectedFormat.current, 
-        question_number: current_question_number, 
+        question_number: current_question_number.toString(), 
         quiz_has_video: isVideoQuiz
       
       });
     setIsModalEditVisible(true);
   }
-  /*
-{
-    "categoryId": "10",
-    "sub_categoryId": "24",
-    "unit_id": "71",
-    "quiz_id": "310"
-}
-  */
-
-/*
-            categoryId: string, 
-            sub_categoryId: string, 
-            unit_id: string, 
-            quiz_id: string, 
-            format: string, 
-            last_question_number: string
-*/
-
 
   return (
     <>
-   
+     <div className='flex justify-between items-center mb-4'>
+      <Link to="/" className='bg-bgColor2 text-textColor2 text-2xl italic'>Home</Link>
+      </div>
+    <div className='bg-bgColor2 text-textColor2 text-xl flex flex-row justify-start items-center mb-4'>
+        <div>
+          <Link className='bg-bgColor2 italic underline text-textColor2 text-xl my-4 mx-1' to={subCategoryLink}>
+            {` ${categoryFilter}`}
+          </Link> {'->'}
+        </div>
+        <div>
+          <Link className='bg-bgColor2 italic underline text-textColor2 text-xl my-4 mx-1' to={unitLink}>
+            {` ${subCategoryFilter}`}
+          </Link> {'->'}
+        </div>
+        
+        <div>
+          <Link className='bg-bgColor2 italic underline text-textColor2 text-xl my-4 mx-1' to={quizLink}>
+            {` ${unitFilter}`}
+          </Link> {'->'}
+        </div>
+        <div className='bg-bgColor2 italic text-textColor2 text-xl p-3'>Quiz {quizNumber}: {quizName}</div>
+      </div>
+
     <div className='bg-bgColor1 text-textColor1'>Video Quiz? {isVideoQuiz.toString()}</div>
     <div className='bg-bgColor2 text-textColor1 p-2 flex flex-row justify-center text-xl mt-3 mb-3'>
     <select
@@ -572,7 +577,7 @@ videoSegmentId?.toString(), content: questionContent, answer_key: answerKey});
               question_number: (questions.length + 1).toString(),
               quiz_has_video: isVideoQuiz,
               format: selectedFormat.current, 
-              quiz_id: params.quiz_id || ""});
+              quiz_id: params.quizId || ""});
             setIsModalNewVisible(true)
           }
 

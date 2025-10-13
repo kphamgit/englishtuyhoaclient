@@ -1,68 +1,50 @@
-//import { useAxiosFetch } from '../components/services/useAxiosFetch';
-
 //import { QuestionProps } from '../components/Question';
 import { useEffect, useMemo, useState } from 'react';
-import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
+import { Link, Outlet, useParams } from 'react-router-dom';
 import { ColumnDef} from '@tanstack/table-core';
-
-import { SubCategoryProps } from './types';
+import { CategoryProps} from './types';
 import { CreateQuizProps } from './NewQuiz';
-import { QueryClient, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useRootUrl } from '../../contexts/root_url';
 
 import { useSortable } from '@dnd-kit/sortable';
 
 import GenericSortableTable, { genericItemType } from './GenericSortableTable';
 
-export interface MyNavLinkProps {
-  name: string,
-  pathname: string
-}
 
 
-export interface ShortUnitProps extends genericItemType {
+interface ShortSubCategoriesProps extends genericItemType {
   name?: string;
   
 }
 
-const queryClient = new QueryClient();  
 
 //{ id: string; question_number: number; format: number; content: string; answer_key: string; }[] | undefined' 
-export default function ListUnits(props:any) {
-  const params = useParams<{ categoryId: string, sub_categoryId: string}>();
-
-  const [units, setUnits] = useState<ShortUnitProps[]>([])
- 
+export default function ListSubCategoriesSave(props:any) {
+  const params = useParams<{ categoryId: string}>();
+  //console.log("***** params = ", params)
+  //const url = `units/${params.unit_id}`;
+  //const [quizzes, setQuizzes] = useState<ShortQuizProps[]>([])
+  const [subCategories, setSubCategories] = useState<ShortSubCategoriesProps[]>([])
+  
+  
 const { rootUrl } = useRootUrl();
 
-  const [subCategoryLink, setSubCategoryLink] = useState<MyNavLinkProps>();
-
-  const location = useLocation(); // Get the location object
-  const queryParams = new URLSearchParams(location.search); // Pars
-
-  //console.log(" List units queryParams = ", queryParams.toString())
-  //queryParams =  category=Grammar
-  const categoryFilter = queryParams.get('category');
-  //console.log(" List units categoryFilter = ", categoryFilter)
-
-  const subCategoryFilter = queryParams.get('sub_category');
- // console.log(" List units subCategoryFilter = ", subCategoryFilter)
-
-const {data: sub_category} = useQuery({
-  queryKey: ['sub_category', params.sub_categoryId],
+const {data: category} = useQuery({
+  queryKey: ['category', params.categoryId],
   queryFn: async () => {
     //console.log("Fetching unit data for unit_id:", params.unit_id);
-    const url = `${rootUrl}/api/sub_categories/${params.sub_categoryId}`;
+    const url = `${rootUrl}/api/categories/${params.categoryId}`;
     console.log("url =", url)
   
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    return response.json() as Promise<SubCategoryProps>;
+    return response.json() as Promise<CategoryProps>;
   },
   //enabled: !!params.unit_id, // Only run the query if unit_id is available
-  enabled:  !!params.sub_categoryId, // Only run the query if unit_id is available
+  enabled:  !!params.categoryId, // Only run the query if unit_id is available
   //staleTime: 5 * 60 * 1000, // 5 minutes
   staleTime: 0  // 5 minutes
   // if the query is accessed again within 5 minutes, 
@@ -72,19 +54,19 @@ const {data: sub_category} = useQuery({
 });
 
 useEffect(() => {
-  if (sub_category) {
+  if (category) {
     //console.log("ListUnits, Unit data:", sub_category);
-    setUnits(sub_category.units ? sub_category.units.map(unit => ({
-      itemId: unit.id.toString(),
-      item_number: unit.unit_number,
-      name: unit.name
+    setSubCategories(category.sub_categories ? category.sub_categories.map(sub => ({
+      itemId: sub.id.toString(),
+      item_number: sub.sub_category_number,
+      name: sub.name
     })) : []);
-    //setSubCategoryLink(`/categories/${params.categoryId}/list_sub_categories`);
-    setSubCategoryLink({ name: sub_category.name, pathname: `/${params.categoryId}/list_sub_categories?category=${categoryFilter}` });
- 
-
+    //console.log("current path = ", location.pathname);
+   
+    
   }
-}, [sub_category]);
+}, [category]);
+
 
 //const { data: unit, loading, error } = useAxiosFetch<UnitProps>({ url: url, method: 'get' })
 //console.log("***** quizzes = ", unit?.quizzes)
@@ -103,7 +85,7 @@ const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
   );
 };
 
-const columns = useMemo<ColumnDef<ShortUnitProps>[]>(
+const columns = useMemo<ColumnDef<ShortSubCategoriesProps>[]>(
   () => [
     {
       id: "drag-handle",
@@ -112,43 +94,38 @@ const columns = useMemo<ColumnDef<ShortUnitProps>[]>(
       size: 60,
     },
     {
+      accessorKey: "itemId",
+      header: "Sub Category ID",
+    },
+    {
       accessorKey: "name",
       header: "Name",
-      cell: (info) => info.getValue(),
-    },
-    {
-      accessorKey: "itemId",
-      header: "Unit ID",
-    },
-    {
-      accessorKey: "item_number",
-      header: "Unit Number",
-    },
-    {
-      accessorKey: "quizzes",
-      header: "Quizzes",
       cell: (info) =>
-        sub_category ? (
+        category ? (
           <Link
             className="italic underline text-blue-300"
-            to={`${info.row.original.itemId}/list_quizzes?category=${categoryFilter}&sub_category=${sub_category.name}&unit=${info.row.original.name}`}
+            to={`${info.row.original.itemId}/list_units?category=${category.name}&sub_category=${info.row.original.name}`}
           >
-            Quizzes
+            {info.row.original.name}
           </Link>
         ) : (
           "Loading..."
         ),
     },
+  
+    {
+      accessorKey: "item_number",
+      header: "Sub Category Number",
+    },
     {
       id: "edit",
       header: "Edit",
       cell: (info) => (
-        <Link className="italic text-blue-300" to={`edit_quiz/${info.row.original.itemId}`}>
+        <Link className="italic text-blue-300" to={`edit_sub_category/${info.row.original.itemId}`}>
           Edit
         </Link>
       ),
     },
-  
     {
       id: "delete",
       header: "Delete",
@@ -163,7 +140,7 @@ const columns = useMemo<ColumnDef<ShortUnitProps>[]>(
     },
     
   ],
-  [sub_category] // No dependencies, so the columns are memoized once
+  [category] // No dependencies, so the columns are memoized once
 );
 //https://www.englishtuyhoa.com/categories/4/sub_categories/9/list_quizzes/27/questions/120
 
@@ -212,31 +189,29 @@ App.tsx:90 No routes matched location "/categories/1/sub_categories/3/quizzes/7"
     */
   };
 
-
-  /*
- <div>
-      <Link className='bg-bgColor2 italic text-textColor2 text-2xl my-4 mx-4' to={subCategoryLink?.pathname || '#'}>
-         {`<- ${subCategoryLink?.name || 'Sub Categories'}`}
-      </Link>
-    </div>
-  */
-
+  const child_reset_item_numbers = (new_numbers: {itemId: string, item_number: number}[]) => {
+    //console.log("test_function called value =", value)
+    //console.log("child_reset_item_numbers called new_numbers =", new_numbers)
+    // use fetch api to post new_numbers to backend /api/questions/renumber',
+    const response = fetch(`${rootUrl}/api/sub_categories/renumber`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id_number_pairs: new_numbers }),
+    })
+    return response;
+  
+  }
 
   return (
     <>
-      <div className='flex justify-between items-center mb-4'>
+    <div className='flex justify-between items-center mb-4'>
       <Link to="/" className='bg-bgColor2 text-textColor2 text-2xl italic'>Home</Link>
       </div>
-      <div className='bg-bgColor2 text-textColor2 flex flex-row justify-start items-center mb-4'>
-        <div>
-          <Link className='bg-bgColor2 italic underline text-textColor2 text-xl my-4 mx-1' to={subCategoryLink?.pathname || '#'}>
-            {` ${categoryFilter}`}
-          </Link> {'->'}
-        </div>
-        <div className='bg-bgColor2 italic text-textColor2 text-xl p-3'>{sub_category?.name}</div>
-      </div>
-  
-      <GenericSortableTable input_data={units} columns={columns} />
+    <div className='bg-bgColor2 text-textColor2 text-xl px-10 py-5'>{category?.name}</div>
+   
+      <GenericSortableTable input_data={subCategories} columns={columns} parent_notify_reset_item_numbers={child_reset_item_numbers} />
       <div className='bg-bgColor2 text-textColor2 p-3'>
         <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
           onClick={() => setCreateNewQuiz(!createNewQuiz)}

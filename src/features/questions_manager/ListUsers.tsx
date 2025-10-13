@@ -1,19 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 //import { deleteQuizAttempts, getQuizAttempts } from '../services/list'
 import { useAxiosFetch } from '../../hooks'
-import DataTable from '../questions_manager/data-table';
+
 import { UserProps } from './types';
-import { Outlet, useNavigate } from 'react-router-dom';
+
 
 
 //import { useTable } from '@tanstack/react-table
 import { getCoreRowModel, flexRender,  createColumnHelper, useReactTable} from '@tanstack/react-table'
 //import { COLUMNS } from '../questions_manager/columns';
 
-
-import { DataRowProps } from './types';
-import { get } from 'http';
-import { col, s } from 'framer-motion/client';
 import { useRootUrl } from '../../contexts/root_url';
 
 export interface ColumnProps { 
@@ -81,7 +77,7 @@ const { rootUrl } = useRootUrl();
     // reduce users to only id, user_name, edit_link, delete_button, select
     useEffect(() => {
     if (users) {
-      console.log("users in ListUsers", users)
+     // console.log("users in ListUsers", users)
       users.map((user) => {
         shortUsers?.push({
           id: user.id,
@@ -100,10 +96,6 @@ const { rootUrl } = useRootUrl();
     const [assignmentMessage, setAssignmentMessage] = useState<string>("");
     const [assignmentQuizLink, setAssignmentQuizLink] = useState<string>("");
     const [assignmentQuizName, setAssignmentQuizName] = useState<string>("");
-
-    //console.log("users data in ListUsers", users)
-    // convert users to json array of objects 
-     const navigate = useNavigate()
 
      const handleRowSelect = (id: number) => {
       setSelectedRows((prev) =>
@@ -167,11 +159,11 @@ const { rootUrl } = useRootUrl();
     ]
 
      useEffect(() => {
-        console.log("Selected Rows: ", selectedRows)
+        //console.log("Selected Rows: ", selectedRows)
         // retrieve data for selected rows
         selectedRows.forEach((id) => {
           const rowData = data.find((row) => row.id === id);
-          console.log("Row data for id ", id, " is ", rowData)
+          //console.log("Row data for id ", id, " is ", rowData)
         }
         )
 
@@ -249,8 +241,8 @@ assignment_number | int          | NO   |     | 1                 |             
           Send message to selected Users
         </button>
         </div>
-        <div className='text-textColor1 p-2 flex flex-row justify-center text-xl mt-3 mb-3'>
-          <table className='table-auto border-separate border border-slate-400 ...'>
+        <div className='bg-bgColor2 text-textColor1 p-2 flex flex-row justify-center text-xl mt-3 mb-3'>
+          <table className='bg-bgColor2 text-textColor2 table-auto border-separate border border-slate-400 ...'>
             <thead className='bg-bgColor3 text-textColor1'>
               {table.getHeaderGroups().map(headerGroup => (
                 <tr key={headerGroup.id}>
@@ -271,7 +263,7 @@ assignment_number | int          | NO   |     | 1                 |             
                 {table.getRowModel().rows.map(row => (
                   <tr key={row.id}>
                     {row.getVisibleCells().map(cell => (
-                      <td key={cell.id} className='border border-slate-300 p-2'>
+                      <td key={cell.id} className='border border-slate-300 p-2 bg-bgColor2 text-textColor2'>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}

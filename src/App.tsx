@@ -5,21 +5,18 @@ import { Logout } from "./features/auth/components/Logout";
 //import ListQuizzes from "./features/questions_manager/ListQuizzes";
 import UnitEditor from "./features/questions_manager/UnitEditor";
 import ListUnits from "./features/questions_manager/ListUnits";
-import GameCreator from "./features/components/GameCreator";
-import ListGames from "./features/questions_manager/ListGames";
+import ListGames from "./features/questions_manager/ListGames"
 import GameEditor from "./features/components/GameEditor";
 import FileUpload from "./features/utils/FileUpload";
 import OrphanQuestionsManager  from "./features/utils/OrphanQuestionsManager";
+import GameCreator from "./features/components/GameCreator";
 import { Utils } from "./features/utils/Utils";
 import NewUnit from "./features/questions_manager/NewUnit";
-import DisplayUnit from "./features/questions_manager/ListQuizzes";
-import NewQuiz from "./features/questions_manager/NewQuiz";
 import QuizEditor from "./features/questions_manager/QuizEditor";
 //import UsersManager from "./features/components/UsersManager";
 import ListUsers from "./features/questions_manager/ListUsers";
 import UserEditor from "./features/questions_manager/UserEditor";
 import NewUser from "./features/utils/NewUser";
-import { NewCategory } from "./features/components/NewCategory";
 import { EditCategory } from "./features/components/EditCategory";
 import { NewSubCategory } from "./features/components/NewSubCategory";
 import { EditSubCategory } from "./features/components/EditSubCategory";
@@ -29,7 +26,8 @@ import { RootUrlProvider } from "./contexts/root_url";
 import ListQuizzes from "./features/questions_manager/ListQuizzes";
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
+import ListSubCategories from "./features/questions_manager/ListSubCategories";
+import ListCagegories from "./features/questions_manager/ListCategories";
 
 const Home = lazy(() => import("./home_page/components/Home"))
 
@@ -79,32 +77,44 @@ function App() {
 
     //get_questions_by_format
     //matched location "/categories/6/sub_categories/13/list_quizzes/37/edit_quiz/146
+    ///categories/1/list_sub_categories/3/list_units/list_quizzes/7" 
+    /*
+<a class="italic text-blue-300" href="/categories/1/list_sub_categories/6/list_units/63/list_quizzes">Quizzes</a>
+
+<a class="italic text-blue-300" href="/categories/1/list_sub_categories/6/list_units/62/list_quizzes">Quizzes</a>
+    */
+//"/categories/categories/1/list_sub_categories?category_name=Grammar
   return (
     <>
     <QueryClientProvider client={queryClient}>
     <RootUrlProvider>
+    
       <SocketContextComponent>
         <Suspense fallback={<div>Loading...</div>}>
           <BrowserRouter>
-           
+      
             <Routes>
               <Route path="/logout" element={<Logout onLogout={onLogout} />} />
+              <Route path="/categories" element={<ListCagegories />} />
+              <Route path="/:categoryId/list_sub_categories" element={<ListSubCategories />} />
+              <Route path="/:categoryId/list_sub_categories/:sub_categoryId/list_units" element={<ListUnits />} />
+              <Route path="/:categoryId/list_sub_categories/:sub_categoryId/list_units/:unitId/list_quizzes" element={<ListQuizzes />} />
+              <Route path="/:categoryId/list_sub_categories/:sub_categoryId/list_units/:unitId/list_quizzes/:quizId/list_questions" element={<ListQuestions />} />
               <Route path="/" element={<Home />}>
-                <Route path="/categories/:categoryId" element={<CategoryPage />}>
+               
+                
                   <Route path="edit_category" element={<EditCategory />} ></Route>
-                  <Route path="sub_categories/:sub_categoryId" element={<ListUnits />} />
+                
+                 
                   <Route path="sub_categories/new_sub_category" element={<NewSubCategory />} ></Route>
-                  <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id" element={<ListQuizzes />} >
-                    <Route path="questions/:quiz_id" element={<ListQuestions />} />
-                    
-                  </Route>
                   <Route path="sub_categories/:sub_categoryId/edit" element={<EditSubCategory />} />
                   <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/edit_quiz/:quiz_id" element={<QuizEditor />} />
                   <Route path="sub_categories/:sub_categoryId/create_unit" element={<NewUnit />} />
                   <Route path="sub_categories/:sub_categoryId/edit_unit/:unit_id" element={<UnitEditor />} />
 
-                </Route>
-                <Route path="/new_category" element={<NewCategory />} ></Route>
+                
+               
+              
                 <Route path="/utils" element={<Utils />} >
                   <Route path="manage_users" element={<ListUsers />} >
                     <Route path="new_user" element={<NewUser />} />
@@ -122,11 +132,12 @@ function App() {
                 </Route>
               </Route>
             </Routes>
-         
+           
           </BrowserRouter>
 
         </Suspense>
       </SocketContextComponent>
+     
       </RootUrlProvider>
       </QueryClientProvider>
     </>

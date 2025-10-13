@@ -1,57 +1,54 @@
-//import { useAxiosFetch } from '../components/services/useAxiosFetch';
-import { useAxiosFetch } from '../../hooks';
-//import { QuestionProps } from '../components/Question';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, Outlet, useNavigate, useParams } from 'react-router-dom';
-import { ColumnDef, createColumnHelper, getCoreRowModel, getSortedRowModel , SortingState} from '@tanstack/table-core';
-import { flexRender, useReactTable } from '@tanstack/react-table';
+
+import { useEffect, useMemo, useState } from 'react';
+import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
+import { ColumnDef, SortingState} from '@tanstack/table-core';
+
 import { UnitProps } from './types';
 import NewQuiz, { CreateQuizProps } from './NewQuiz';
 import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { useRootUrl } from '../../contexts/root_url';
 
-import { arrayMove, useSortable } from '@dnd-kit/sortable';
+import {useSortable } from '@dnd-kit/sortable';
 
-import GenericSortableTable from './GenericSortableTable';
+import GenericSortableTable, { genericItemType } from './GenericSortableTable';
 
-export interface genericItemType {
-  itemId: string;
-  item_number: string;
-}
 
 export interface ShortQuizProps extends genericItemType {
   name?: string;
   video_url?: string;
 }
 
-/*
-export type ShortQuizProps = {
-  itemId: string;
-  name: string;
-  quiz_number: string;
-  video_url?: string;
-}
-*/
-
 const queryClient = new QueryClient();  
 
 //{ id: string; question_number: number; format: number; content: string; answer_key: string; }[] | undefined' 
 export default function ListQuizzes(props:any) {
-  const params = useParams<{ categoryId: string, sub_categoryId: string, unit_id: string}>();
-  //console.log("***** params = ", params)
-  //const url = `units/${params.unit_id}`;
-  const [enabledFetchUnit, setEnabledFetchUnit] = useState(true)
+  const params = useParams<{ categoryId: string, sub_categoryId: string, unitId: string}>();
+  //console.log("in ListQuizzes (*********** params = ", params)
+ 
   const [quizzes, setQuizzes] = useState<ShortQuizProps[]>([])
+
+     const location = useLocation(); // Get the location object
+     const queryParams = new URLSearchParams(location.search); // Pars
+     const categoryFilter = queryParams.get('category');
+     //console.log("ListQuizzes:  categoryFilter=", categoryFilter);
+     const subCategoryFilter = queryParams.get('sub_category');
+      //console.log("ListQuizzes:  subCategoryFilter=", subCategoryFilter);
+      const unitFilter = queryParams.get('unit');
+      //console.log("ListQuizzes:  unitFilter=", unitFilter);
 
 const { rootUrl } = useRootUrl();
 
+  const [unitLink, setUnitLink] = useState<string>('');
+
+
+    const [subCategoryLink, setSubCategoryLink] = useState<string>();
 
 
 const {data: unit} = useQuery({
-  queryKey: ['unit', params.unit_id],
+  queryKey: ['unit', params.unitId],
   queryFn: async () => {
     //console.log("Fetching unit data for unit_id:", params.unit_id);
-    const url = `${rootUrl}/api/units/${params.unit_id}`;
+    const url = `${rootUrl}/api/units/${params.unitId}`;
     //console.log("url =", url)
    // console.log("Query key:", ['unit', params.unit_id]);
     
@@ -62,7 +59,7 @@ const {data: unit} = useQuery({
     return response.json() as Promise<UnitProps>;
   },
   //enabled: !!params.unit_id, // Only run the query if unit_id is available
-  enabled:  !!params.unit_id, // Only run the query if unit_id is available
+  enabled:  !!params.unitId, // Only run the query if unit_id is available
   //staleTime: 5 * 60 * 1000, // 5 minutes
   staleTime: 0  // 5 minutes
   // if the query is accessed again within 5 minutes, 
@@ -73,29 +70,21 @@ const {data: unit} = useQuery({
 
 useEffect(() => {
   if (unit) {
-    //console.log("Unit data updated:", unit);
+    //console.log("in ListQuizzes, Unit data:", unit);
     /*
-[
-    {
-        "id": 310,
-        "name": "Video Quiz",
-        "quiz_number": 1,
-        "disabled": false,
-        "video_url": "https://www.youtube.com/watch?v=wNVL1zNjYf8",
-        "unitId": 71
-    },
-]
+<td class="bg-bgColor2 text-textColor2 px-2 text-lg"><a class="italic text-blue-300"
+ href="/categories/1/list_sub_categories/1/list_units/2/list_quizzes/questions/2">Questions</a></td>
     */
-
     setQuizzes(
       (unit.quizzes || []).map(quiz => ({
         itemId: quiz.id,
         name: quiz.name,
-        item_number: quiz.quiz_number.toString(),
+        item_number: Number(quiz.quiz_number),
         video_url: quiz.video_url,
       }))
     );
-    
+    // append unit name to current navigation context
+
   }
 }, [unit]);
 
@@ -104,65 +93,16 @@ useEffect(() => {
 
 const [createNewQuiz, setCreateNewQuiz] = useState(false)
 
-const [sorting, setSorting] = useState<SortingState>([]);
-
- const columnHelper = createColumnHelper<any>();
-
- /*
-const columns = [
-  columnHelper.accessor('id', {
-    header: () => <span className='flex items-center'>Id</span>,
-    cell: info => info.getValue(),
-  }),
-  columnHelper.accessor('name', {
-    header: () => <span className='flex items-center'>Name</span>,
-    cell: info => info.getValue(),
-  }),
-  columnHelper.accessor('quiz_number', {
-    header: () => <span className='flex items-center'>Quiz Number</span>,
-    cell: info => info.getValue(),
-  }),
-  columnHelper.accessor('video_url', {
-    header: () => <span className='flex items-center'>Video URL</span>,
-    cell: info => info.getValue(),
-  }),
-  columnHelper.accessor('edit', {
-    header: () => <span className='flex items-center'>Edit</span>,
-    cell: info => (
-      <Link className='italic text-blue-300' to={`edit_quiz/${info.row.original.id}`}>Edit</Link>
-    )
-  }),
-  columnHelper.accessor('delete', {
-    header: () => <span className='flex items-center'>Delete</span>,
-    cell: info => (
-      <button
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-      onClick={() => deleteQuiz(info.row.original.id)}
-    >
-      Delete
-    </button>
-    )
-  }),
-  columnHelper.accessor('questions', {
-    header: () => <span className='flex items-center'>Questions</span>,
-    cell: info => (
-      <Link className='italic text-blue-300' to={`questions/${info.row.original.id}`}>Questions</Link>
-    )
-  }),
-  columnHelper.accessor('assign', {
-    header: () => <span className='flex items-center'></span>,
-    cell: info => (
-      <button
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-      onClick={() => alert(`/sub_categories/${params.sub_categoryId}/take_quiz/${info.row.original.id}` + " " + info.row.original.name)}
-    >
-      Assign
-    </button>
-    )
-  }),
- 
-]
-*/
+///categories/1/list_sub_categories/1/list_units
+ useEffect(() => {
+  // Add a custom entry to the history
+  if (unit) {
+      // set the previous path to the second to last item in history
+      setUnitLink(`/${params.categoryId}/list_sub_categories/${params.sub_categoryId}/list_units?category=${categoryFilter}&sub_category=${subCategoryFilter}`);
+      setSubCategoryLink(`/${params.categoryId}/list_sub_categories?category=${categoryFilter}`);
+     //setPreviousPath(history.length > 1 ? history[history.length - 2] : '/');
+  }
+}, [location, unit]);
 
 const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
   const { attributes, listeners } = useSortable({
@@ -197,6 +137,14 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
       accessorKey: "video_url",
       header: "Video Url",
     },
+ 
+    {
+      accessorKey: "questions",
+      header: "Questions",
+      cell: info => (
+        <Link className='italic underline text-blue-300' to={`${info.row.original.itemId}/list_questions?category=${categoryFilter}&sub_category=${subCategoryFilter}&unit=${unitFilter}`}>Questions</Link>
+      )
+    },
     {
       id: "edit",
       header: "Edit",
@@ -205,13 +153,6 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
           Edit
         </Link>
       ),
-    },
-    {
-      accessorKey: "questions",
-      header: "Questions",
-      cell: info => (
-        <Link className='italic text-blue-300' to={`questions/${info.row.original.itemId}`}>Questions</Link>
-      )
     },
     {
       id: "delete",
@@ -243,33 +184,10 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
   ],
   [] // No dependencies, so the columns are memoized once
 );
-
-/*
-  columnHelper.accessor('assign', {
-    header: () => <span className='flex items-center'></span>,
-    cell: info => (
-      <button
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-      onClick={() => alert(`/sub_categories/${params.sub_categoryId}/take_quiz/${info.row.original.id}` + " " + info.row.original.name)}
-    >
-      Assign
-    </button>
-    )
-  }),
-*/
-
-//router.delete("/:id", quizzes.delete);
-//https://www.englishtuyhoa.com/categories/4/sub_categories/9/edit_quiz/120
-
      
      const createQuiz = async ({ name, quiz_number, video_url, unitId, video_segments }: CreateQuizProps) => {
       console.log("createQuiz called with:", { name, quiz_number, video_url, unitId, video_segments });
-      //console.log("Quiz Name:", name);
-      //console.log("Quiz Number:", quiz_number);
-      //console.log("Video URL:", video_url);
-      //console.log("Unit ID:", unitId);
-      //console.log("Video Segments:", video_segments);
-      //${rootUrl}/api/quizzes`
+   
       const response = await fetch(`${rootUrl}/api/quizzes`, {
         method: 'POST',
         headers: {
@@ -290,11 +208,6 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
 
      //const onQuizCreated = async (create_quiz_props : CreateQuizProps) => {
      const onQuizCreated = async ({ name, quiz_number, video_url, unitId, video_segments }: CreateQuizProps) => {
-      //console.log("Quiz Name:", name);
-      //console.log("Quiz Number:", quiz_number);
-      //console.log("Video URL:", video_url);
-      //console.log("Unit ID:", unitId);
-      //console.log("Video Segments:", video_segments);
       console.log("Calling mutate to create quiz")
       mutate({ name, quiz_number, video_url, unitId, video_segments });
       // Perform additional logic with the properties
@@ -313,8 +226,8 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
       }]);
       // Invalidate and refetch
       console.log("All queries in cache:", queryClient.getQueryCache().getAll());
-      console.log("In mutate, Query key:", ['unit', params.unit_id]);
-      queryClient.invalidateQueries({ queryKey: ['unit', params.unit_id] });
+      console.log("In mutate, Query key:", ['unit', params.unitId]);
+      queryClient.invalidateQueries({ queryKey: ['unit', params.unitId] });
       setCreateNewQuiz(false)
     },
   
@@ -332,33 +245,35 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
     setQuizzes(prev => prev.filter(vs => vs.itemId !== quiz_id));
     return response.json();
   };
-
-                /*
-                     useEffect(() => {
-                      // Retrieve all rows from the table
-                      const rows = table.getRowModel().rows;
-                  
-                      // Extract the values of the "id" column
-                      const idColumnValues = rows.map((row) => row.original.id);
-                  
-                      console.log("Values of the 'id' column:", idColumnValues);
-                      // sent to server to update ids of quizzes in this unit
-                    }, [table, sorting]);
-                    */
-
    
   return (
     <>
+     <div className='flex justify-between items-center mb-4'>
+      <Link to="/" className='bg-bgColor2 text-textColor2 text-2xl italic'>Home</Link>
+      </div>
+      <div className='bg-bgColor2 text-textColor2 flex flex-row justify-start items-center mb-4'>
+        <div>
+          <Link className='bg-bgColor2 italic underline text-textColor2 text-xl my-4 mx-1' to={subCategoryLink || ''}>
+            {` ${categoryFilter}`}
+          </Link> {'->'}
+        </div>
+        <div>
+          <Link className='bg-bgColor2 italic underline text-textColor2 text-xl my-4 mx-1' to={unitLink}>
+            {` ${subCategoryFilter}`}
+          </Link> {'->'}
+        </div>
+        <div className='bg-bgColor2 italic text-textColor2 text-xl p-3'>{unit?.name}</div>
+      </div>
+
       <GenericSortableTable input_data={quizzes} columns={columns} />
       <div className='bg-bgColor2 text-textColor2 p-3'>
-
         <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
           onClick={() => setCreateNewQuiz(!createNewQuiz)}
         >
           {createNewQuiz ? 'Cancel' : 'Create New Quiz'}
         </button>
         {createNewQuiz &&
-          <NewQuiz categoryId={params.categoryId || ''} sub_categoryId={params.sub_categoryId || ''} unit_id={params.unit_id || ''} parent_func={onQuizCreated} />
+          <NewQuiz categoryId={params.categoryId || ''} sub_categoryId={params.sub_categoryId || ''} unit_id={params.unitId || ''} parent_func={onQuizCreated} />
         }
       </div>
       <Outlet />

@@ -27,14 +27,21 @@ export interface DataRowProps {
     data_type: string;
 }
 //format: string; content: string; answer_key: string;
-export interface UnitProps {
+export interface SubCategoryProps {
     id: string,
-    unit_number: number,
+    sub_category_number: number,
     name: string,
-    level?: string,
-    content?: string,
-    quizzes?: QuizProps[] | undefined,
-    subCategoryId?: number,
+    units?: UnitProps[] | undefined,
+}
+
+export interface UnitProps {
+  id: string,
+  unit_number: number,
+  name: string,
+  level?: string,
+  content?: string,
+  quizzes?: QuizProps[] | undefined,
+  subCategoryId?: number,
 }
 
 /*
@@ -138,6 +145,13 @@ export interface CategoryRowProps {
     edit_link: string
     clone_button: string,
     delete_button: string
+}
+
+export interface CategoryProps {
+  id: string,
+  category_number: number,
+  name: string
+  sub_categories?: SubCategoryProps[] | undefined,
 }
 
 export interface RadioProps{
