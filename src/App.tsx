@@ -12,7 +12,6 @@ import OrphanQuestionsManager  from "./features/utils/OrphanQuestionsManager";
 import GameCreator from "./features/components/GameCreator";
 import { Utils } from "./features/utils/Utils";
 import NewUnit from "./features/questions_manager/NewUnit";
-import QuizEditor from "./features/questions_manager/QuizEditor";
 //import UsersManager from "./features/components/UsersManager";
 import ListUsers from "./features/questions_manager/ListUsers";
 import UserEditor from "./features/questions_manager/UserEditor";
@@ -84,6 +83,10 @@ function App() {
 <a class="italic text-blue-300" href="/categories/1/list_sub_categories/6/list_units/62/list_quizzes">Quizzes</a>
     */
 //"/categories/categories/1/list_sub_categories?category_name=Grammar
+/*
+routes matched location "/10/list_sub_categories/24/list_units/71/list_quizzes/edit_quiz/342" 
+*/
+
   return (
     <>
     <QueryClientProvider client={queryClient}>
@@ -108,7 +111,6 @@ function App() {
                  
                   <Route path="sub_categories/new_sub_category" element={<NewSubCategory />} ></Route>
                   <Route path="sub_categories/:sub_categoryId/edit" element={<EditSubCategory />} />
-                  <Route path="sub_categories/:sub_categoryId/list_quizzes/:unit_id/edit_quiz/:quiz_id" element={<QuizEditor />} />
                   <Route path="sub_categories/:sub_categoryId/create_unit" element={<NewUnit />} />
                   <Route path="sub_categories/:sub_categoryId/edit_unit/:unit_id" element={<UnitEditor />} />
 
