@@ -280,12 +280,18 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
   };
    
   const closeModal = (params: CloseModalProps) => {
+
       if (params.action === "cancel") {
         setIsModalEditVisible(false);
         //setIsModalNewVisible(false);
         setEditModalContent(null);
        // setNewModalContent(null);
         return;
+      }
+      if (params.action === "edit") {
+        // refresh the list of quizzes
+        setIsModalEditVisible(false);
+        setEditModalContent(null);
       }
   }
 

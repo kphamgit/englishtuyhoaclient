@@ -55,7 +55,7 @@ interface EditQuizProps {
                     throw new Error('Network response was not ok');
                 }
                 onClose({action: 'edit'});
-                return response.json();
+                //return response.json();
             })
     }
     
