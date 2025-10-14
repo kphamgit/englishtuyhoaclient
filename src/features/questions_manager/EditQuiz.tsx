@@ -3,7 +3,8 @@ import { useAxiosFetch } from '../../hooks';
 import { useRootUrl } from '../../contexts/root_url';
 import { CloseModalProps } from './ListQuestions';
 import { EditQuizModalContentProps } from './ListQuizzes';
-import { QuizProps } from './types';
+import { QuizProps, VideoSegmentProps } from './types';
+import ListVideoSegments from './ListVideoSegments';
 
 interface EditQuizProps {
     modal_content: EditQuizModalContentProps;
@@ -13,6 +14,18 @@ interface EditQuizProps {
     const EditQuiz: React.FC<EditQuizProps> = ({ modal_content, onClose }) => {
 
       const  {quiz_id} = modal_content
+
+      const [videoSegments, setVideoSegments] = useState<VideoSegmentProps[]>([])
+      /*
+   id?: number,
+    duration: number,
+    segment_number: number,
+    question_numbers: string,
+    start_time: string,
+    end_time: string,
+    quizId: number
+
+*/
 
         const [name, setName] = useState<string>('')
    
@@ -26,8 +39,10 @@ interface EditQuizProps {
  
     useEffect(() => {
         if (quiz) {
+            console.log("EditQuiz:  quiz=", quiz);
           setName(quiz.name)
           setVideoUrl(quiz.video_url || '')
+          setVideoSegments(quiz.video_segments || [])
        }
     },[quiz])
 
@@ -60,27 +75,42 @@ interface EditQuizProps {
     }
     
 
-       return (
-                <div className='bg-bgColor1 text-textColor2 w-auto'>
-                    <div className='bg-bgColor1 text-textColor2 mb-2 w-auto'>Edit Quiz. ID ={quiz?.id}</div>
-                   <div className='mx-10 text-textColor1 mb-2'>Name
-                        <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md  mx-1' type="text" value={name}
+        return (
+            <div className='bg-bgColor1 text-textColor2 w-auto'>
+                <div className='bg-bgColor1 text-textColor2 mb-2 w-auto'>Edit Quiz. ID ={quiz?.id}</div>
+                <div className='mx-10 text-textColor1 mb-2'>Name
+                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md  mx-1' type="text" value={name}
                         onChange={e => setName(e.target.value)}></input>
-                    </div>
-                    <div className='mx-10 text-textColor1 mb-2'>Video URL
-                        <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-auto mx-1' size={60} type="text" value={videoUrl}
-                        onChange={e => setVideoUrl(e.target.value)}></input>
-                    </div>
-                    <div>
-                    </div>
-                  
-                    <button className='bg-bgColor3 m-3 p-1' onClick={update_quiz}>Save quiz</button>
-                    <button className='bg-bgColor2 m-3 p-1 text-textColor2' onClick={handleCancel}>Cancel</button>
-                  
                 </div>
-            )
+                <div className='mx-10 text-textColor1 mb-2'>Video URL
+                    <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-auto mx-1' size={60} type="text" value={videoUrl}
+                        onChange={e => setVideoUrl(e.target.value)}></input>
+                </div>
+                <div>
+                    <ListVideoSegments quiz_id={quiz_id || ''} videoSegments={videoSegments} />
+
+                </div>
+
+                <button className='bg-bgColor3 m-3 p-1' onClick={update_quiz}>Save quiz</button>
+                <button className='bg-bgColor2 m-3 p-1 text-textColor2' onClick={handleCancel}>Cancel</button>
+
+            </div>
+        )
 }
 
 
 export default EditQuiz;
+
+
+/*
+   id?: number,
+    duration: number,
+    segment_number: number,
+    question_numbers: string,
+    start_time: string,
+    end_time: string,
+    quizId: number
+
+*/
+
 

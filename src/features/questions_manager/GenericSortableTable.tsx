@@ -101,6 +101,15 @@ function GenericSortableTable<T extends genericItemType>({
 
   const table = useReactTable({
     data,
+    columns: columns,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.itemId,
+  
+  });
+
+/*
+ const table = useReactTable({
+    data,
     columns: [
       ...columns,
       {
@@ -120,6 +129,8 @@ function GenericSortableTable<T extends genericItemType>({
     getRowId: (row) => row.itemId,
   
   });
+*/
+
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;

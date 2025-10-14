@@ -17,6 +17,17 @@ interface ListVideoSegmentsProps {
     quiz_id: string | undefined
 }
  
+/*
+   id?: number,
+    duration: number,
+    segment_number: number,
+    question_numbers: string,
+    start_time: string,
+    end_time: string,
+    quizId: number
+*/
+
+
 export default function ListVideoSegments({ videoSegments, quiz_id }: { videoSegments: VideoSegmentProps[] | undefined , quiz_id?: string | undefined}) {
 
   const [video_segments, setVideoSegments] = useState<VideoSegmentProps[]>(
@@ -33,6 +44,7 @@ const [createNewVideoSegment, setCreateNewVideoSegment] = useState(false)
 const [sorting, setSorting] = useState<SortingState>([]);
 
  const columnHelper = createColumnHelper<any>();
+
 
 const columns = [
   columnHelper.accessor('id', {
@@ -56,24 +68,18 @@ const columns = [
     // when using onBlur, you need to click outside the input field for the change to be registered
     // in the table
       const onBlur = () => {
-        // Here you would typically update your data source
-        // For example, if you have an `updateData` function in your table's meta:
-        // info.table.options.meta?.updateData(info.row.index, info.column.id, value);
-        //console.log(`Updated cell value for ${info.column.id} in row ${info.row.index}: ${value}`);
-        // Output:   Updated cell value for  segment_number   in row         0        :   99999
-        // You entered 99999 in column segment_number in row 0, and you clicked outside the input box to trigger onBlur
-        // you will get the output above
-        // If you want to keep the input box in sync with external changes to the cell value,
-    // Update the videoSegments array
-      setVideoSegments(prev => {
-      const updatedSegments = [...prev];
-      updatedSegments[rowIndex] = {
-        ...updatedSegments[rowIndex],
-        segment_number: value, // Update the segment_number
-      };
-      //console.log("Updated row:", updatedSegments[rowIndex]);
-      return updatedSegments;
-    });
+        console.log(`onBlur triggered for row ${rowIndex}, column ${info.column.id} with value: ${value}`);
+        // value is the segment_number entered in the input field
+        setVideoSegments(prev => {
+          const updatedSegments = [...prev];
+          updatedSegments[rowIndex] = {
+            ...updatedSegments[rowIndex],
+            segment_number: value, // Update the segment_number
+          };
+          //console.log("Updated row:", updatedSegments[rowIndex]);
+          return updatedSegments;
+        });
+        updateVideoSegment({...info.row.original, segment_number: value});
 
       };
 
@@ -130,15 +136,16 @@ const columns = [
       const inputRef = useRef<HTMLInputElement>(null);
       const onBlur = () => {
         //console.log(`Updated cell value for ${info.column.id} in row ${info.row.index}: ${value}`);
-      setVideoSegments(prev => {
-      const updatedSegments = [...prev];
-      updatedSegments[rowIndex] = {
-        ...updatedSegments[rowIndex],
-        start_time: value, // Update the segment_number
-      };
-      //console.log("Updated row:", updatedSegments[rowIndex]);
-      return updatedSegments;
-    });
+        setVideoSegments(prev => {
+          const updatedSegments = [...prev];
+          updatedSegments[rowIndex] = {
+            ...updatedSegments[rowIndex],
+            start_time: value, // Update the segment_number
+          };
+          //console.log("Updated row:", updatedSegments[rowIndex]);
+          return updatedSegments;
+        });
+        updateVideoSegment({...info.row.original, start_time: value});
 
       };
       return (
@@ -160,15 +167,16 @@ const columns = [
       const inputRef = useRef<HTMLInputElement>(null);
       const onBlur = () => {
        // console.log(`Updated cell value for ${info.column.id} in row ${info.row.index}: ${value}`);
-      setVideoSegments(prev => {
-      const updatedSegments = [...prev];
-      updatedSegments[rowIndex] = {
-        ...updatedSegments[rowIndex],
-        end_time: value, // Update the segment_number
-      };
-      //console.log("Updated row:", updatedSegments[rowIndex]);
-      return updatedSegments;
-    });
+       setVideoSegments(prev => {
+        const updatedSegments = [...prev];
+        updatedSegments[rowIndex] = {
+          ...updatedSegments[rowIndex],
+          end_time: value, // Update the segment_number
+        };
+        //console.log("Updated row:", updatedSegments[rowIndex]);
+        return updatedSegments;
+      });
+      updateVideoSegment({...info.row.original, end_time: value});
 
       };
       return (
@@ -180,41 +188,17 @@ const columns = [
         />
       );
     },
-  }),
-  columnHelper.accessor('trigger_blue', {
-    // fire an onBlur event for the input field to be refreshed (this is how onBlur works which is different
-    // for onChange event where the input field is refreshed as you type)
-    // when using onBlur, you need to click outside the input field for the change to be registered
-    // in the table
-    header: () => <span className='flex items-center'></span>,
-    cell: ({ row }) => (
-      <button
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-      onClick={() => {
-        // Trigger the onBlur event for the input field
-        const inputElement = document.querySelector('input:focus');
-        if (inputElement) {
-          (inputElement as HTMLInputElement).blur();
-         
-        }
-       
-      }}
-    >
-      Trigger Blur
-    </button>
-    ),
-  }),
- 
+  }), 
   columnHelper.accessor('update_row', {
     header: () => <span className='flex items-center'></span>,
     cell: ({ row }) => (
       <button
       className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
       onClick={(e) => {
-        // Trigger the onBlur event for the input field
-        //console.log(" inputElement exists, onBlur triggered", row.original)
-        //console.log(" event target", e.target)
-        updateVideoSegment(row.original, e)
+        console.log("Update button clicked for row:", row.original)
+        // if you click the button while an input field is focused, the onBlur event for that input field will be triggered first
+        // this is how onblur works,
+        // So when u click on the Update button, the onBlur event for the input field that has recently been changed will be triggered
       }}
     >
       { row.original.id ? 'Update' : 'Save' }
@@ -236,9 +220,9 @@ const columns = [
  
 ]
 
-const updateVideoSegment = async (videoSegment: VideoSegmentProps, e: React.MouseEvent<HTMLButtonElement>) => {
-    //console.log("updateVideoSegment called with videoSegment:", videoSegment);
-    const htmlEl = e.target as HTMLElement;
+const updateVideoSegment = async (videoSegment: VideoSegmentProps) => {
+    console.log("updateVideoSegment called with videoSegment:", videoSegment);
+    //const htmlEl = e.target as HTMLElement;
     //console.log(" event target", htmlEl.innerText)
     const method = videoSegment.id ? 'PUT' : 'POST';
     const url = videoSegment.id ? `${rootUrl}/api/video_segments/${videoSegment.id}` : `${rootUrl}/api/video_segments`;
@@ -256,9 +240,9 @@ const updateVideoSegment = async (videoSegment: VideoSegmentProps, e: React.Mous
       setVideoSegments(prev => prev.map(vs => vs === videoSegment ? data : vs));
     }
     // If the button text is 'Save', change it to 'Update' after successful creation
-    if (htmlEl.innerText === 'Save') {
-      htmlEl.innerText = 'Update';
-    }
+    //if (htmlEl.innerText === 'Save') {
+     // htmlEl.innerText = 'Update';
+    //}
 }
 
 const deleteVideoSegment = async (id: string) => {

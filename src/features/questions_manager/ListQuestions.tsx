@@ -18,7 +18,7 @@ import EditQuestion from './EditQuestion';
 interface ShortQuestionProps extends genericItemType {
   format: string
   content: string,
-  video_segment_id?: string
+  videoSegmentId?: string
   answer_key?: string
 }
 
@@ -97,6 +97,8 @@ export default function ListQuestions(props:any) {
 
   const [isVideoQuiz, setIsVideoQuiz] = useState<boolean>(false);
   
+  //a field within a row that on onblur event was triggered
+  const updatedField = useRef<{id: string, row_index: number, column_id: string, value: string} | null>(null);
 
    const [quizLink, setQuizLink] = useState<string>('');
 
@@ -152,7 +154,7 @@ const { rootUrl } = useRootUrl();
           format: format.toString(),
           content: content || 'content....',
           answer_key: answer_key || '',
-          video_segment_id: videoSegmentId?.toString(), // Optional chaining for cleaner code
+          videoSegmentId: videoSegmentId?.toString(), // Optional chaining for cleaner code
         };
       });
       setQuestions(shortQuestions);
@@ -226,6 +228,72 @@ const { rootUrl } = useRootUrl();
       
     };
 
+    /*
+interface ShortQuestionProps extends genericItemType {
+  format: string
+  content: string,
+  video_segment_id?: string
+  answer_key?: string
+}
+    */
+
+    const updateQuestionRow = async (question_row: ShortQuestionProps) => {
+        //console.log("updateVideoSegment called with videoSegment:", question_row);
+        /*
+{
+    "itemId": 6210,
+    "item_number": "1",
+    "format": "1",
+    "content": "How [are] you?",
+    "answer_key": "are",
+    "video_segment_id": "44"
+}
+        */
+
+       // const column_id = updatedField.current?.column_id || 'unknown_column';
+        //console.log(" Stringified question_row =", JSON.stringify(question_row))
+
+        // replace video_segment_id with camel case videoSegmentId
+        const {itemId, item_number,format, ...rest } = question_row;
+       
+        const body = { ...rest };
+        //console.log(" ***** body =", body)
+        //console.log(" Stringified body =", JSON.stringify(body))
+        /*
+{
+    "itemId": 6210,
+    "item_number": "1",
+    "format": "1",
+    "content": "How [are] you?",
+    "answer_key": "are",
+    "video_segment_id": "3"
+}
+        */
+
+
+        const method = 'PUT';
+        const url = `${rootUrl}/api/questions/${question_row.itemId}`
+        const response = await fetch(url, {
+          method: method,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body), // exclude itemId , item_number, and format from the body
+        });
+        const data = await response.json();
+        alert("Successfully updated question row id " + question_row.itemId);
+        
+        const updateButton = document.getElementById(`update_button_${question_row.itemId}`);
+
+        if (updateButton) {
+          // rgb 59, 30, 246
+          updateButton.style.backgroundColor = '#3b82f6'; // Change color to original blue
+          // of the update_row button
+        }
+       
+
+    }
+
 //const { data: unit, loading, error } = useAxiosFetch<UnitProps>({ url: url, method: 'get' })
 //console.log("***** quizzes = ", unit?.quizzes)
 
@@ -256,9 +324,19 @@ const child_reset_item_numbers = (new_numbers: {itemId: string, item_number: num
   return response;
 
 }
-/*
- formatConversion[format]
-*/
+
+const set_questions = (column_id: string, rowIndex: number, value: string) => {
+  // column_id is the field being updated, e.g. video_segment_id, content, answer_key ...
+  setQuestions(prev => {
+    const updatedQuestions = [...prev];
+    updatedQuestions[rowIndex] = {
+      ...updatedQuestions[rowIndex],
+      [column_id]: value as string, // Update the segment_number
+    };
+    console.log(" ------->>>>>>> updatedQuestions =", updatedQuestions)
+    return updatedQuestions;
+  });
+}
 
 const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
   () => [
@@ -270,11 +348,11 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
     },
     {
       accessorKey: "itemId",
-      header: "Question ID",
+      header: "Id",
     },
     {
       accessorKey: "item_number",
-      header: "Question Number",
+      header: "Qu. Number",
       //enableSorting: true, // Enable sorting for this column
     },
     {
@@ -288,21 +366,191 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
     {
       accessorKey: "content",
       header: "Content",
+      cell: info => {
+        const initialValue = info.getValue();
+        const rowIndex = info.row.index; // Get the row index
+        const [value, setValue] = useState(initialValue);
+        const inputRef = useRef<HTMLInputElement>(null);
+         // onBlur event causes the input field to be refreshed 
+         // ( onBlur works differently from onChange event where the input field is refreshed as you type)
+      // when using onBlur, you need to click outside the input field for the change to be registered
+      // in the table
+        const onBlur = () => {
+          updatedField.current = {id: info.row.original.itemId, row_index: rowIndex,  column_id: info.column.id, value: value as string};
+          //console.log(" ON BLUR updatedField current after updated =", updatedField.current)
+          setQuestions(prev => {
+            const updatedQuestions = [...prev];
+            updatedQuestions[rowIndex] = {
+              ...updatedQuestions[rowIndex],
+              content: value as string, // Update the segment_number
+            };
+           //console.log(" ON BLUR updatedQuestions =", updatedQuestions)
+            return updatedQuestions;
+          });
+        // console.log(" onBlur, row original =", info.row.original)
+          //
+        };
+  
+        return (
+          <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-96 mx-1'
+          ref={inputRef} // Attach the ref to the input field
+            value={value as string}
+            onChange={e => {
+              // use document.getElementById to get the update_row button on the same row
+              const updateButton = document.getElementById(`update_button_${info.row.original.itemId}`);
+
+              if (updateButton) {
+                updateButton.style.backgroundColor = 'red'; // Change color to red
+              }
+              //console.log(" onChange , row original =",info.row.original)
+
+              setValue(e.target.value)
+            } }
+            onBlur={onBlur}
+          />
+        );
+      }, // end cell info
+
     }, 
     {
       accessorKey: "answer_key",
       header: "Answer Key",
       cell: info => {
-        return info.row.original.answer_key || ''
-      },
+        const initialValue = info.getValue();
+        const rowIndex = info.row.index; // Get the row index
+        const [value, setValue] = useState(initialValue);
+        const inputRef = useRef<HTMLInputElement>(null);
+         // onBlur event causes the input field to be refreshed 
+         // ( onBlur works differently from onChange event where the input field is refreshed as you type)
+      // when using onBlur, you need to click outside the input field for the change to be registered
+      // in the table
+        const onBlur = () => {
+          updatedField.current = {id: info.row.original.itemId, row_index: rowIndex,  column_id: info.column.id, value: value as string};
+          //console.log(" ON BLUR updatedField current after updated =", updatedField.current)
+          setQuestions(prev => {
+            const updatedQuestions = [...prev];
+            updatedQuestions[rowIndex] = {
+              ...updatedQuestions[rowIndex],
+              answer_key: value as string, // Update the segment_number
+            };
+           //console.log(" ON BLUR updatedQuestions =", updatedQuestions)
+            return updatedQuestions;
+          });
+        // console.log(" onBlur, row original =", info.row.original)
+          //
+        };
+  
+        return (
+          <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-48 mx-1'
+          ref={inputRef} // Attach the ref to the input field
+            value={value as string}
+            onChange={e => {
+              // use document.getElementById to get the update_row button on the same row
+              const updateButton = document.getElementById(`update_button_${info.row.original.itemId}`);
+
+              if (updateButton) {
+                updateButton.style.backgroundColor = 'red'; // Change color to red
+              }
+              //console.log(" onChange , row original =",info.row.original)
+
+              setValue(e.target.value)
+            } }
+            onBlur={onBlur}
+          />
+        );
+      }, // end cell info
+
     }, 
     {
-      accessorKey: "video_segment_id",
+      accessorKey: "videoSegmentId",
       header: "Video Segment ID",
       cell: info => {
-        return info.getValue()
-      },
+        const initialValue = info.getValue();
+        const rowIndex = info.row.index; // Get the row index
+        const [value, setValue] = useState(initialValue);
+        const inputRef = useRef<HTMLInputElement>(null);
+         // onBlur event causes the input field to be refreshed 
+         // ( onBlur works differently from onChange event where the input field is refreshed as you type)
+      // when using onBlur, you need to click outside the input field for the change to be registered
+      // in the table
+        const onBlur = () => {
+          updatedField.current = {id: info.row.original.itemId, row_index: rowIndex,  column_id: info.column.id, value: value as string};
+          //console.log(" ON BLUR updatedField current after updated =", updatedField.current)
+          setQuestions(prev => {
+            const updatedQuestions = [...prev];
+            updatedQuestions[rowIndex] = {
+              ...updatedQuestions[rowIndex],
+              videoSegmentId: value as string, // Update the segment_number
+            };
+           //console.log(" ON BLUR updatedQuestions =", updatedQuestions)
+            return updatedQuestions;
+          });
+        // console.log(" onBlur, row original =", info.row.original)
+          //
+        };
+  
+        return (
+          <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-12 mx-1'
+          ref={inputRef} // Attach the ref to the input field
+            value={value as string}
+            onChange={e => {
+              // use document.getElementById to get the update_row button on the same row
+              const updateButton = document.getElementById(`update_button_${info.row.original.itemId}`);
+
+              if (updateButton) {
+                updateButton.style.backgroundColor = 'red'; // Change color to red
+              }
+              //console.log(" onChange , row original =",info.row.original)
+
+              setValue(e.target.value)
+            } }
+            onBlur={onBlur}
+          />
+        );
+      }, // end cell info
+
+
     }, 
+    {
+      id: "update_row",
+      header: "Update",
+      cell: ({ row }) => (
+        <button
+        id = {`update_button_${row.original.itemId}`}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+        onClick={(e) => {
+          // ****** IMPORTANT kpham: when you click the UPDATE button, and previously an input field was focused,
+          // then an onBlur event will be triggered first, before the onClick event of this button is fired.
+
+          //console.log("Update button clicked for row id:", row.original.itemId)
+         
+          //.current = row.original.itemId;
+         
+          /*
+{
+    "id": 6210,
+    "row_index": 0,
+    "column_id": "video_segment_id",
+    "value": "11"
+}
+          */
+
+         // since onBlur gets fired when user click anywhere outside the input field,
+         // we have to make sure that the user has clicked on the Update button of the same row
+               if (updatedField.current) {
+            updateQuestionRow({...row.original, [updatedField.current.column_id]: updatedField.current.value as string});
+          } else {
+            console.error("updatedField.current is null");
+          }
+          // if you click this button (or any other field) while an input field is focused, the onBlur event for that input field will be triggered first
+          // this is why you don't need an onClick event 
+        }}
+      >
+        Update
+      </button>
+      ),
+    },
+
     {
       id: "edit",
       header: "Edit",
@@ -320,24 +568,6 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
           Edit
         </button>
         </>
-      ),
-    },
-  
-    {
-      id: "delete",
-      header: "Delete",
-      cell: (info) => (
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-          onClick={() => { 
-            const originals = info.table.getRowModel().rows.map((row: any) => row.original);
-            //console.log("cloneQuestion originals =", originals);
-            deleteQuestion( info.row.original.itemId, originals)
-          }
-        }
-        >
-          Delete
-        </button>
       ),
     },
     {
@@ -374,6 +604,23 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
           Create
         </button>
         </>
+      ),
+    },
+    {
+      id: "delete",
+      header: "Delete",
+      cell: (info) => (
+        <button
+          className="bg-amber-700 hover:bg-amber-500 text-white font-bold py-1 px-2 rounded"
+          onClick={() => { 
+            const originals = info.table.getRowModel().rows.map((row: any) => row.original);
+            //console.log("cloneQuestion originals =", originals);
+            deleteQuestion( info.row.original.itemId, originals)
+          }
+        }
+        >
+          Delete
+        </button>
       ),
     },
   ],
@@ -418,7 +665,7 @@ videoSegmentId?.toString(), content: questionContent, answer_key: answerKey});
         if (q.itemId === editModalContent?.question_id) {
           return {
             ...q,
-             video_segment_id: params.video_segment_id,
+             videoSegmentId: params.video_segment_id,
               content: params.content,
               answer_key: params.answer_key,
           };
@@ -448,7 +695,7 @@ videoSegmentId?.toString(), content: questionContent, answer_key: answerKey});
           item_number: parseInt(params.item_number || "0"), // Default to "0" if undefined
           format: params.format || "1", // Default to "1" if undefined
           content: "content....",
-          video_segment_id: params.video_segment_id,
+          videoSegmentId: params.video_segment_id,
         };
         // use splice method to insert the new question after the position of the current row item number
         const index = questions.findIndex((q) => q.item_number === new_question.item_number);
@@ -561,7 +808,7 @@ videoSegmentId?.toString(), content: questionContent, answer_key: answerKey});
         </div>
       )}
      
-          {isModalEditVisible && (
+      {isModalEditVisible && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <EditQuestion 
            modal_content={editModalContent!} onClose={closeModal} />
