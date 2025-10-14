@@ -11,11 +11,22 @@ import { useRootUrl } from '../../contexts/root_url';
 import {useSortable } from '@dnd-kit/sortable';
 
 import GenericSortableTable, { genericItemType } from './GenericSortableTable';
+import EditQuiz from './EditQuiz';
 
+export interface EditQuizModalContentProps {
+  quiz_id: string;
+  quiz_number: number;
+}
 
 export interface ShortQuizProps extends genericItemType {
   name?: string;
   video_url?: string;
+}
+
+interface CloseModalProps {
+  action: "edit" | "new" | "cancel",
+  itemId?: string,
+  item_number?: string,
 }
 
 const queryClient = new QueryClient();  
@@ -34,6 +45,10 @@ export default function ListQuizzes(props:any) {
      const subCategoryFilter = queryParams.get('sub_category');
       //console.log("ListQuizzes:  subCategoryFilter=", subCategoryFilter);
       const unitFilter = queryParams.get('unit');
+
+      const [isModalEditVisible, setIsModalEditVisible] = useState(false); // State for modal visibility
+      const [editModalContent, setEditModalContent] = useState<EditQuizModalContentProps | null>(null);
+      
       //console.log("ListQuizzes:  unitFilter=", unitFilter);
 
 const { rootUrl } = useRootUrl();
@@ -116,6 +131,14 @@ const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
   );
 };
 
+const editQuiz = (quiz_id: string, quiz_number: number) => {
+  //console.log("createQuestion called with ^^^^^^^^^^^^^^ selectedFormat:", selectedFormat);
+
+  setEditModalContent({ quiz_id: quiz_id, quiz_number: quiz_number });
+  setIsModalEditVisible(true);
+}
+
+
 const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
   () => [
     {
@@ -149,9 +172,19 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
       id: "edit",
       header: "Edit",
       cell: (info) => (
-        <Link className="italic text-blue-300" to={`edit_quiz/${info.row.original.itemId}`}>
+        <>
+       
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+          onClick={() => {
+              editQuiz(info.row.original.itemId, info.row.original.item_number)
+            } 
+            
+          }
+        >
           Edit
-        </Link>
+        </button>
+        </>
       ),
     },
     {
@@ -246,41 +279,30 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
     return response.json();
   };
    
+  const closeModal = (params: CloseModalProps) => {
+      if (params.action === "cancel") {
+        setIsModalEditVisible(false);
+        //setIsModalNewVisible(false);
+        setEditModalContent(null);
+       // setNewModalContent(null);
+        return;
+      }
+  }
+
   return (
     <>
-     <div className='flex justify-between items-center mb-4'>
-      <Link to="/" className='bg-bgColor2 text-textColor2 text-2xl italic'>Home</Link>
-      </div>
-      <div className='bg-bgColor2 text-textColor2 flex flex-row justify-start items-center mb-4'>
-        <div>
-          <Link className='bg-bgColor2 italic underline text-textColor2 text-xl my-4 mx-1' to={subCategoryLink || ''}>
-            {` ${categoryFilter}`}
-          </Link> {'->'}
-        </div>
-        <div>
-          <Link className='bg-bgColor2 italic underline text-textColor2 text-xl my-4 mx-1' to={unitLink}>
-            {` ${subCategoryFilter}`}
-          </Link> {'->'}
-        </div>
-        <div className='bg-bgColor2 italic text-textColor2 text-xl p-3'>{unit?.name}</div>
-      </div>
-
       <GenericSortableTable input_data={quizzes} columns={columns} />
-      <div className='bg-bgColor2 text-textColor2 p-3'>
-        <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
-          onClick={() => setCreateNewQuiz(!createNewQuiz)}
-        >
-          {createNewQuiz ? 'Cancel' : 'Create New Quiz'}
-        </button>
-        {createNewQuiz &&
-          <NewQuiz categoryId={params.categoryId || ''} sub_categoryId={params.sub_categoryId || ''} unit_id={params.unitId || ''} parent_func={onQuizCreated} />
-        }
-      </div>
-      <Outlet />
+ 
+      {isModalEditVisible && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <EditQuiz 
+           modal_content={editModalContent!} onClose={closeModal} />
+        </div>
+      )}
+    
     </>
   )
       
 }
 
-//
-// <DataTable columns={columns} data={data} />
+
