@@ -76,7 +76,7 @@ useEffect(() => {
 //const { data: unit, loading, error } = useAxiosFetch<UnitProps>({ url: url, method: 'get' })
 //console.log("***** quizzes = ", unit?.quizzes)
 
-const [createNewQuiz, setCreateNewQuiz] = useState(false)
+const [createNewSubCategory, setCreateNewSubCategory] = useState(false)
 
 const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
   const { attributes, listeners } = useSortable({
@@ -189,9 +189,9 @@ const columns = useMemo<ColumnDef<ShortSubCategoriesProps>[]>(
       <GenericSortableTable input_data={subCategories} columns={columns} parent_notify_reset_item_numbers={child_reset_item_numbers} />
       <div className='bg-bgColor2 text-textColor2 p-3'>
         <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
-          onClick={() => setCreateNewQuiz(!createNewQuiz)}
+          onClick={() => setCreateNewSubCategory(!createNewSubCategory)}
         >
-          {createNewQuiz ? 'Cancel' : 'Create New Quiz'}
+          {createNewSubCategory ? 'Cancel' : 'Create New Sub Category'}
         </button>
        
       </div>

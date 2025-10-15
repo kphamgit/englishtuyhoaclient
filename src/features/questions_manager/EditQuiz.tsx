@@ -5,10 +5,11 @@ import { CloseModalProps } from './ListQuestions';
 import { EditQuizModalContentProps } from './ListQuizzes';
 import { QuizProps, VideoSegmentProps } from './types';
 import ListVideoSegments from './ListVideoSegments';
+import { QuizCloseModalProps } from './NewQuiz';
 
 interface EditQuizProps {
     modal_content: EditQuizModalContentProps;
-    onClose: (params: CloseModalProps) => void;
+    onClose: (params: QuizCloseModalProps) => void;
   }
   
     const EditQuiz: React.FC<EditQuizProps> = ({ modal_content, onClose }) => {
@@ -47,7 +48,12 @@ interface EditQuizProps {
     },[quiz])
 
     const handleCancel = () => {
-        onClose({action: 'cancel'});
+        onClose({action: 'cancel',
+            name:  '',
+            quiz_number:  '',
+            video_url:  '',
+            unitId:  ''
+        });
     }
 
     const update_quiz = () => {
@@ -69,7 +75,13 @@ interface EditQuizProps {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                onClose({action: 'edit'});
+                onClose({
+                    action: 'edit', 
+                    name: name, 
+                    quiz_number: quiz?.quiz_number || '',
+                    video_url: videoUrl || '',
+                    unitId: quiz?.unitId || ''
+                });
                 //return response.json();
             })
     }

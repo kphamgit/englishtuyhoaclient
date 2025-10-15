@@ -214,12 +214,14 @@ function GenericSortableTable<T extends genericItemType>({
           </table>
         </div>
       </DndContext>
+      <div className="bg-bgColor2 text-textColor2 p-3">
       <button
-        className="text-textColor1 bg-bgColor1 rounded-lg px-5 pt-3 mt-2"
+        className="text-textColor1 bg-bgColor4 rounded-lg px-5 pt-3 mt-2"
         onClick={reset_item_numbers}
       >
         Renumber Item
       </button>
+      </div>
     </div>
   );
 }

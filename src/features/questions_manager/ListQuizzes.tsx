@@ -4,7 +4,8 @@ import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import { ColumnDef, SortingState} from '@tanstack/table-core';
 
 import { UnitProps } from './types';
-import NewQuiz, { CreateQuizProps } from './NewQuiz';
+import { CreateQuizProps, NewQuizModalContentProps, QuizCloseModalProps } from './NewQuiz';
+import NewQuiz from './NewQuiz';
 import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { useRootUrl } from '../../contexts/root_url';
 
@@ -18,15 +19,17 @@ export interface EditQuizModalContentProps {
   quiz_number: number;
 }
 
+
+
 export interface ShortQuizProps extends genericItemType {
   name?: string;
   video_url?: string;
 }
 
+
+
 interface CloseModalProps {
   action: "edit" | "new" | "cancel",
-  itemId?: string,
-  item_number?: string,
 }
 
 const queryClient = new QueryClient();  
@@ -48,7 +51,11 @@ export default function ListQuizzes(props:any) {
 
       const [isModalEditVisible, setIsModalEditVisible] = useState(false); // State for modal visibility
       const [editModalContent, setEditModalContent] = useState<EditQuizModalContentProps | null>(null);
-      
+     
+      const [isModalNewVisible, setIsModalNewVisible] = useState(false); // State for modal visibility
+      const [newModalContent, setNewModalContent] = useState<NewQuizModalContentProps | null>(null);
+  
+
       //console.log("ListQuizzes:  unitFilter=", unitFilter);
 
 const { rootUrl } = useRootUrl();
@@ -146,6 +153,10 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
       header: "Move",
       cell: ({ row }) => <RowDragHandleCell rowId={row.id} />,
       size: 60,
+    },
+    {
+      accessorKey: "itemId",
+      header: "Id",
     },
     {
       accessorKey: "name",
@@ -279,25 +290,82 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
     return response.json();
   };
    
-  const closeModal = (params: CloseModalProps) => {
-
+  const closeModal = (params: QuizCloseModalProps) => {
+      console.log("closeModal called with params =", params)
       if (params.action === "cancel") {
+        setIsModalNewVisible(false);
         setIsModalEditVisible(false);
-        //setIsModalNewVisible(false);
+        setNewModalContent(null);
         setEditModalContent(null);
-       // setNewModalContent(null);
         return;
       }
       if (params.action === "edit") {
         // refresh the list of quizzes
         setIsModalEditVisible(false);
         setEditModalContent(null);
+        const updatedQuizzes = quizzes.map(q => 
+          {
+            //console.log("q.itemId =", q.itemId, " editModalContent?.question_id =", editModalContent?.question_id)
+          if (q.itemId === editModalContent?.quiz_id) {
+            return {
+              ...q,
+              item_number: params.quiz_number,
+              name: params.name || q.name,
+              video_url: params.video_url || q.video_url,
+            };
+          }
+          return q;
+        }); 
+        
+       // console.log("updatedQuestions =", updatedQuestions)
+        //setQuestions(updatedQuestions);
+        setQuizzes(updatedQuizzes.map(q => ({
+          ...q,
+          item_number: Number(q.item_number),
+          name: q.name,
+        })));
       }
+      if (params.action === "new") {
+        // add the new quiz to the list of quizzes
+        setIsModalNewVisible(false);
+        setNewModalContent(null);
+        const new_quiz: ShortQuizProps = {
+          itemId: params.id!,
+          item_number: Number(params.quiz_number!),
+          name: params.name,
+          video_url: params.video_url,
+        }
+        console.log("new_quiz =", new_quiz)
+        setQuizzes(prev => [...prev, new_quiz]);
+      
+      }
+
+     
+
+  }
+
+  const child_reset_item_numbers = (new_numbers: {itemId: string, item_number: number}[]) => {
+    //console.log("test_function called value =", value)
+    //console.log("child_reset_item_numbers called new_numbers =", new_numbers)
+    // use fetch api to post new_numbers to backend /api/questions/renumber',
+    const response = fetch(`${rootUrl}/api/quizzes/renumber`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id_number_pairs: new_numbers }),
+    })
+    return response;
+  
   }
 
   return (
     <>
-      <GenericSortableTable input_data={quizzes} columns={columns} />
+      <GenericSortableTable 
+        input_data={quizzes} 
+        columns={columns} 
+        parent_notify_reset_item_numbers={child_reset_item_numbers}
+        />
  
       {isModalEditVisible && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -305,7 +373,27 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
            modal_content={editModalContent!} onClose={closeModal} />
         </div>
       )}
-    
+      <div className='bg-bgColor2 text-textColor2 p-3 my-3'>
+      <button className='bg-bgColor4 text-textColor4 bg-2 rounded-lg w-40 p-2 m-2'
+          onClick={() => 
+          {
+            setNewModalContent({ 
+              unitId: params.unitId || '',
+            });
+            setIsModalNewVisible(true)
+          }
+
+          }
+        >
+          Create New Quiz
+        </button>
+      {isModalNewVisible && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <NewQuiz
+              modal_content={newModalContent!} onClose={closeModal} />
+          </div>
+        )}
+      </div>
     </>
   )
       
