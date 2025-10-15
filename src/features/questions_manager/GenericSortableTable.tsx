@@ -33,6 +33,8 @@ import {
 // needed for row & cell level scope DnD setup
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useRootUrl } from "../../contexts/root_url";
+
 
 
 export interface genericItemType {
@@ -47,9 +49,10 @@ generic type T can be any object type, e.g., ShortQuizProps, QuestionProps, Unit
 interface GenericTableProps<T extends { itemId: string }> {
     input_data: T[]; // Use the generic type for the data array
     columns: ColumnDef<T>[]; // Use the generic type for the column definitions
-    parent_notify_reset_item_numbers?: (combined: genericItemType[]) => void; // Optional callback prop
+    data_type?: string; 
+    parent_notify_delete_row?: (item_id: string) => void; // Optional callback prop
   }
-
+//const deleteQuestion = async (question_id: string,  originals: ShortQuestionProps[]) => {
 // Row Component
 interface DraggableRowProps<T extends { itemId: string }> {
   row: Row<T>; // Use the generic type for the row
@@ -84,7 +87,8 @@ const DraggableRow = <T extends { itemId: string }>({ row }: DraggableRowProps<T
 function GenericSortableTable<T extends genericItemType>({
   input_data,
   columns,
-  parent_notify_reset_item_numbers,
+  parent_notify_delete_row,
+  data_type,
 }: GenericTableProps<T>) {
   useEffect(() => {
     setData(input_data);
@@ -97,8 +101,11 @@ function GenericSortableTable<T extends genericItemType>({
     [data]
   );
 
+  const { rootUrl } = useRootUrl();
+
   const rerender = () => setData([...data]);
 
+  /*
   const table = useReactTable({
     data,
     columns: columns,
@@ -106,8 +113,9 @@ function GenericSortableTable<T extends genericItemType>({
     getRowId: (row) => row.itemId,
   
   });
+  */
 
-/*
+
  const table = useReactTable({
     data,
     columns: [
@@ -118,9 +126,9 @@ function GenericSortableTable<T extends genericItemType>({
         cell: (info) => (
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-            onClick={() => console.log(info.row.original.itemId)}
+            onClick={() => delete_row(info.row.original.itemId)}
           >
-            Delete Generic
+            Delete
           </button>
         ),
       },
@@ -129,7 +137,24 @@ function GenericSortableTable<T extends genericItemType>({
     getRowId: (row) => row.itemId,
   
   });
-*/
+
+  const delete_row = async (itemId: string) => {
+    console.log("delete_row called with itemId:", itemId);
+    
+    const response = await fetch(`${rootUrl}/api/${data_type}/${itemId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.ok) {
+      parent_notify_delete_row?.(itemId);
+    } else {
+      console.error("Failed to delete question with id:", itemId);
+    }
+    
+
+  }
 
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -156,12 +181,8 @@ function GenericSortableTable<T extends genericItemType>({
       sorted_numbers[i] = (i + 1);
     }
 
-    const combined = item_ids.map((id, index) => ({
-      itemId: id,
-      item_number: sorted_numbers[index],
-    }));
-
-    parent_notify_reset_item_numbers?.(combined);
+  
+   //parent_notify_reset_item_numbers?.(combined);
     setData((prev) => {
       const updatedRows = prev.map((row, index) => ({
         ...row,
@@ -169,7 +190,30 @@ function GenericSortableTable<T extends genericItemType>({
       }));
       return updatedRows;
     });
+
+    const combined = item_ids.map((id, index) => ({
+      itemId: id,
+      item_number: sorted_numbers[index],
+    }));
+
+    call_api_reset_item_numbers(combined);
+
   };
+
+  const call_api_reset_item_numbers = (new_numbers: {itemId: string, item_number: number}[]) => {
+ 
+    //console.log("call_api_reset_item_numbers new_numbers =", new_numbers)
+    // use fetch api to post new_numbers to backend /api/questions/renumber',
+    const response = fetch(`${rootUrl}/api/${data_type}/renumber`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id_number_pairs: new_numbers }),
+    })
+    return response;
+  
+  }
 
   const getColumnValues = (columnId: string): unknown[] => {
     return table.getRowModel().rows.map((row) => row.getValue(columnId));

@@ -202,58 +202,23 @@ const { rootUrl } = useRootUrl();
    
     };
 
-    const deleteQuestion = async (question_id: string,  originals: ShortQuestionProps[]) => {
+    const rowDeleted = async (question_id: string) => {
       // for the use of originals, see cloneQuestion function
-      //console.log("deleteQuiz called with quiz_id:", question_id);
+      console.log("deleteQuiz called with quiz_id:", question_id);
       
-    const response = await fetch(`${rootUrl}/api/questions/${question_id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    if (response.ok) {
-     // console.log("Successfully deleted question with id:", question_id);
-      // Update the local state to remove the deleted question
-      const updatedQuestions = originals.filter(q => q.itemId !== question_id);
+      setQuestions(prev => prev.filter(vs => vs.itemId !== question_id));
+/*
+      const updatedQuestions = row.filter(q => q.itemId !== question_id);
       setQuestions(updatedQuestions.map(q => ({
         ...q,
         content: q.content || 'content....', // Ensure content is always a string
       })));
-    } else {
-      console.error("Failed to delete question with id:", question_id);
-    }
-    return response.json();
-    
-      
+      */
     };
 
-    /*
-interface ShortQuestionProps extends genericItemType {
-  format: string
-  content: string,
-  video_segment_id?: string
-  answer_key?: string
-}
-    */
 
     const updateQuestionRow = async (question_row: ShortQuestionProps) => {
         //console.log("updateVideoSegment called with videoSegment:", question_row);
-        /*
-{
-    "itemId": 6210,
-    "item_number": "1",
-    "format": "1",
-    "content": "How [are] you?",
-    "answer_key": "are",
-    "video_segment_id": "44"
-}
-        */
-
-       // const column_id = updatedField.current?.column_id || 'unknown_column';
-        //console.log(" Stringified question_row =", JSON.stringify(question_row))
-
-        // replace video_segment_id with camel case videoSegmentId
         const {itemId, item_number,format, ...rest } = question_row;
        
         const body = { ...rest };
@@ -294,10 +259,6 @@ interface ShortQuestionProps extends genericItemType {
 
     }
 
-//const { data: unit, loading, error } = useAxiosFetch<UnitProps>({ url: url, method: 'get' })
-//console.log("***** quizzes = ", unit?.quizzes)
-
-
 const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
   const { attributes, listeners } = useSortable({
     id: rowId,
@@ -309,21 +270,6 @@ const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
     </button>
   );
 };
-
-const child_reset_item_numbers = (new_numbers: {itemId: string, item_number: number}[]) => {
-  //console.log("test_function called value =", value)
-  //console.log("child_reset_item_numbers called new_numbers =", new_numbers)
-  // use fetch api to post new_numbers to backend /api/questions/renumber',
-  const response = fetch(`${rootUrl}/api/questions/renumber`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ id_number_pairs: new_numbers }),
-  })
-  return response;
-
-}
 
 const set_questions = (column_id: string, rowIndex: number, value: string) => {
   // column_id is the field being updated, e.g. video_segment_id, content, answer_key ...
@@ -408,6 +354,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
             } }
             onBlur={onBlur}
           />
+
         );
       }, // end cell info
 
@@ -606,38 +553,10 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
         </>
       ),
     },
-    {
-      id: "delete",
-      header: "Delete",
-      cell: (info) => (
-        <button
-          className="bg-amber-700 hover:bg-amber-500 text-white font-bold py-1 px-2 rounded"
-          onClick={() => { 
-            const originals = info.table.getRowModel().rows.map((row: any) => row.original);
-            //console.log("cloneQuestion originals =", originals);
-            deleteQuestion( info.row.original.itemId, originals)
-          }
-        }
-        >
-          Delete
-        </button>
-      ),
-    },
   ],
   [] // No dependencies, so the columns are memoized once
 );
 
-
-  const deleteQuiz = async (quiz_id: string) => {
-    //("deleteQuiz called with quiz_id:", quiz_id);
-    const response = await fetch(`${rootUrl}/api/quizzes/${quiz_id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    return response.json();
-  };
 
   const closeModal = (params: CloseModalProps) => {
     if (params.action === "cancel") {
@@ -647,10 +566,6 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       setNewModalContent(null);
       return;
     }
-
-    /*
-videoSegmentId?.toString(), content: questionContent, answer_key: answerKey});
-    */
 
     if (isModalEditVisible) {
       //console.log(" closeModal params = ", params)
@@ -797,7 +712,8 @@ videoSegmentId?.toString(), content: questionContent, answer_key: answerKey});
       <GenericSortableTable 
         input_data={questions} 
         columns={columns} 
-        parent_notify_reset_item_numbers={child_reset_item_numbers}
+        data_type='questions'
+        parent_notify_delete_row={rowDeleted}
         />
       <div className='bg-bgColor2 text-textColor2 p-3'>
 
@@ -824,7 +740,8 @@ videoSegmentId?.toString(), content: questionContent, answer_key: answerKey});
               question_number: (questions.length + 1).toString(),
               quiz_has_video: isVideoQuiz,
               format: selectedFormat.current, 
-              quiz_id: params.quizId || ""});
+              quiz_id: params.quizId || ""
+            });
             setIsModalNewVisible(true)
           }
 

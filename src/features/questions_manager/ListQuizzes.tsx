@@ -145,7 +145,6 @@ const editQuiz = (quiz_id: string, quiz_number: number) => {
   setIsModalEditVisible(true);
 }
 
-
 const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
   () => [
     {
@@ -198,18 +197,7 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
         </>
       ),
     },
-    {
-      id: "delete",
-      header: "Delete",
-      cell: (info) => (
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-          onClick={() => deleteQuiz(info.row.original.itemId)}
-        >
-          Delete
-        </button>
-      ),
-    },
+   
     {
       id: "assign",
       header: "Assign",
@@ -277,17 +265,11 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
   
   });
 
-  const deleteQuiz = async (quiz_id: string) => {
-    console.log("deleteQuiz called with quiz_id:", quiz_id);
-    const response = await fetch(`${rootUrl}/api/quizzes/${quiz_id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-     // Remove the deleted segment from local state
+  const rowDeleted = async (quiz_id: string) => {
+    // for the use of originals, see cloneQuestion function
+    
+    //const updatedQuestions = row.filter(q => q.itemId !== question_id);
     setQuizzes(prev => prev.filter(vs => vs.itemId !== quiz_id));
-    return response.json();
   };
    
   const closeModal = (params: QuizCloseModalProps) => {
@@ -344,27 +326,13 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
 
   }
 
-  const child_reset_item_numbers = (new_numbers: {itemId: string, item_number: number}[]) => {
-    //console.log("test_function called value =", value)
-    //console.log("child_reset_item_numbers called new_numbers =", new_numbers)
-    // use fetch api to post new_numbers to backend /api/questions/renumber',
-    const response = fetch(`${rootUrl}/api/quizzes/renumber`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ id_number_pairs: new_numbers }),
-    })
-    return response;
-  
-  }
-
   return (
     <>
       <GenericSortableTable 
         input_data={quizzes} 
         columns={columns} 
-        parent_notify_reset_item_numbers={child_reset_item_numbers}
+        data_type='quizzes'
+        parent_notify_delete_row={rowDeleted}
         />
  
       {isModalEditVisible && (

@@ -148,19 +148,6 @@ const columns = useMemo<ColumnDef<ShortUnitProps>[]>(
         </Link>
       ),
     },
-  
-    {
-      id: "delete",
-      header: "Delete",
-      cell: (info) => (
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-          onClick={() => deleteUnit(info.row.original.itemId)}
-        >
-          Delete
-        </button>
-      ),
-    },
     
   ],
   [sub_category] // No dependencies, so the columns are memoized once
@@ -195,32 +182,12 @@ App.tsx:90 No routes matched location "/categories/1/sub_categories/3/quizzes/7"
       // Perform additional logic with the properties
   };
 
+  const rowDeleted = async (quiz_id: string) => {
+    // for the use of originals, see cloneQuestion function
     
-
-  const deleteUnit = async (unit_id: string) => {
-    console.log("deleteQuiz called with quiz_id:", unit_id);
-    /*
-    const response = await fetch(`${rootUrl}/api/quizzes/${quiz_id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-     // Remove the deleted segment from local state
-    setQuizzes(prev => prev.filter(vs => vs.itemId !== quiz_id));
-    return response.json();
-    */
+    //const updatedQuestions = row.filter(q => q.itemId !== question_id);
+    setUnits(prev => prev.filter(vs => vs.itemId !== quiz_id));
   };
-
-
-  /*
- <div>
-      <Link className='bg-bgColor2 italic text-textColor2 text-2xl my-4 mx-4' to={subCategoryLink?.pathname || '#'}>
-         {`<- ${subCategoryLink?.name || 'Sub Categories'}`}
-      </Link>
-    </div>
-  */
-
 
   return (
     <>
@@ -236,12 +203,17 @@ App.tsx:90 No routes matched location "/categories/1/sub_categories/3/quizzes/7"
         <div className='bg-bgColor2 italic text-textColor2 text-xl p-3'>{sub_category?.name}</div>
       </div>
   
-      <GenericSortableTable input_data={units} columns={columns} />
+      <GenericSortableTable 
+        input_data={units} 
+        columns={columns} 
+        data_type='units'
+        />
+
       <div className='bg-bgColor2 text-textColor2 p-3'>
         <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
           onClick={() => setCreateNewQuiz(!createNewQuiz)}
         >
-          {createNewQuiz ? 'Cancel' : 'Create New Quiz'}
+          {createNewQuiz ? 'Cancel' : 'Create New Unit'}
         </button>
        
       </div>

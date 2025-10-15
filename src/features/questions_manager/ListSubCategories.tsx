@@ -131,53 +131,17 @@ const columns = useMemo<ColumnDef<ShortSubCategoriesProps>[]>(
         </Link>
       ),
     },
-    {
-      id: "delete",
-      header: "Delete",
-      cell: (info) => (
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-          onClick={() => deleteUnit(info.row.original.itemId)}
-        >
-          Delete
-        </button>
-      ),
-    },
-    
   ],
   [sub_categories] // No dependencies, so the columns are memoized once
 );
      
 
-  const deleteUnit = async (unit_id: string) => {
-    console.log("deleteQuiz called with quiz_id:", unit_id);
-    /*
-    const response = await fetch(`${rootUrl}/api/quizzes/${quiz_id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-     // Remove the deleted segment from local state
-    setQuizzes(prev => prev.filter(vs => vs.itemId !== quiz_id));
-    return response.json();
-    */
-  };
-
-  const child_reset_item_numbers = (new_numbers: {itemId: string, item_number: number}[]) => {
-    //console.log("test_function called value =", value)
-    //console.log("child_reset_item_numbers called new_numbers =", new_numbers)
-    // use fetch api to post new_numbers to backend /api/questions/renumber',
-    const response = fetch(`${rootUrl}/api/sub_categories/renumber`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ id_number_pairs: new_numbers }),
-    })
-    return response;
+const rowDeleted = async (quiz_id: string) => {
+  // for the use of originals, see cloneQuestion function
   
-  }
+  //const updatedQuestions = row.filter(q => q.itemId !== question_id);
+  setSubCategories(prev => prev.filter(vs => vs.itemId !== quiz_id));
+};
 
   return (
     <>
@@ -186,7 +150,10 @@ const columns = useMemo<ColumnDef<ShortSubCategoriesProps>[]>(
       </div>
     <div className='bg-bgColor2 text-textColor2 text-xl px-10 py-5'>{category_name}</div>
    
-      <GenericSortableTable input_data={subCategories} columns={columns} parent_notify_reset_item_numbers={child_reset_item_numbers} />
+      <GenericSortableTable input_data={subCategories} 
+      columns={columns} 
+      data_type='sub_categories'
+      />
       <div className='bg-bgColor2 text-textColor2 p-3'>
         <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
           onClick={() => setCreateNewSubCategory(!createNewSubCategory)}
