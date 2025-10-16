@@ -37,7 +37,7 @@ interface NewQuestionProps {
          
           const {question_number, format, quiz_has_video, quiz_id} = modal_content
           
-          const [questionNumber, setQuestionNumber] = useState<string>(question_number ? String(question_number) : '') 
+          const [questionNumber, setQuestionNumber] = useState<number>(question_number ? question_number : 1) 
 
          // const [questionNumber, setQuestionNumber] = useState({
            // question_number: content ? parseInt(content) + 1 : 1
@@ -130,6 +130,7 @@ interface NewQuestionProps {
                 // combine radios_params into question content
                 const question_content = radio_params.choice_1_text + '/' + radio_params.choice_2_text + '/' +
                     radio_params.choice_3_text + '/' + radio_params.choice_4_text
+                setQuestionContent(question_content)
                 const my_params = {...question_params, content: question_content}
                 //console.log("MMMMMM radio_params=", res)
                 const response = await createQuestion(rootUrl, my_params )
@@ -176,12 +177,14 @@ interface NewQuestionProps {
                     new_question_id = response.data.id
                 }
         }
-   
+       console.log("before onClose questtionContent =", questionContent)
         onClose({ 
             action: 'new',
             itemId: new_question_id,
-            item_number: questionNumber !== undefined ? String(questionNumber) : undefined,
+            item_number: questionNumber,
             format: format,
+            content: questionContent,
+            answer_key: answerKey,
             video_segment_id: quiz_has_video ? String(videoSegmentId) : undefined,
          })
         //const url = `/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}/list_quizzes/${params.unit_id}/questions/${params.quiz_id}`
@@ -223,8 +226,8 @@ interface NewQuestionProps {
                 </div>
        
                 <div className='mx-10 text-textColor1 mb-2'>Question Number
-                    <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="text" value={questionNumber}
-                    onChange={e => setQuestionNumber(e.target.value)}></input>
+                    <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-4/12 mx-1' type="number" value={questionNumber}
+                    onChange={e => setQuestionNumber(parseInt(e.target.value))}></input>
                 </div>
 
                 <div className='mx-10 bg-bgColor1 text-textColor1 mb-2'>Display Instruction
@@ -251,15 +254,11 @@ interface NewQuestionProps {
 
                  <div className='flex flex-row justify-start gap-2'>
                 <div className='mx-10 text-textColor1 mb-2'>Content
-                {format === "4" || format === "5"?
-                     <div className='mx-10 text-textColor1 mb-2 bg-gray-700 p-2 rounded-md'>
-                       NO CONTENT
-                      </div>
-                    :
+               
                     <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md  mx-1' size={70} type="text" value={questionContent}
                     onChange={e => setQuestionContent(e.target.value)}></input>
 
-                }
+                
                 </div>
               
                 </div>

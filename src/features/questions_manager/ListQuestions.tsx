@@ -26,7 +26,7 @@ export interface CloseModalProps {
   action: "edit" | "new" | "cancel",
   video_segment_id?: string,
   itemId?: string,
-  item_number?: string,
+  item_number?: number,
   format?: string,
   content?: string,
   answer_key?: string,
@@ -57,14 +57,14 @@ export interface NewModalContentProps {
   quiz_has_video: boolean;
   format: string;
   quiz_id: string;
-  question_number?: string;
+  question_number?: number;
 }
 
 export interface EditModalContentProps {
   quiz_has_video: boolean;
   question_id: string;
   format: string;
-  question_number: string;
+  question_number: number;
   video_segment_id?: string;
 }
 
@@ -150,7 +150,7 @@ const { rootUrl } = useRootUrl();
       const shortQuestions: ShortQuestionProps[] = data.questions.map(({ id, format, question_number, content, answer_key, videoSegmentId }: any) => {
         return {
           itemId: id,
-          item_number: question_number.toString(),
+          item_number: question_number,
           format: format.toString(),
           content: content || 'content....',
           answer_key: answer_key || '',
@@ -178,6 +178,8 @@ const { rootUrl } = useRootUrl();
       const data = await response.json();
 
       const new_question = data.new_question;
+
+     
       // add data.new_question to the originals array after the original question
       // REMEMBER, have to use originals, not questions, to update the local state
       const index = originals.findIndex((q : ShortQuestionProps)=> q.itemId === question_id);
@@ -499,7 +501,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
           onClick={() => {
-              editQuestion(info.row.original.itemId, info.row.original.item_number)
+              editQuestion(info.row.original.format, info.row.original.itemId, info.row.original.item_number)
             } 
             
           }
@@ -584,7 +586,8 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       //setQuestions(updatedQuestions);
       setQuestions(updatedQuestions.map(q => ({
         ...q,
-        content: q.content || 'content....', // Ensure content is always a string
+        content: q.content || 'content....', 
+        answer_key: q.answer_key, // Ensure content is always a string
       })));
      
       return;
@@ -599,22 +602,37 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
         //const new_question_number = (questions.length + 1).toString();
         const new_question: ShortQuestionProps = {
           itemId: params.itemId || "temporary_id", // temporary id, will be replaced when the page is refreshed
-          item_number: parseInt(params.item_number || "0"), // Default to "0" if undefined
+          //item_number: parseInt(params.item_number || "0"), // Default to "0" if undefined
+          item_number: params.item_number ?? 0, // Default to 0 if undefined
           format: params.format || "1", // Default to "1" if undefined
-          content: "content....",
+          content: params.content || 'content....', 
+          answer_key: params.answer_key || '',
           videoSegmentId: params.video_segment_id,
         };
+
+        console.log(" ********* New question to be added to the table =", new_question)
         // use splice method to insert the new question after the position of the current row item number
+        
+        // print out all the item numbers in the questions array for debugging
+        //console.log(" All existing question item numbers:");
+        //questions.forEach(q => console.log("Existing question item number =", q.item_number, " type of item number =", typeof q.item_number));
+
+        //console.log("Type of new_question.item_number:", typeof new_question.item_number);
+        //console.log("Type of questions[0].item_number:", typeof questions[0]?.item_number);
+
         const index = questions.findIndex((q) => q.item_number === new_question.item_number);
-        //console.log("Inserting new question at index:", index);
+        //console.log("Found index for this question number:", index);
         if (index !== -1) {
+          //console.log("Inserting new question at index:", index);
           const updatedQuestions = [
-            ...questions.slice(0, index),
+            ...questions.slice(0, index+1),
             new_question,
-            ...questions.slice(index),
+            ...questions.slice(index+1),
           ];
+          //console.log("Updated questions after insertion:", updatedQuestions);
           setQuestions(updatedQuestions);
         } else {
+          //console.log("Could not find index for question number" ,new_question.item_number, "Appending new question at the end.");
           setQuestions([...questions, new_question]);
         }
         //setQuestions([...questions, new_question]);
@@ -638,7 +656,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
     //console.log("createQuestion called with ^^^^^^^^^^^^^^ selectedFormat:", selectedFormat);
 
     setNewModalContent({ 
-      question_number: (current_question_number + 1).toString(), 
+      question_number: current_question_number,
       quiz_has_video: isVideoQuiz,
       format: selectedFormat.current, 
       quiz_id: params.quizId || ""});
@@ -647,12 +665,12 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
     
   };
 
-  const editQuestion = (current_question_id: string, current_question_number: number) => {
+  const editQuestion = (format: string, current_question_id: string, current_question_number: number) => {
     //console.log("createQuestion called with ^^^^^^^^^^^^^^ selectedFormat:", selectedFormat);
 
     setEditModalContent({question_id: current_question_id,
-        format: selectedFormat.current, 
-        question_number: current_question_number.toString(), 
+        format: format, 
+        question_number: current_question_number,
         quiz_has_video: isVideoQuiz
       
       });
@@ -729,7 +747,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
           onClick={() => 
           {
             setNewModalContent({ 
-              question_number: (questions.length + 1).toString(),
+              question_number: questions.length + 1,
               quiz_has_video: isVideoQuiz,
               format: selectedFormat.current, 
               quiz_id: params.quizId || ""
