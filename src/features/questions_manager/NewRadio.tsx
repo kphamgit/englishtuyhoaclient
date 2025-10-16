@@ -55,21 +55,21 @@ export interface RadioProps {
         <div className='mx-12 my-10'>
     <fieldset className="flex max-w-md flex-col gap-4 pb-12">
       <legend className="mb-4">Fill in choices</legend>
-      <div className="flex items-center gap-2">
+      <div className=" flex items-center gap-2">
             <Radio onChange={e => handleChange(e.target.value, choice1Text)} id="choice1" name="choices" value="choice1"  />
-            <input type='text' value={choice1Text}  onChange={e => setChoice1Text(e.target.value)} size={80} />
+            <input className='bg-bgColor4' type='text' value={choice1Text}  onChange={e => setChoice1Text(e.target.value)} size={80} />
       </div>
       <div className="flex items-center gap-2">
             <Radio onChange={e => handleChange(e.target.value, choice2Text)} id="choice2" name="choices" value="choice2" />
-            <input type='text' value={choice2Text}  onChange={e => setChoice2Text(e.target.value)} size={80} />
+            <input className='bg-bgColor4'  type='text' value={choice2Text}  onChange={e => setChoice2Text(e.target.value)} size={80} />
       </div>
       <div className="flex items-center gap-2">
             <Radio onChange={e => handleChange(e.target.value, choice3Text)} id="choice3" name="choices" value="choice3"  />
-            <input type='text' value={choice3Text}  onChange={e => setChoice3Text(e.target.value)} size={80} />
+            <input className='bg-bgColor4'  type='text' value={choice3Text}  onChange={e => setChoice3Text(e.target.value)} size={80} />
       </div>
       <div className="flex items-center gap-2">
             <Radio onChange={e => handleChange(e.target.value, choice4Text)} id="choice4" name="choices" value="choice4"  />
-        <input type='text' value={choice4Text}  onChange={e => setChoice4Text(e.target.value)} size={80} />
+        <input className='bg-bgColor3'  type='text' value={choice4Text}  onChange={e => setChoice4Text(e.target.value)} size={80} />
       </div>
     </fieldset>
     </div>

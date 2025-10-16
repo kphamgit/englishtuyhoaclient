@@ -57,23 +57,23 @@ import { RadioProps } from './types';
       }));
 //onChange={e => setChoice1Text(e.target.value)}
 return (
-  <div className="flex max-w-md flex-col gap-4" id="checkbox">
+  <div className="m-5 flex max-w-md flex-col gap-4" id="checkbox">
     <h3>{choice1Text}</h3>
     <div className="flex items-center gap-2">
       <Checkbox id="choice1" onChange={(e) => handleChange(e.target.id, choice1Text, e.target.checked)}  />
-      <input type='text' value={choice1Text}  onChange={e => {setChoice1Text(e.target.value); }} size={80} />
+      <input className='bg-bgColor4' type='text' value={choice1Text}  onChange={e => {setChoice1Text(e.target.value); }} size={80} />
     </div>
     <div className="flex items-center gap-2">
       <Checkbox id="choice2" onChange={(e) => handleChange(e.target.id, choice2Text, e.target.checked)} />
-      <input type='text' value={choice2Text}  onChange={e => {setChoice2Text(e.target.value); }} size={80} />
+      <input className='bg-bgColor4' type='text' value={choice2Text}  onChange={e => {setChoice2Text(e.target.value); }} size={80} />
     </div>
     <div className="flex items-center gap-2">
       <Checkbox id="choice3" onChange={(e) => handleChange(e.target.id, choice3Text, e.target.checked)} />
-      <input type='text' value={choice3Text}  onChange={e => {setChoice3Text(e.target.value); }} size={80} />
+      <input className='bg-bgColor4' type='text' value={choice3Text}  onChange={e => {setChoice3Text(e.target.value); }} size={80} />
     </div>
     <div className="flex gap-2 mb-14">
     <Checkbox id="choice4" onChange={(e) => handleChange(e.target.id, choice4Text, e.target.checked)} />
-    <input type='text' value={choice4Text}  onChange={e => {setChoice4Text(e.target.value); }} size={80} />
+    <input className='bg-bgColor4' type='text' value={choice4Text}  onChange={e => {setChoice4Text(e.target.value); }} size={80} />
     </div>
  
   </div>

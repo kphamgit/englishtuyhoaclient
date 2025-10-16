@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { updateUser } from '../services/list';
 import { UserProps } from './types';
-import { useAxiosFetch } from './useAxiosFetch';
+import { useAxiosFetch } from  '../../hooks/useAxiosFetch';
 
 
 export default function UserEditor(props: any) {
@@ -47,6 +47,7 @@ const update_user = () => {
         user_name: userName,
         role: role,
     }
+    /*
     updateUser(params.id, unit_params )
     .then(response => {
         //console.log("SUCCESS updating question")
@@ -57,6 +58,7 @@ const update_user = () => {
     .catch(error => {
         console.log(error)
     })
+        */
     
 }
 

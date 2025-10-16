@@ -204,16 +204,8 @@ const { rootUrl } = useRootUrl();
 
     const rowDeleted = async (question_id: string) => {
       // for the use of originals, see cloneQuestion function
-      console.log("deleteQuiz called with quiz_id:", question_id);
-      
+      //console.log("deleteQuiz called with quiz_id:", question_id);
       setQuestions(prev => prev.filter(vs => vs.itemId !== question_id));
-/*
-      const updatedQuestions = row.filter(q => q.itemId !== question_id);
-      setQuestions(updatedQuestions.map(q => ({
-        ...q,
-        content: q.content || 'content....', // Ensure content is always a string
-      })));
-      */
     };
 
 
@@ -246,7 +238,7 @@ const { rootUrl } = useRootUrl();
           body: JSON.stringify(body), // exclude itemId , item_number, and format from the body
         });
         const data = await response.json();
-        alert("Successfully updated question row id " + question_row.itemId);
+        //alert("Successfully updated question row id " + question_row.itemId);
         
         const updateButton = document.getElementById(`update_button_${question_row.itemId}`);
 

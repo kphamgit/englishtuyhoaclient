@@ -6,6 +6,8 @@ import ListVideoSegments from './ListVideoSegments';
 import { genericItemType } from './GenericSortableTable';
 import { on } from 'events';
 import { useRootUrl } from '../../contexts/root_url';
+import { useMutation } from '@tanstack/react-query';
+import { createQuiz } from '../services/list';
 
 /*
 export interface NewQuizProps {
@@ -57,51 +59,29 @@ interface NewQuizProps {
       const [quizNumber, setQuizNumber] = useState<string | undefined>('')
       const [videoUrl, setVideoUrl] = useState<string | undefined>('')
  
-const create_quiz = () => {
-    console.log(" NewQuiz: create quiz  .........name =", name, " quizNumber=", quizNumber, " videoUrl=", videoUrl, " unitId=", unitId)
-    /*
-    let quiz_props = {
+     
+const create_quiz = async () => {
+  
+    const my_params = {
         name: name,
-        quiz_number: quizNumber,
+        quiz_number: quizNumber || '',
         video_url: videoUrl || '',
-        unitId: props.unit_id, 
-        
+        unitId: unitId
     }
-   
-    */
-   // use fetch to send a POST request to the server
-   const url = `${rootUrl}/api/quizzes`
-   const body = {
-         name: name,
-         quiz_number: quizNumber,
-         video_url: videoUrl,
-         unitId: unitId,
-    }
-    console.log(" NewQuiz: create quiz  url =", url, " body=", body)
-    fetch(url, {
-         method: 'POST',
-         headers: {
-              'Content-Type': 'application/json',
-         },
-         body: JSON.stringify(body),    
-    })
-    .then(response => {
-         if (!response.ok) {
-            console.log(" NewQuiz: create quiz  response not ok =", response)
-                throw new Error('Network response was not ok');
-            }
-            const quiz = response.json() 
-            onClose({ 
-                action: 'new',
-                
-                name: name, 
-                quiz_number: quizNumber || '', 
-                video_url: videoUrl || '',
-                unitId: unitId
-                 })
-           // return response.json();
-    })
-
+    const response = await createQuiz(rootUrl, my_params )
+                   if (response) {
+                    console.log(" NewQuiz: create quiz response data = ", response.data)
+                      // console.log("button cloze question created ok")
+                      
+                          onClose({ action: 'new',
+                            id: response.data.id.toString(),
+                            name: name,
+                            quiz_number: quizNumber || '',
+                            video_url: videoUrl || '',
+                            unitId: unitId
+                          })
+                            
+                   }
   
   // const body = {
 }
