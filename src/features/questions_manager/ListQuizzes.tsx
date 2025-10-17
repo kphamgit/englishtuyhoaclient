@@ -273,7 +273,7 @@ const columns = useMemo<ColumnDef<ShortQuizProps>[]>(
   };
    
   const closeModal = (params: QuizCloseModalProps) => {
-      console.log("closeModal called with params =", params)
+      //console.log("closeModal called with params =", params)
       if (params.action === "cancel") {
         setIsModalNewVisible(false);
         setIsModalEditVisible(false);

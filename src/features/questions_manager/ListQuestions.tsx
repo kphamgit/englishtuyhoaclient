@@ -462,11 +462,6 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
         onClick={(e) => {
           // ****** IMPORTANT kpham: when you click the UPDATE button, and previously an input field was focused,
           // then an onBlur event will be triggered first, before the onClick event of this button is fired.
-
-          //console.log("Update button clicked for row id:", row.original.itemId)
-         
-          //.current = row.original.itemId;
-         
           /*
 {
     "id": 6210,
@@ -489,7 +484,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       >
         Update
       </button>
-      ),
+      ), // end cell info
     },
 
     {

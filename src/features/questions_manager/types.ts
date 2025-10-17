@@ -1,7 +1,10 @@
+import { VideoSegmentProps } from "./ListVideoSegments";
+
 export interface ColumnProps { 
     Header: string, accessor: string 
 }
 
+/*
 export interface VideoSegmentProps {
     id?: number,
     duration: number,
@@ -11,6 +14,7 @@ export interface VideoSegmentProps {
     end_time: string,
     quizId: number
 }
+*/
 
 export interface DataRowProps {
     id: string,
@@ -33,6 +37,8 @@ export interface SubCategoryProps {
     name: string,
     units?: UnitProps[] | undefined,
 }
+
+
 
 export interface UnitProps {
   id: string,

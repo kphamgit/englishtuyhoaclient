@@ -1,16 +1,23 @@
 //import { useAxiosFetch } from '../components/services/useAxiosFetch';
 
 //import { QuestionProps } from '../components/Question';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import { createColumnHelper, getCoreRowModel, getSortedRowModel , SortingState} from '@tanstack/table-core';
+import { ColumnDef, createColumnHelper, getCoreRowModel, getSortedRowModel , SortingState} from '@tanstack/table-core';
 import { flexRender, useReactTable } from '@tanstack/react-table';
 
 import { useRootUrl } from '../../contexts/root_url';
-import { VideoSegmentProps } from './types';
+//import { VideoSegmentProps } from './types';
+import { useSortable } from '@dnd-kit/sortable';
+import { ShortQuizProps } from './ListQuizzes';
+import GenericSortableTable, { genericItemType } from './GenericSortableTable';
 
 
-
+export interface VideoSegmentProps extends genericItemType {
+  start_time: string,
+  end_time?: string,
+  question_numbers?: string,
+}
 
 interface ListVideoSegmentsProps {
     videoSegments: VideoSegmentProps[] | undefined
@@ -28,429 +35,400 @@ interface ListVideoSegmentsProps {
 */
 
 
-export default function ListVideoSegments({ videoSegments, quiz_id }: { videoSegments: VideoSegmentProps[] | undefined , quiz_id?: string | undefined}) {
+export default function ListVideoSegments({ videoSegments, quiz_id }: { videoSegments: any | undefined , quiz_id?: string | undefined}) {
 
   const [video_segments, setVideoSegments] = useState<VideoSegmentProps[]>(
     videoSegments || []
   );
 const { rootUrl } = useRootUrl();
 
+const [selectedRows, setSelectedRows] = useState<string[]>([]);
+
+//a field within a row that on onblur event was triggered
+const updatedField = useRef<{id: string, row_index: number, column_id: string, value: string} | null>(null);
+
+const handleRowSelect = (id: string) => {
+  //console.log("handleRowSelect called with id =", id);
+
+  setSelectedRows((prev) => {
+    const updatedSelectedRows = prev.includes(id)
+      ? prev.filter((rowId) => rowId !== id) // Remove the row if already selected
+      : [...prev, id]; // Add the row if not already selected
+
+   //console.log("Updated selectedRows:", updatedSelectedRows); // Log the updated state
+    return updatedSelectedRows;
+  });
+};
+
 useEffect(() => {
-  setVideoSegments(videoSegments || []);
+  //console.log("ListVideoSegments: videoSegments =", videoSegments);
+
+  const video_segment_rows = videoSegments?.map((vs: any) => ({
+    itemId: vs.id ? vs.id.toString() : '',
+    item_number: vs.segment_number,
+    start_time: vs.start_time,
+    end_time: vs.end_time || '',
+    question_numbers: vs.question_numbers || '',
+  }));
+
+  //console.log("ListVideoSegments: video_segment_rows =", video_segment_rows);
+  /*
+{
+    "id": 15,
+    "duration": 10000,
+    "segment_number": 0,
+    "question_numbers": "1",
+    "start_time": "0:00",
+    "end_time": "0:15",
+    "quizId": 310
+}
+  */
+  setVideoSegments(video_segment_rows || []);
+  
+  //setVideoSegments(videoSegments || []);
 }, [videoSegments]);
 
-const [createNewVideoSegment, setCreateNewVideoSegment] = useState(false)
-
-const [sorting, setSorting] = useState<SortingState>([]);
-
- const columnHelper = createColumnHelper<any>();
-
-
-const columns = [
-  columnHelper.accessor('id', {
-    header: () => <span className='flex items-center'>Id</span>,
-    cell: info => info.getValue(),
-  }),
-  columnHelper.accessor('duration', {
-    header: () => <span className='flex items-center'>Duration</span>,
-  
-    cell: info => info.getValue(),
-  }),
-  columnHelper.accessor('segment_number', {
-    header: () => <span className='flex items-start'>Segment Number</span>,
-    cell: info => {
-      const initialValue = info.getValue();
-      const rowIndex = info.row.index; // Get the row index
-      const [value, setValue] = useState(initialValue);
-      const inputRef = useRef<HTMLInputElement>(null);
-       // onBlur event causes the input field to be refreshed ( onBlur works differently
-    // for onChange event where the input field is refreshed as you type)
-    // when using onBlur, you need to click outside the input field for the change to be registered
-    // in the table
-      const onBlur = () => {
-        console.log(`onBlur triggered for row ${rowIndex}, column ${info.column.id} with value: ${value}`);
-        // value is the segment_number entered in the input field
-        setVideoSegments(prev => {
-          const updatedSegments = [...prev];
-          updatedSegments[rowIndex] = {
-            ...updatedSegments[rowIndex],
-            segment_number: value, // Update the segment_number
-          };
-          //console.log("Updated row:", updatedSegments[rowIndex]);
-          return updatedSegments;
-        });
-        updateVideoSegment({...info.row.original, segment_number: value});
-
-      };
-
-      return (
-        <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-12 mx-1'
-        ref={inputRef} // Attach the ref to the input field
-          value={value}
-          onChange={e => setValue(e.target.value)}
-          onBlur={onBlur}
-        />
-      );
-    },
-  }),
-  columnHelper.accessor('question_numbers', {
-    header: () => <div className='flex flex-row items-center px-1'>
-      Question Numbers
-    </div>,
-    cell: info => {
-      const initialValue = info.getValue();
-      const rowIndex = info.row.index; // Get the row index
-      const [value, setValue] = useState(initialValue);
-      const inputRef = useRef<HTMLInputElement>(null);
-      const onBlur = () => {
-        //console.log(`Updated cell value for ${info.column.id} in row ${info.row.index}: ${value}`);
-      setVideoSegments(prev => {
-      const updatedSegments = [...prev];
-      updatedSegments[rowIndex] = {
-        ...updatedSegments[rowIndex],
-        question_numbers: value, // Update the segment_number
-      };
-      //console.log("Updated row:", updatedSegments[rowIndex]);
-      return updatedSegments;
-    });
-
-      };
-      return (
-        <div className='flex items-center'>
-        <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-16 mx-1'
-        ref={inputRef} // Attach the ref to the input field
-          value={value}
-          onChange={e => setValue(e.target.value)}
-          onBlur={onBlur}
-        />
-        </div>
-      );
-    },
-  }),
-  columnHelper.accessor('start_time', {
-    header: () => <span className='flex items-center'>Start Time</span>,
-    cell: info => {
-      const initialValue = info.getValue();
-      const rowIndex = info.row.index; // Get the row index
-      const [value, setValue] = useState(initialValue);
-      const inputRef = useRef<HTMLInputElement>(null);
-      const onBlur = () => {
-        //console.log(`Updated cell value for ${info.column.id} in row ${info.row.index}: ${value}`);
-        setVideoSegments(prev => {
-          const updatedSegments = [...prev];
-          updatedSegments[rowIndex] = {
-            ...updatedSegments[rowIndex],
-            start_time: value, // Update the segment_number
-          };
-          //console.log("Updated row:", updatedSegments[rowIndex]);
-          return updatedSegments;
-        });
-        updateVideoSegment({...info.row.original, start_time: value});
-
-      };
-      return (
-        <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-16 mx-1'
-        ref={inputRef} // Attach the ref to the input field
-          value={value}
-          onChange={e => setValue(e.target.value)}
-          onBlur={onBlur}
-        />
-      );
-    },
-  }),
-  columnHelper.accessor('end_time', {
-    header: () => <span className='flex items-center'>End Time</span>,
-    cell: info => {
-      const initialValue = info.getValue();
-      const rowIndex = info.row.index; // Get the row index
-      const [value, setValue] = useState(initialValue);
-      const inputRef = useRef<HTMLInputElement>(null);
-      const onBlur = () => {
-       // console.log(`Updated cell value for ${info.column.id} in row ${info.row.index}: ${value}`);
-       setVideoSegments(prev => {
-        const updatedSegments = [...prev];
-        updatedSegments[rowIndex] = {
-          ...updatedSegments[rowIndex],
-          end_time: value, // Update the segment_number
-        };
-        //console.log("Updated row:", updatedSegments[rowIndex]);
-        return updatedSegments;
-      });
-      updateVideoSegment({...info.row.original, end_time: value});
-
-      };
-      return (
-        <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-16 mx-1'
-        ref={inputRef} // Attach the ref to the input field
-          value={value}
-          onChange={e => setValue(e.target.value)}
-          onBlur={onBlur}
-        />
-      );
-    },
-  }), 
-  columnHelper.accessor('update_row', {
-    header: () => <span className='flex items-center'></span>,
-    cell: ({ row }) => (
-      <button
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-      onClick={(e) => {
-        console.log("Update button clicked for row:", row.original)
-        // if you click the button while an input field is focused, the onBlur event for that input field will be triggered first
-        // this is how onblur works,
-        // So when u click on the Update button, the onBlur event for the input field that has recently been changed will be triggered
-      }}
-    >
-      { row.original.id ? 'Update' : 'Save' }
+const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
+  const { attributes, listeners } = useSortable({
+    id: rowId,
+  });
+  return (
+    // Alternatively, you could set these attributes on the rows themselves
+    <button {...attributes} {...listeners}>
+      🟰
     </button>
-    ),
-  }),
-  columnHelper.accessor('delete', {
-    header: () => <span className='flex items-center'></span>,
-    cell: info => (
-      <button
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-      onClick={() => deleteVideoSegment(info.row.original.id ? info.row.original.id.toString() : '')}
-    >
-      Delete
-    </button>
-    )
-  }),
-  
+  );
+};
+
+const updateRow = async (row: VideoSegmentProps) => {
+  //console.log("updateVideoSegment called with videoSegment:", question_row);
+  const {itemId, item_number, ...rest } = row;
  
-]
-
-const updateVideoSegment = async (videoSegment: VideoSegmentProps) => {
-    console.log("updateVideoSegment called with videoSegment:", videoSegment);
-    //const htmlEl = e.target as HTMLElement;
-    //console.log(" event target", htmlEl.innerText)
-    const method = videoSegment.id ? 'PUT' : 'POST';
-    const url = videoSegment.id ? `${rootUrl}/api/video_segments/${videoSegment.id}` : `${rootUrl}/api/video_segments`;
-    const response = await fetch(url, {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(videoSegment),
-    });
-    const data = await response.json();
-    //console.log("Successfully updated/created video segment:", data);
-    if (!videoSegment.id) {
-      // If it was a new segment, update the local state with the new ID from the server
-      setVideoSegments(prev => prev.map(vs => vs === videoSegment ? data : vs));
-    }
-    // If the button text is 'Save', change it to 'Update' after successful creation
-    //if (htmlEl.innerText === 'Save') {
-     // htmlEl.innerText = 'Update';
-    //}
+  const body = { ...rest };
+  //console.log(" ***** body =", body)
+  //console.log(" Stringified body =", JSON.stringify(body))
+  /*
+{
+"itemId": 6210,
+"item_number": "1",
+"format": "1",
+"content": "How [are] you?",
+"answer_key": "are",
+"video_segment_id": "3"
 }
+  */
 
-const deleteVideoSegment = async (id: string) => {
-  //console.log("deleteVideoSegment called with id:", id);
-  const url = `${rootUrl}/api/video_segments/${id}`;
+
+  const method = 'PUT';
+  const url = `${rootUrl}/api/video_segments/${row.itemId}`
   const response = await fetch(url, {
-    method: "DELETE",
+    method: method,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body), // exclude itemId , item_number, and format from the body
+  });
+  const data = await response.json();
+  //alert("Successfully updated question row id " + question_row.itemId);
+  
+  const updateButton = document.getElementById(`update_button_${row.itemId}`);
+
+  if (updateButton) {
+    // rgb 59, 30, 246
+    updateButton.style.backgroundColor = '#3b82f6'; // Change color to original blue
+    // of the update_row button
+  }
+ 
+
+} // end updateRow
+
+const cloneRow = async (id: string, originals: any) => {
+  //console.log("cloneQuestion called with question_id:", question_id);
+  const response = await fetch(`${rootUrl}/api/video_segments/${id}/clone`, {
+    method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
   });
+   // Remove the deleted segment from local state
+  //setQuestions(prev => prev.filter(vs => vs.itemId !== question_id));
+  // update the local state with the new cloned question
   const data = await response.json();
-  //console.log("Successfully remove video segment:", data);
-  // Remove the deleted segment from local state
-  setVideoSegments(prev => prev.filter(vs => vs.id !== parseInt(id)));
-}
-/*
-{
-    "id": 16,
-    "duration": 15000,
-    "segment_number": "2",
-    "question_numbers": "2,3,4",
-    "start_time": "0:15",
-    "end_time": "0:25",
-    "quizId": 310
-}
-*/
 
-
-
-  const table = useReactTable({
-      data: video_segments ? video_segments : [],
-      columns: columns,
-      getCoreRowModel: getCoreRowModel(),
-      getSortedRowModel: getSortedRowModel(),
-      state: {
-        sorting: sorting,
+  console.log(" cloneRow: response from server after cloning =", data);
+  const new_segment = data.new_segment;
+  
+  // add data.new_question to the originals array after the original question
+  // REMEMBER, have to use originals, not questions, to update the local state
+  const index = originals.findIndex((q : VideoSegmentProps)=> q.itemId === id);
+  if (index !== -1) {
+    const updatedVideoSegments = [
+      ...originals.slice(0, index + 1),
+      {
+        itemId: new_segment.id,
+        item_number: new_segment.segment_number,
+        start_time: new_segment.start_time,
+        end_time: new_segment.end_time || '',
+        question_numbers: new_segment.question_numbers || '',
       },
-      onSortingChange: setSorting,
-     })
+      ...originals.slice(index + 1),
+    ];
+   
+    console.log(" cloneRow: updatedVideoSegments =", updatedVideoSegments);
+    setVideoSegments(updatedVideoSegments);
 
-     //console.log("****** table header Groups = ", table.getHeaderGroups())
-  const getColumnValues = (columnId: string): unknown[] => {
-    return table.getRowModel().rows.map(row => row.getValue(columnId));
-  };
-
+    //setVideoSegments(updatedVideoSegments.map(q => ({
+     // ...q,
+    //  content: q.content || 'content....', // Ensure content is always a string
+   // })));
+  //
+  }
   
 
-                     useEffect(() => {
-                      // Retrieve all rows from the table
-                      const rows = table.getRowModel().rows;
-                  
-                      // Extract the values of the "id" column
-                      const idColumnValues = rows.map((row) => row.original.id);
-                  
-                      //console.log("Values of the 'id' column:", idColumnValues);
-                      // sent to server to update ids of quizzes in this unit
-                    }, [table, sorting]);
+};  //end clone
 
-    const saveVideoSegmentTable = () => {
-        const rows : VideoSegmentProps[] = []
-        table.getRowModel().rows.forEach((row, index) => {
-          rows.push(row.original)
-        })
-        // for testing only, print all rows in the table
-        //console.log(`Row ${index}:`, row.original);
-        // use fetch to save one row at a time to the server
-        //const rows = table.getRowModel().rows;
-        
-        const update_url = `${rootUrl}/api/video_segments/batch_update`;
-        fetch(update_url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({video_segments: rows}),
-        }).then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        }
-        ).then(data => {
-          console.log("Successfully updated video segment:", data);
-        }
-        ).catch(error => {
-          console.log("Error updating video segment:", error);  
-        
-      }
-      )
-      
-    }
-  //}
-    
-      const add_segment = async () => {
-        // first, add to frontend
-           //console.log("add video segment quizID ", quiz?.id)
-          if (!videoSegments) {
-              setVideoSegments([{
-                  duration: 0,
-                  segment_number: 0,
-                  question_numbers: '1',
-                  start_time: '0:00',
-                  end_time: '0:10',
-                  quizId: quiz_id ? Number(quiz_id) : 0
-              }]);
-              
-          }
-          else { // create and add a new segment to an existing list
-            const newSegment: any = {
-              duration: 0,
-              segment_number: 0,
-              question_numbers: '1',
-              start_time: '0:00',
-              end_time: '0:10',
-              quizId: quiz_id ? Number(quiz_id) : 0
-          };
-          setVideoSegments([...videoSegments, newSegment]);
-          }
-        }
-   
-    return (
-      <div>
-          <div className='text-textColor1 p-2 flex flex-col justify-center mt-3 mb-3'>
-            <div className='mb-3'>Video Segments for Quiz ID: {quiz_id} </div>
-            <table className="bg-bgColor2 text-textColor2 table-auto border-collapse border border-gray-300">
-                  <thead className='bg-bgColor3 text-textColor1'>
-                    {table.getHeaderGroups().map(headerGroup => (
-                      <tr key={headerGroup.id}>
-                        {headerGroup.headers.map(header => (
-                          <th
-                            key={header.id}
-                            onClick={header.column.getToggleSortingHandler()}
-                            className="border border-slate-300 p-2"
-                          >
-                            <div>
-                              {flexRender(header.column.columnDef.header, header.getContext())}
-                              {header.column.getIsSorted() ? { asc: " ↑", desc: " ↓" }[header.column.getIsSorted() as "asc" | "desc"] : null}
-                            </div>
-                          </th>
-                        ))}
-                      </tr>
-                    ))}
-                  </thead>
-                   <tbody className='bg-bgColor2 text-textColor2'>
-                       {table.getRowModel().rows.map(row => (
-                         <tr key={row.id}>
-                           {row.getVisibleCells().map(cell => (
-                             <td key={cell.id} className='bg-bgColor2 border border-slate-300 p-2'>
-                               {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                             </td>
-                           ))}
-                         </tr>
-                       ))}
-                   </tbody>
-                 </table>
+const columns = useMemo<ColumnDef<VideoSegmentProps>[]>(
+  () => [
+    {
+      id: "drag-handle",
+      header: "Move",
+      cell: ({ row }) => <RowDragHandleCell rowId={row.id} />,
+      size: 60,
+    },
+    {
+      accessorKey: "itemId",
+      header: "Id",
+    },
+    {
+      accessorKey: "item_number",
+      header: "Segment Number",
+    },
+    {
+      accessorKey: "start_time",
+      header: "Start Time",
+      cell: info => {
+        const initialValue = info.getValue();
+        const rowIndex = info.row.index; // Get the row index
+        const [value, setValue] = useState(initialValue);
+        const inputRef = useRef<HTMLInputElement>(null);
+        const onBlur = () => {
+          updatedField.current = {id: info.row.original.itemId, row_index: rowIndex,  column_id: info.column.id, value: value as string};
+          //console.log(" ON BLUR updatedField current after updated =", updatedField.current)
+          setVideoSegments(prev => {
+            const updatedQuestions = [...prev];
+            updatedQuestions[rowIndex] = {
+              ...updatedQuestions[rowIndex],
+              start_time: value as string, // Update the segment_number
+            };
+           //console.log(" ON BLUR updatedQuestions =", updatedQuestions)
+            return updatedQuestions;
+          });
+        // console.log(" onBlur, row original =", info.row.original)
+          //
+        };
+  
+        return (
+          <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-48 mx-1'
+          ref={inputRef} // Attach the ref to the input field
+            value={value as string}
+            onChange={e => {
+              // use document.getElementById to get the update_row button on the same row
+              const updateButton = document.getElementById(`update_button_${info.row.original.itemId}`);
 
+              if (updateButton) {
+                updateButton.style.backgroundColor = 'red'; // Change color to red
+              }
+              //console.log(" onChange , row original =",info.row.original)
 
-                 <div className='bg-bgColor2 text-textColor2 p-3'>
-               
-                  <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
-                  onClick={() => {
-                    // save all segment numbers to segmentNumbers state
-                    const segment_numbers: number[] = getColumnValues('segment_number') as number[]; 
-                    //console.log(" segment_numbers length:", segment_numbers.length);
-                   // getColumnValues('segment_number').forEach((row, index) => {
-                    //  console.log(row);
-                   // })
-                   for (let i = 0; i < segment_numbers.length; i++) {
-                    //console.log(`Segment number at index ${i}:`, segment_numbers[i]);
-                      segment_numbers[i] = i
-                   }
-                    //segment_numbers.sort((a:number, b: number) => a - b);
-                    //console.log("new Segment Numbers:", segment_numbers);
-                    setVideoSegments(prev => {
-                      //console.log("Updating video segments with new segment numbers");
-                      const updatedSegments = prev.map((segment, index) => ({
-                        ...segment,
-                        segment_number: segment_numbers[index],
-                      }));
-                      return updatedSegments;
-                    });
-                  
-                    // for testing only, print all rows in the table
-                  
-                   
-                  }}
-                  >
-                    Sort Segment Numbers
-                  </button>
-                  <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
-                  onClick={saveVideoSegmentTable}
-                  >
-                    Save All Changes
-                  </button>
-                  <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
-                  onClick={add_segment}
-                  >
-                    Add Segment
-                  </button>
-                 
-                    </div>
-            </div>
-            <Outlet />
-            </div>
-    )
-      
+              setValue(e.target.value)
+            } }
+            onBlur={onBlur}
+          />
+        );
+      }, // end cell info
+
+    },
+    {
+      accessorKey: "end_time",
+      header: "End Time",
+      cell: info => {
+        const initialValue = info.getValue();
+        const rowIndex = info.row.index; // Get the row index
+        const [value, setValue] = useState(initialValue);
+        const inputRef = useRef<HTMLInputElement>(null);
+        const onBlur = () => {
+          updatedField.current = {id: info.row.original.itemId, row_index: rowIndex,  column_id: info.column.id, value: value as string};
+          //console.log(" ON BLUR updatedField current after updated =", updatedField.current)
+          setVideoSegments(prev => {
+            const updatedQuestions = [...prev];
+            updatedQuestions[rowIndex] = {
+              ...updatedQuestions[rowIndex],
+              end_time: value as string, // Update the segment_number
+            };
+           //console.log(" ON BLUR updatedQuestions =", updatedQuestions)
+            return updatedQuestions;
+          });
+        // console.log(" onBlur, row original =", info.row.original)
+          //
+        };
+  
+        return (
+          <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-48 mx-1'
+          ref={inputRef} // Attach the ref to the input field
+            value={value as string}
+            onChange={e => {
+              // use document.getElementById to get the update_row button on the same row
+              const updateButton = document.getElementById(`update_button_${info.row.original.itemId}`);
+
+              if (updateButton) {
+                updateButton.style.backgroundColor = 'red'; // Change color to red
+              }
+              //console.log(" onChange , row original =",info.row.original)
+
+              setValue(e.target.value)
+            } }
+            onBlur={onBlur}
+          />
+        );
+      }, // end cell info
+    },
+    {
+      id: "update_row",
+      header: "Update",
+      cell: ({ row }) => (
+        <button
+        id = {`update_button_${row.original.itemId}`}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+        onClick={(e) => {
+          // ****** IMPORTANT kpham: when you click the UPDATE button, and previously an input field was focused,
+          // then an onBlur event will be triggered first, before the onClick event of this button is fired.
+          /*
+{
+    "id": 6210,
+    "row_index": 0,
+    "column_id": "video_segment_id",
+    "value": "11"
+}
+          */
+
+         // since onBlur gets fired when user click anywhere outside the input field,
+         // we have to make sure that the user has clicked on the Update button of the same row
+               if (updatedField.current) {
+            updateRow({...row.original, [updatedField.current.column_id]: updatedField.current.value as string});
+          } else {
+            console.error("updatedField.current is null");
+          }
+          // if you click this button (or any other field) while an input field is focused, the onBlur event for that input field will be triggered first
+          // this is why you don't need an onClick event 
+        }}
+      >
+        Update
+      </button>
+      ), // end cell info
+    },
+    {
+      accessorKey: "question_numbers",
+      header: "Question Numbers",
+    },
+    {
+      id: "clone",
+      header: "Clone",
+      cell: (info) => (
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+          onClick={() => {
+            const originals = info.table.getRowModel().rows.map((row: any) => row.original);
+            //console.log("cloneQuestion originals =", originals);
+            cloneRow(info.row.original.itemId, originals)
+          }
+          }
+        >
+          Clone
+        </button>
+      ),
+    },
+    {
+      id: "select",
+      header: "Select",
+      cell: (info) => (
+        <input
+          type="checkbox"
+          checked={selectedRows.includes(String(info.row.original.itemId))}
+          onChange={() => handleRowSelect(info.row.original.itemId)}
+        />
+      ),
+    },
+ 
+  ],
+  [selectedRows] // Add selectedRows as a dependency to update when it changes
+      // otherwise, the checkbox state do not reflect the actual updated selectedRows state
+      // KPHAM Oct 16, 2025
+);
+
+const rowDeleted = async (id: string) => {
+  // for the use of originals, see cloneQuestion function
+  //console.log("deleteQuiz called with quiz_id:", question_id);
+  setVideoSegments(prev => prev.filter(vs => vs.itemId !== id));
+};
+
+return (
+  <div>
+    in ListVideoSegments: quiz_id = {quiz_id}
+    <GenericSortableTable 
+        input_data={video_segments} 
+        columns={columns} 
+        data_type='video_segments'
+        parent_notify_delete_row={rowDeleted}
+        />
+  </div>
+)
+
 }
 
-//
-// <DataTable columns={columns} data={data} />
+/*
+     cell: info => {
+        const initialValue = info.getValue();
+        const rowIndex = info.row.index; // Get the row index
+        const [value, setValue] = useState(initialValue);
+        const inputRef = useRef<HTMLInputElement>(null);
+         // onBlur event causes the input field to be refreshed 
+         // ( onBlur works differently from onChange event where the input field is refreshed as you type)
+      // when using onBlur, you need to click outside the input field for the change to be registered
+      // in the table
+        const onBlur = () => {
+          updatedField.current = {id: info.row.original.itemId, row_index: rowIndex,  column_id: info.column.id, value: value as string};
+          //console.log(" ON BLUR updatedField current after updated =", updatedField.current)
+          setQuestions(prev => {
+            const updatedQuestions = [...prev];
+            updatedQuestions[rowIndex] = {
+              ...updatedQuestions[rowIndex],
+              answer_key: value as string, // Update the segment_number
+            };
+           //console.log(" ON BLUR updatedQuestions =", updatedQuestions)
+            return updatedQuestions;
+          });
+        // console.log(" onBlur, row original =", info.row.original)
+          //
+        };
+  
+        return (
+          <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-48 mx-1'
+          ref={inputRef} // Attach the ref to the input field
+            value={value as string}
+            onChange={e => {
+              // use document.getElementById to get the update_row button on the same row
+              const updateButton = document.getElementById(`update_button_${info.row.original.itemId}`);
+
+              if (updateButton) {
+                updateButton.style.backgroundColor = 'red'; // Change color to red
+              }
+              //console.log(" onChange , row original =",info.row.original)
+
+              setValue(e.target.value)
+            } }
+            onBlur={onBlur}
+          />
+        );
+      }, // end cell info
+
+*/

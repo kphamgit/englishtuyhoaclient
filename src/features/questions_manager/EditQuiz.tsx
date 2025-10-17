@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useAxiosFetch } from '../../hooks';
 import { useRootUrl } from '../../contexts/root_url';
-import { CloseModalProps } from './ListQuestions';
+
 import { EditQuizModalContentProps } from './ListQuizzes';
-import { QuizProps, VideoSegmentProps } from './types';
-import ListVideoSegments from './ListVideoSegments';
+import { QuizProps } from './types';
+import ListVideoSegments, { VideoSegmentProps } from './ListVideoSegments';
 import { QuizCloseModalProps } from './NewQuiz';
 
 interface EditQuizProps {
@@ -17,16 +17,6 @@ interface EditQuizProps {
       const  {quiz_id} = modal_content
 
       const [videoSegments, setVideoSegments] = useState<VideoSegmentProps[]>([])
-      /*
-   id?: number,
-    duration: number,
-    segment_number: number,
-    question_numbers: string,
-    start_time: string,
-    end_time: string,
-    quizId: number
-
-*/
 
         const [name, setName] = useState<string>('')
    
@@ -40,7 +30,7 @@ interface EditQuizProps {
  
     useEffect(() => {
         if (quiz) {
-            console.log("EditQuiz:  quiz=", quiz);
+            //console.log("EditQuiz:  quiz=", quiz);
           setName(quiz.name)
           setVideoUrl(quiz.video_url || '')
           setVideoSegments(quiz.video_segments || [])

@@ -1,12 +1,6 @@
 import {  useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import { VideoSegmentProps } from './types';
-import { List } from 'flowbite-react';
-import ListVideoSegments from './ListVideoSegments';
-import { genericItemType } from './GenericSortableTable';
-import { on } from 'events';
+import { VideoSegmentProps } from './ListVideoSegments';
 import { useRootUrl } from '../../contexts/root_url';
-import { useMutation } from '@tanstack/react-query';
 import { createQuiz } from '../services/list';
 
 /*
@@ -61,7 +55,6 @@ interface NewQuizProps {
  
      
 const create_quiz = async () => {
-  
     const my_params = {
         name: name,
         quiz_number: quizNumber || '',
