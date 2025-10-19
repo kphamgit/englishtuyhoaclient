@@ -268,7 +268,7 @@ interface NewQuestionProps {
                 </div>
                 <div className='mx-10 text-textColor1 mb-2'>Video Segment ID
                 { quiz_has_video &&
-                    <input className='mx-10 text-textColor2 mb-2 bg-bgColor4' type="number" value={videoSegmentId} 
+                    <input className='mx-10 text-textColor2 mb-2 bg-bgColor4' type="text" value={videoSegmentId} 
                     onChange={e => setVideoSegmentId(Number(e.target.value))}></input>
                 }
                 Starts with 0

@@ -1,0 +1,140 @@
+import React, { useEffect, useImperativeHandle, useRef, useState } from 'react'
+import ReactPlayer from 'react-player'
+
+
+import './MyReactPlayer.css';
+
+    export type YouTubePlayerRef = {
+      playSegment: (start_time: string, end_time: string) => void;
+    }
+
+    type YouTubePlayerProps = {
+        video_url: string;
+        parent_playingEnds?: () => void;
+    };
+
+    //const [videoUrl, setVideoUrl] = useState('')
+    const YoutubeVideoPlayer = React.memo(
+      React.forwardRef<YouTubePlayerRef, YouTubePlayerProps>(function YoutubeVideoPlayer(props, ref) {
+    const [playing, setPlaying] = useState(false);
+
+    const stopCount = useRef(0);
+
+    const playerRef = useRef<ReactPlayer>(null);
+
+    const endTime = useRef<string | null>(null);
+
+    const convertToMiliSeconds = (time: string): number => {
+      const [minutes, seconds] = time.split(":").map(Number); // Split and convert to numbers
+      return (minutes * 60 + seconds) * 1000; // Calculate total seconds
+    };
+
+    const convertToSeconds = (time: string): number => {
+      const [minutes, seconds] = time.split(":").map(Number); // Split and convert to numbers
+      return (minutes * 60 + seconds); // Calculate total seconds
+    };
+      
+     useImperativeHandle(ref, () => ({
+       
+        playSegment(start_time: string, end_time: string) {
+            //console.log("YoutubeVideoPlayer: playSegment called with ", start_time, end_time);
+          endTime.current = end_time;
+          seekToTime(convertToSeconds(start_time));
+          setPlaying(true);
+        }
+      }));
+    
+      const handlePlayPause = () => {
+        setPlaying(!playing);
+      };
+
+      const seekToTime = (time: number) => {    // time in seconds
+        playerRef.current?.seekTo(time);
+      };
+
+      const seekForward = () => {
+        playerRef.current?.seekTo(playerRef.current.getCurrentTime() + 10);
+        //playerRef.current?.seekTo(31);
+    };
+
+    const seekBackward = () => {
+      playerRef.current?.seekTo(playerRef.current.getCurrentTime() - 10);
+  };
+
+  const handleProgress = (state: { played: number; playedSeconds: number; loaded: number; loadedSeconds: number }) => {
+    const millisecondsPlayed = Math.floor(state.playedSeconds * 1000);
+    if (endTime.current && millisecondsPlayed >= convertToMiliSeconds(endTime.current)) {
+      setPlaying(false);
+      stopCount.current += 1;
+      //console.log("Playing stopped,");
+      if (stopCount.current === 2) {  // to avoid calling parent function twice
+        // because ReactPlayer onProgress is called twice when stopping. Why? Probably due to a lag 
+        // when the end time is reached but the video is not fully stopped yet.
+        props.parent_playingEnds && props.parent_playingEnds();
+        stopCount.current = 0;
+      }
+    }
+  };
+
+
+  return (
+    <>
+    
+    <div className='flex justify-items-start bg-cyan-300'>
+     
+    <div className='flex flex-col'>
+      <div>
+        <div>
+          <div></div>
+          <ReactPlayer
+            ref={playerRef}
+            playing={playing}
+            url={props.video_url}
+            onProgress={handleProgress}
+            muted={false}
+            controls={true}
+          />
+        </div>
+      </div>
+    
+    </div>
+    </div>
+    </>
+    );
+  })
+);
+
+/*
+  <div className='flex flex-row justify-start gap-2 mt-3 mb-5'>
+          <div className='text-textColor1'>
+          <button className='bg-amber-500 p-1 rounded-md' onClick={handlePlayPause}>
+          {playing ? 'Pause' : 'Play'}
+        </button>
+          </div>
+          <div className='text-textColor1'>
+          <button className='bg-green-400 p-1 rounded-md' onClick={seekForward}>Forward</button>
+          </div>
+          <div className='text-textColor1'>
+          <button className='bg-cyan-400 p-1 rounded-md' onClick={seekBackward}>Backward</button>
+          </div>
+      </div>
+*/
+
+export default YoutubeVideoPlayer;
+/*
+{
+    "id": 300,
+    "name": "Video Quiz",
+    "quiz_number": 2,
+    "disabled": false,
+    "video_url": "https://www.youtube.com/watch?v=zghYZJS02A4",
+    "unitId": 71,
+    "video_segments": [
+        {
+            "id": 1,
+            "duration": 10000,
+            "quizId": 300
+        }
+    ]
+}
+*/

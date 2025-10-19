@@ -11,6 +11,12 @@ import { useRootUrl } from '../../contexts/root_url';
 import { useSortable } from '@dnd-kit/sortable';
 import { ShortQuizProps } from './ListQuizzes';
 import GenericSortableTable, { genericItemType } from './GenericSortableTable';
+import YoutubeVideoPlayer, { YouTubePlayerRef } from '../components/YoutubeVideoPlayer';
+import NewVideoSegment, { NewSegmentModalContentProps, SegmentCloseModalProps } from './NewVideoSegment';
+import { ConsoleLoggingListener } from 'microsoft-cognitiveservices-speech-sdk/distrib/lib/src/common.browser/ConsoleLoggingListener';
+import { createVideoSegment } from '../services/list';
+import { useAxiosFetch } from '../../hooks';
+import { video } from 'framer-motion/client';
 
 
 export interface VideoSegmentProps extends genericItemType {
@@ -19,8 +25,14 @@ export interface VideoSegmentProps extends genericItemType {
   question_numbers?: string,
 }
 
+ interface VideoSegmentRowProps extends genericItemType {
+  start_time: string,
+  end_time?: string,
+  question_numbers?: string,
+}
+
 interface ListVideoSegmentsProps {
-    videoSegments: VideoSegmentProps[] | undefined
+    //videoSegments: VideoSegmentProps[] | undefined
     quiz_id: string | undefined
 }
  
@@ -35,17 +47,43 @@ interface ListVideoSegmentsProps {
 */
 
 
-export default function ListVideoSegments({ videoSegments, quiz_id }: { videoSegments: any | undefined , quiz_id?: string | undefined}) {
+export default function ListVideoSegments({ quiz_id, videoUrl}: {  quiz_id?: string | undefined, videoUrl?: string | undefined}) {
 
-  const [video_segments, setVideoSegments] = useState<VideoSegmentProps[]>(
-    videoSegments || []
-  );
+ const [videoSegmentRows, setVideoSegmentRows] = useState<VideoSegmentRowProps[]>(
+
+ );
 const { rootUrl } = useRootUrl();
 
 const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
+ const [newModalContent, setNewModalContent] = useState<NewSegmentModalContentProps | null>(null);
+
+//const [videoUrl, setVideoUrl] = useState<string | undefined>('')
+
 //a field within a row that on onblur event was triggered
 const updatedField = useRef<{id: string, row_index: number, column_id: string, value: string} | null>(null);
+
+const youTubeVideoRef  = useRef<YouTubePlayerRef>(null);
+
+const [isModalNewVisible, setIsModalNewVisible] = useState(false); // State for modal visibility
+
+  const url = `/video_segments/get_from_quiz/${quiz_id}`
+
+      const { data: video_segments, loading, error } =
+          useAxiosFetch<any>({ url: url, method: 'get' })
+ 
+    useEffect(() => {
+        if (video_segments) {
+          //console.log("ListVideoSegments:  my_video_segments return =", video_segments.data);
+          setVideoSegmentRows(video_segments.data.map((vs: any) => ({
+            itemId: vs.id ? vs.id.toString() : '',
+            item_number: vs.segment_number,
+            start_time: vs.start_time,
+            end_time: vs.end_time || '',
+            question_numbers:  vs.question_numbers.join(',') || '',
+          })))
+       }
+    },[video_segments])
 
 const handleRowSelect = (id: string) => {
   //console.log("handleRowSelect called with id =", id);
@@ -60,33 +98,23 @@ const handleRowSelect = (id: string) => {
   });
 };
 
-useEffect(() => {
-  //console.log("ListVideoSegments: videoSegments =", videoSegments);
-
-  const video_segment_rows = videoSegments?.map((vs: any) => ({
-    itemId: vs.id ? vs.id.toString() : '',
-    item_number: vs.segment_number,
-    start_time: vs.start_time,
-    end_time: vs.end_time || '',
-    question_numbers: vs.question_numbers || '',
-  }));
-
-  //console.log("ListVideoSegments: video_segment_rows =", video_segment_rows);
-  /*
+/*
 {
-    "id": 15,
-    "duration": 10000,
+    "id": 46,
+    "duration": 0,
     "segment_number": 0,
-    "question_numbers": "1",
-    "start_time": "0:00",
-    "end_time": "0:15",
+    "start_time": "00:00",
+    "end_time": "00:15",
+    "question_numbers": [
+        1
+    ],
+    "question_ids": [
+        6288
+    ],
     "quizId": 310
+
 }
   */
-  setVideoSegments(video_segment_rows || []);
-  
-  //setVideoSegments(videoSegments || []);
-}, [videoSegments]);
 
 const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
   const { attributes, listeners } = useSortable({
@@ -175,7 +203,7 @@ const cloneRow = async (id: string, originals: any) => {
     ];
    
     console.log(" cloneRow: updatedVideoSegments =", updatedVideoSegments);
-    setVideoSegments(updatedVideoSegments);
+    //setVideoSegments(updatedVideoSegments);
 
     //setVideoSegments(updatedVideoSegments.map(q => ({
      // ...q,
@@ -213,9 +241,9 @@ const columns = useMemo<ColumnDef<VideoSegmentProps>[]>(
         const inputRef = useRef<HTMLInputElement>(null);
         const onBlur = () => {
           updatedField.current = {id: info.row.original.itemId, row_index: rowIndex,  column_id: info.column.id, value: value as string};
-          //console.log(" ON BLUR updatedField current after updated =", updatedField.current)
-          setVideoSegments(prev => {
-            const updatedQuestions = [...prev];
+      
+          setVideoSegmentRows(prev => {
+            const updatedQuestions = [...(prev || [])];
             updatedQuestions[rowIndex] = {
               ...updatedQuestions[rowIndex],
               start_time: value as string, // Update the segment_number
@@ -258,9 +286,9 @@ const columns = useMemo<ColumnDef<VideoSegmentProps>[]>(
         const inputRef = useRef<HTMLInputElement>(null);
         const onBlur = () => {
           updatedField.current = {id: info.row.original.itemId, row_index: rowIndex,  column_id: info.column.id, value: value as string};
-          //console.log(" ON BLUR updatedField current after updated =", updatedField.current)
-          setVideoSegments(prev => {
-            const updatedQuestions = [...prev];
+      
+          setVideoSegmentRows(prev => {
+            const updatedQuestions = [...(prev || [])];
             updatedQuestions[rowIndex] = {
               ...updatedQuestions[rowIndex],
               end_time: value as string, // Update the segment_number
@@ -291,6 +319,25 @@ const columns = useMemo<ColumnDef<VideoSegmentProps>[]>(
           />
         );
       }, // end cell info
+    },
+    {
+      id: "play",
+      header: "Play",
+      cell: (info) => (
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+          onClick={() => {
+           
+            //console.log("cloneQuestion originals =", originals);
+            if (youTubeVideoRef.current) {
+              youTubeVideoRef.current.playSegment(info.row.original.start_time || '', info.row.original.end_time || '');
+            }
+          }
+          }
+        >
+          Play
+        </button>
+      ),
     },
     {
       id: "update_row",
@@ -368,18 +415,81 @@ const columns = useMemo<ColumnDef<VideoSegmentProps>[]>(
 const rowDeleted = async (id: string) => {
   // for the use of originals, see cloneQuestion function
   //console.log("deleteQuiz called with quiz_id:", question_id);
-  setVideoSegments(prev => prev.filter(vs => vs.itemId !== id));
+  //setVideoSegments(prev => prev.filter(vs => vs.itemId !== id));
 };
+
+const closeModal = (params: SegmentCloseModalProps | null) => {
+  setIsModalNewVisible(false);
+}
+
+const create_video_segment = async () => {
+    const my_params = {
+        segment_number: 0,
+        video_url: videoUrl || '',
+        quizId: quiz_id || '',
+    }
+   
+    /*
+   duration: req.body.duration,
+      segment_number: req.body.segment_number,
+      start_time: req.body.start_time,
+      end_time: req.body.end_time,
+      question_numbers: req.body.question_numbers,
+      quizId: req.body.quizId.toString(),
+    */
+
+    const response = await createVideoSegment(rootUrl, my_params )
+                   if (response) {
+                    console.log(" NewVideoSegment: created, response data = ", response.data)
+                      // console.log("button cloze question created ok")
+                      /*
+                          onClose({ action: 'new',
+                            id: response.data.id.toString(),
+                            name: name,
+                            quiz_number: quizNumber || '',
+                            video_url: videoUrl || '',
+                            unitId: unitId
+                          })
+                        */  
+                   }
+  
+  // const body = {
+}
+
 
 return (
   <div>
     in ListVideoSegments: quiz_id = {quiz_id}
+    <div>
+        <YoutubeVideoPlayer 
+        video_url={videoUrl || ''} 
+        ref={youTubeVideoRef}
+        />
+    </div>
     <GenericSortableTable 
-        input_data={video_segments} 
+        input_data={videoSegmentRows || []} 
         columns={columns} 
         data_type='video_segments'
         parent_notify_delete_row={rowDeleted}
         />
+
+<button className='bg-bgColor4 text-textColor4 bg-2 rounded-lg w-40 p-2 m-2'
+          onClick={() => 
+          {
+            create_video_segment();
+          }
+
+          }
+        >
+          Create New Video Segment
+        </button>
+
+      {isModalNewVisible && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <NewVideoSegment
+              modal_content={newModalContent!} onClose={closeModal} />
+          </div>
+        )}
   </div>
 )
 

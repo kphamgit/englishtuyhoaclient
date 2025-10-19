@@ -6,6 +6,7 @@ import { EditQuizModalContentProps } from './ListQuizzes';
 import { QuizProps } from './types';
 import ListVideoSegments, { VideoSegmentProps } from './ListVideoSegments';
 import { QuizCloseModalProps } from './NewQuiz';
+import YoutubeVideoPlayer from '../components/YoutubeVideoPlayer';
 
 interface EditQuizProps {
     modal_content: EditQuizModalContentProps;
@@ -88,8 +89,9 @@ interface EditQuizProps {
                     <input className='bg-bgColor3 px-2 text-lg text-textColor1 rounded-md w-auto mx-1' size={60} type="text" value={videoUrl}
                         onChange={e => setVideoUrl(e.target.value)}></input>
                 </div>
+         
                 <div>
-                    <ListVideoSegments quiz_id={quiz_id || ''} videoSegments={videoSegments} />
+                    <ListVideoSegments quiz_id={quiz_id || ''}  videoUrl={videoUrl}/>
 
                 </div>
 

@@ -137,6 +137,16 @@ export async function createQuiz(rootUrl: string, params: any) {
   //return "test"
 }
 
+export async function createVideoSegment(rootUrl: string, params: any) {
+  //console.log(" in updateQuestion id ",id )
+   
+  const url = `${rootUrl}/api/video_segments`
+  const response = await axios.post(url, params)
+  return response
+  //return "test"
+}
+
+
 export async function createUser(rootUrl: string, params: any) {
   console.log(" in createUser params = ",params )
    

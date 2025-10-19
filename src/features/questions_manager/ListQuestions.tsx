@@ -13,12 +13,15 @@ import GenericSortableTable, { genericItemType } from './GenericSortableTable';
 
 import NewQuestion from './NewQuestion';
 import EditQuestion from './EditQuestion';
-
+import { YouTubePlayerRef } from '../components/YoutubeVideoPlayer';
+import { u, video } from 'framer-motion/client';
+import { stringify } from 'querystring';
 
 interface ShortQuestionProps extends genericItemType {
   format: string
   content: string,
   videoSegmentId?: string
+  video_segment_number?: number
   answer_key?: string
 }
 
@@ -32,12 +35,9 @@ export interface CloseModalProps {
   answer_key?: string,
 }
 
-/*
-  itemId: "new", // temporary id, will be replaced when the page is refreshed
-          item_number: new_question_number,
-          format: selectedFormat.current,
-*/
-
+type VideoSegmentQuestionNumbers = {
+  [videoSegmentId: string]: string[]; // Key is a string, value is an array of numbers
+};
 
 const formatOptions = [
   { value: "1", label: "Cloze" },
@@ -58,6 +58,7 @@ export interface NewModalContentProps {
   format: string;
   quiz_id: string;
   question_number?: number;
+  
 }
 
 export interface EditModalContentProps {
@@ -83,6 +84,8 @@ export default function ListQuestions(props:any) {
 }
   */
 
+
+const youTubeVideoRef  = useRef<YouTubePlayerRef>(null);
   
   const [questions, setQuestions] = useState<ShortQuestionProps[]>([])
   //const [selectedFormat, setSelectedFormat] = useState<string>("1"); // State for dropdown selection
@@ -97,8 +100,10 @@ export default function ListQuestions(props:any) {
 
   const [isVideoQuiz, setIsVideoQuiz] = useState<boolean>(false);
   
-  //a field within a row that on onblur event was triggered
-  const updatedField = useRef<{id: string, row_index: number, column_id: string, value: string} | null>(null);
+  //a field within a row that on onblur event was triggered.
+  // this field is updated via the onBlur event
+  // and is used in the Update button onClick event to notify server using api calls
+  const updatedField = useRef<{id: string, row_index: number, column_id: string, value: string, video_segment_id?: string} | null>(null);
 
    const [quizLink, setQuizLink] = useState<string>('');
 
@@ -108,6 +113,11 @@ export default function ListQuestions(props:any) {
 
    const [quizName, setQuizName] = useState<string>('');
    const [quizNumber, setQuizNumber] = useState<string>('');
+
+   const [videoUrl, setVideoUrl] = useState<string | null>('');
+
+   // for video quizzes
+   const [videoSegments, setVideoSegments] = useState<{id: string, segment_number: number, start_time: number, end_time: number}[]>([]);
 
   const formatConversion: { [key: string]: string } = {"1": 'Cloze', "2": "Button Cloze Select", "3": 'Button Select', 
     "4": "Radio ",  "5": "Checkbox", "6": "Word Scramble", "7": "Speech Recognition", "8": "Word Select",
@@ -147,6 +157,15 @@ const { rootUrl } = useRootUrl();
       setUnitLink(`/${params.categoryId}/list_sub_categories/${params.sub_categoryId}/list_units?category=${categoryFilter}&sub_category=${subCategoryFilter}`);
       setSubCategoryLink(`/${params.categoryId}/list_sub_categories?category=${categoryFilter}`);
       setIsVideoQuiz(!!(data.video_url && data.video_url.length > 0));
+      setVideoUrl(data.video_url || null);
+      //console.log(" SETTING video segments =", data.video_segments)
+      setVideoSegments(data.video_segments ? data.video_segments.map((vs: any) => ({
+        id: vs.id.toString(),
+        segment_number: vs.segment_number,
+        start_time: vs.start_time,
+        end_time: vs.end_time,
+      })) : []);
+
       const shortQuestions: ShortQuestionProps[] = data.questions.map(({ id, format, question_number, content, answer_key, videoSegmentId }: any) => {
         return {
           itemId: id,
@@ -155,6 +174,7 @@ const { rootUrl } = useRootUrl();
           content: content || 'content....',
           answer_key: answer_key || '',
           videoSegmentId: videoSegmentId?.toString(), // Optional chaining for cleaner code
+          video_segment_number: videoSegmentId ? data.video_segments.find((vs: any) => vs.id === videoSegmentId)?.segment_number : undefined,
         };
       });
       setQuestions(shortQuestions);
@@ -173,13 +193,9 @@ const { rootUrl } = useRootUrl();
         },
       });
        // Remove the deleted segment from local state
-      //setQuestions(prev => prev.filter(vs => vs.itemId !== question_id));
-      // update the local state with the new cloned question
       const data = await response.json();
 
       const new_question = data.new_question;
-
-     
       // add data.new_question to the originals array after the original question
       // REMEMBER, have to use originals, not questions, to update the local state
       const index = originals.findIndex((q : ShortQuestionProps)=> q.itemId === question_id);
@@ -191,67 +207,22 @@ const { rootUrl } = useRootUrl();
             item_number: new_question.question_number.toString(),
             format: new_question.format.toString(),
             content: new_question.content || 'content....',
+            answer_key: new_question.answer_key || '',
+            video_segment_id: new_question.videoSegmentId ? new_question.videoSegmentId.toString() : undefined,
+            video_segment_number: new_question.videoSegmentId ? videoSegments.find(vs => vs.id === new_question.videoSegmentId.toString())?.segment_number : undefined,
           },
           ...originals.slice(index + 1),
         ];
-       
-        setQuestions(updatedQuestions.map(q => ({
-          ...q,
-          content: q.content || 'content....', // Ensure content is always a string
-        })));
-      //
+        setQuestions(updatedQuestions);
       }
    
-    };
+    };  //end cloneQuestion
 
     const rowDeleted = async (question_id: string) => {
       // for the use of originals, see cloneQuestion function
       //console.log("deleteQuiz called with quiz_id:", question_id);
       setQuestions(prev => prev.filter(vs => vs.itemId !== question_id));
     };
-
-
-    const updateQuestionRow = async (question_row: ShortQuestionProps) => {
-        //console.log("updateVideoSegment called with videoSegment:", question_row);
-        const {itemId, item_number,format, ...rest } = question_row;
-       
-        const body = { ...rest };
-        //console.log(" ***** body =", body)
-        //console.log(" Stringified body =", JSON.stringify(body))
-        /*
-{
-    "itemId": 6210,
-    "item_number": "1",
-    "format": "1",
-    "content": "How [are] you?",
-    "answer_key": "are",
-    "video_segment_id": "3"
-}
-        */
-
-
-        const method = 'PUT';
-        const url = `${rootUrl}/api/questions/${question_row.itemId}`
-        const response = await fetch(url, {
-          method: method,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body), // exclude itemId , item_number, and format from the body
-        });
-        const data = await response.json();
-        //alert("Successfully updated question row id " + question_row.itemId);
-        
-        const updateButton = document.getElementById(`update_button_${question_row.itemId}`);
-
-        if (updateButton) {
-          // rgb 59, 30, 246
-          updateButton.style.backgroundColor = '#3b82f6'; // Change color to original blue
-          // of the update_row button
-        }
-       
-
-    }
 
 const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
   const { attributes, listeners } = useSortable({
@@ -264,19 +235,6 @@ const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
     </button>
   );
 };
-
-const set_questions = (column_id: string, rowIndex: number, value: string) => {
-  // column_id is the field being updated, e.g. video_segment_id, content, answer_key ...
-  setQuestions(prev => {
-    const updatedQuestions = [...prev];
-    updatedQuestions[rowIndex] = {
-      ...updatedQuestions[rowIndex],
-      [column_id]: value as string, // Update the segment_number
-    };
-    console.log(" ------->>>>>>> updatedQuestions =", updatedQuestions)
-    return updatedQuestions;
-  });
-}
 
 const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
   () => [
@@ -317,7 +275,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       // in the table
         const onBlur = () => {
           updatedField.current = {id: info.row.original.itemId, row_index: rowIndex,  column_id: info.column.id, value: value as string};
-          //console.log(" ON BLUR updatedField current after updated =", updatedField.current)
+      
           setQuestions(prev => {
             const updatedQuestions = [...prev];
             updatedQuestions[rowIndex] = {
@@ -357,7 +315,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       accessorKey: "answer_key",
       header: "Answer Key",
       cell: info => {
-        const initialValue = info.getValue();
+        const initialValue = info.getValue() || ""; // Fallback to an empty string if undefined
         const rowIndex = info.row.index; // Get the row index
         const [value, setValue] = useState(initialValue);
         const inputRef = useRef<HTMLInputElement>(null);
@@ -367,7 +325,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       // in the table
         const onBlur = () => {
           updatedField.current = {id: info.row.original.itemId, row_index: rowIndex,  column_id: info.column.id, value: value as string};
-          //console.log(" ON BLUR updatedField current after updated =", updatedField.current)
+      
           setQuestions(prev => {
             const updatedQuestions = [...prev];
             updatedQuestions[rowIndex] = {
@@ -404,7 +362,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
     }, 
     {
       accessorKey: "videoSegmentId",
-      header: "Video Segment ID",
+      header: "Segment ID",
       cell: info => {
         const initialValue = info.getValue();
         const rowIndex = info.row.index; // Get the row index
@@ -416,7 +374,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       // in the table
         const onBlur = () => {
           updatedField.current = {id: info.row.original.itemId, row_index: rowIndex,  column_id: info.column.id, value: value as string};
-          //console.log(" ON BLUR updatedField current after updated =", updatedField.current)
+       
           setQuestions(prev => {
             const updatedQuestions = [...prev];
             updatedQuestions[rowIndex] = {
@@ -453,31 +411,150 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
 
     }, 
     {
+      accessorKey: "video_segment_number",
+      header: "Segment Number",
+      cell: info => {
+        //const initialValue = info.getValue();
+        const initialValue = info.getValue(); // Fallback to an 
+        const [value, setValue] = useState<string>(initialValue as string);
+        const rowIndex = info.row.index; // Get the row index
+        //const [value, setValue] = useState(initialValue);
+        const inputRef = useRef<HTMLInputElement>(null);
+         // onBlur event causes the input field to be refreshed 
+         // ( onBlur works differently from onChange event where the input field is refreshed as you type)
+      // when using onBlur, you need to click outside the input field for the change to be registered
+      // in the table
+        const onBlur = (e: any) => {
+          /*
+          const clickedElement = (e as FocusEvent).relatedTarget; // The element that was clicked
+  console.log("Element that triggered onBlur:", clickedElement);
+
+  if (clickedElement) {
+     console.log("Clicked element ID:", (clickedElement as HTMLButtonElement).id );
+     //update_button_6288
+    //console.log("Clicked element class:", clickedElement.className);
+  } else {
+    console.log("No related target (e.g., clicked outside the document)");
+  }
+          */
+
+  updatedField.current = {
+    id: info.row.original.itemId,
+    row_index: rowIndex,
+    column_id: info.column.id,
+    value: value as string,
+  };
+
+          //updatedField.current = {id: info.row.original.itemId, row_index: rowIndex,  column_id: info.column.id, value: value as string};
+       
+          setQuestions(prev => {
+            const updatedQuestions = [...prev];
+              // search videoSegments to find the video_segment_id that matches value (as segment_number)
+            const matchingSegment = videoSegments.find(vs => vs.segment_number === parseInt(value as string));
+           // console.log(" onBlur: matchingSegment =", matchingSegment)
+            const video_segment_id = matchingSegment ? matchingSegment.id : undefined;
+            console.log(" onBlur: matching , video_segment_id for segment number value: ", value, " is", video_segment_id)
+           
+            if (video_segment_id && updatedField.current) {
+              updatedField.current.video_segment_id = video_segment_id;
+              // this will be used in Update onclick event
+            }
+            updatedQuestions[rowIndex] = {
+              ...updatedQuestions[rowIndex],
+              videoSegmentId: video_segment_id, // Update the segment_number
+            };
+            console.log(" ON BLUR updatedQuestions =", updatedQuestions)
+            return updatedQuestions;
+          });
+        };  // end onBlur
+  
+        return (
+          <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-12 mx-1'
+          ref={inputRef} // Attach the ref to the input field
+            value={value as string}
+            onChange={e => {
+              // use document.getElementById to get the update_row button on the same row
+              const updateButton = document.getElementById(`update_button_${info.row.original.itemId}`);
+              if (updateButton) {
+                updateButton.style.backgroundColor = 'red'; // Change color to red
+              }
+              //console.log(" onChange , row original =",info.row.original)
+              setValue(e.target.value)
+            } }
+            onBlur={onBlur}
+          />
+        );
+      }, // end cell info
+
+
+    }, 
+    {
       id: "update_row",
       header: "Update",
       cell: ({ row }) => (
         <button
         id = {`update_button_${row.original.itemId}`}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-        onClick={(e) => {
-          // ****** IMPORTANT kpham: when you click the UPDATE button, and previously an input field was focused,
+        onClick={async (e) => {
+          // ****** IMPORTANT kpham: when you click the UPDATE button, and previously an input field was focused (value change),
           // then an onBlur event will be triggered first, before the onClick event of this button is fired.
-          /*
-{
-    "id": 6210,
-    "row_index": 0,
-    "column_id": "video_segment_id",
-    "value": "11"
-}
-          */
-
          // since onBlur gets fired when user click anywhere outside the input field,
          // we have to make sure that the user has clicked on the Update button of the same row
-               if (updatedField.current) {
-            updateQuestionRow({...row.original, [updatedField.current.column_id]: updatedField.current.value as string});
-          } else {
-            console.error("updatedField.current is null");
-          }
+        //console.log(" Update column id ", updatedField.current?.column_id, " for row index ", updatedField.current?.row_index)
+          if (updatedField.current) {
+            const updated_column_id = updatedField.current?.column_id;  
+            const body = {
+              format: row.original.format, // Include `format`
+              ...(updated_column_id && {
+                [updated_column_id]: updatedField.current.value, //
+              }),
+            };
+            const method = 'PUT';
+            const url = `${rootUrl}/api/questions/${row.original.itemId}`
+            const response = await fetch(url, {
+              method: method,
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(body), // exclude itemId , item_number, and format from the body
+            });
+            const data = await response.json();
+            
+            console.log("Successfully updated question data return  " + data);
+            // if updated_column_id is videoSegmentId, then we need to update the video_segment_number in the questions state
+            // first search videoSegments to find the segment_number that matches updatedField.current.value
+            /*
+            if (updated_column_id === 'videoSegmentId') {
+              const matchingSegment = videoSegments.find(vs => vs.id === updatedField.current?.value);
+              const corresponding_segment_number = matchingSegment ? matchingSegment.segment_number : undefined;
+              console.log(" Update onClick: matching segment number for NEW videoSegmentId value: ", updatedField.current?.value, " is", corresponding_segment_number)
+              // now update the questions state
+              
+              setQuestions(prev => {
+                const updatedQuestions = [...prev];
+                const rowIndex = updatedField.current ? updatedField.current.row_index : -1;
+                if (rowIndex !== -1) {
+                  updatedQuestions[rowIndex] = {
+                    ...updatedQuestions[rowIndex],
+                    video_segment_number: corresponding_segment_number,
+                  };
+                }
+                //console.log("^^^^^^^^^^^^^ onClick Update button: updatedQuestions =", updatedQuestions)
+                return updatedQuestions;
+              });
+            }
+            */
+            const updateButton = document.getElementById(`update_button_${row.original.itemId}`);
+            if (updateButton) {
+              // rgb 59, 30, 246
+              updateButton.style.backgroundColor = '#3b82f6'; // Change color to original blue
+              // of the update_row button
+            }
+
+
+          }  // end if updatedField.current
+         /*  note: row original has stale data if user has changed any input field but not yet clicked Update button
+         */
           // if you click this button (or any other field) while an input field is focused, the onBlur event for that input field will be triggered first
           // this is why you don't need an onClick event 
         }}
@@ -543,7 +620,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       ),
     },
   ],
-  [] // No dependencies, so the columns are memoized once
+  [videoSegments] // Recompute columns if videoSegments change
 );
 
 
@@ -602,7 +679,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
           format: params.format || "1", // Default to "1" if undefined
           content: params.content || 'content....', 
           answer_key: params.answer_key || '',
-          videoSegmentId: params.video_segment_id,
+
         };
 
         console.log(" ********* New question to be added to the table =", new_question)
@@ -630,19 +707,11 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
           //console.log("Could not find index for question number" ,new_question.item_number, "Appending new question at the end.");
           setQuestions([...questions, new_question]);
         }
-        //setQuestions([...questions, new_question]);
-     // }
+  
       setIsModalNewVisible(false);
       setNewModalContent(null);
       return;
     }
-
-    /*
-  // Update the local state to remove the deleted question
-      const updatedQuestions = originals.filter(q => q.itemId !== question_id);
-      setQuestions(updatedQuestions);
-    */
-
  
   };
 
@@ -654,7 +723,8 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       question_number: current_question_number,
       quiz_has_video: isVideoQuiz,
       format: selectedFormat.current, 
-      quiz_id: params.quizId || ""});
+      quiz_id: params.quizId || ""
+    });
     
       setIsModalNewVisible(true);
     
@@ -697,7 +767,26 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
         <div className='bg-bgColor2 italic text-textColor2 text-xl p-3'>Quiz {quizNumber}: {quizName}</div>
       </div>
 
-    <div className='bg-bgColor1 text-textColor1'>Video Quiz? {isVideoQuiz.toString()}</div>
+      <div className='bg-bgColor1 text-textColor1'>Video Quiz? {isVideoQuiz.toString()}</div>
+      { videoUrl &&
+       <div>
+     
+        {videoSegments.length > 0 &&
+          videoSegments.map((segment) => (
+            <button key={segment.id} className='bg-bgColor2 text-textColor1 m-2 p-2 rounded-lg'
+              onClick={() => {
+                if (youTubeVideoRef.current) {
+                  youTubeVideoRef.current.playSegment(segment.start_time.toString(), segment.end_time.toString());
+                }
+              }}
+            >
+              Play Segment {segment.segment_number} id: {segment.id}, ( {segment.start_time} - {segment.end_time} )
+            </button>
+          ))
+        }
+        </div>
+      }
+  
     <div className='bg-bgColor2 text-textColor1 p-2 flex flex-row justify-center text-xl mt-3 mb-3'>
     <select
         id="formatDropdown"
@@ -737,7 +826,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       )}
       
       </div>
-      <div className='bg-bgColor2 text-textColor2 px-5 pb-10 mb-5'>
+      <div className='flex flex-row gap-3 bg-bgColor1 text-textColor1 px-5 pb-10 mb-5'>
         <button className='text-textColor1 bg-bgColor1 rounded-lg'
           onClick={() => 
           {
@@ -754,6 +843,32 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
         >
           Create New Question
         </button>
+        <button className='text-textColor4 bg-bgColor4 rounded-lg p-3'
+          onClick={() => 
+          {
+            console.log(" All questions and their video segment ids:", questions);
+            const obj: VideoSegmentQuestionNumbers = {};
+             questions.forEach((question, index) => {
+              //console.log(" Question id =", question.itemId);
+              //console.log(" Video Segment Id =", question.videoSegmentId);
+              // seatch videoSegments to find the video segment id that matches the video_segment_number
+              const videoSegment = videoSegments.find(vs => vs.segment_number.toString() === question.videoSegmentId);
+              //console.log(" Matching video segment id =", videoSegment?.id);
+              if (videoSegment) {
+                if (!obj[videoSegment.id]) {
+                  obj[videoSegment.id] = [];
+                }
+                obj[videoSegment.id].push(question.itemId);
+              }
+             })
+             //console.log(" video segments: ", videoSegments)
+              // use video_segment_number as key to group question ids
+          }
+
+          }
+        >
+           Set Question numbers for Video Segments
+        </button>
         {isModalNewVisible && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <NewQuestion
@@ -767,4 +882,9 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       
 }
 
-
+/*
+   <YoutubeVideoPlayer
+          ref={youTubeVideoRef} 
+          video_url={videoUrl} 
+        />
+*/
