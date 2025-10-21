@@ -415,7 +415,7 @@ const columns = useMemo<ColumnDef<VideoSegmentProps>[]>(
 const rowDeleted = async (id: string) => {
   // for the use of originals, see cloneQuestion function
   //console.log("deleteQuiz called with quiz_id:", question_id);
-  //setVideoSegments(prev => prev.filter(vs => vs.itemId !== id));
+  setVideoSegmentRows(prev => prev?.filter(vs => vs.itemId !== id));
 };
 
 const closeModal = (params: SegmentCloseModalProps | null) => {
@@ -438,9 +438,22 @@ const create_video_segment = async () => {
       quizId: req.body.quizId.toString(),
     */
 
+     // question_numbers:  response.data.question_numbers.join(',') || '',
     const response = await createVideoSegment(rootUrl, my_params )
                    if (response) {
                     console.log(" NewVideoSegment: created, response data = ", response.data)
+                    setVideoSegmentRows(prev => ([
+                      ...(prev || []),
+                      {
+                        itemId: response.data.id ? response.data.id.toString() : '',
+                        item_number: response.data.segment_number,
+                        start_time: response.data.start_time,
+                        end_time: response.data.end_time || '',
+                        question_numbers:  
+                          response.data.question_numbers ? response.data.question_numbers.join(',') : ''
+                        ,
+                      }
+                    ]))
                       // console.log("button cloze question created ok")
                       /*
                           onClose({ action: 'new',

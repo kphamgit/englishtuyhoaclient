@@ -42,6 +42,10 @@ export interface genericItemType {
   item_number: number;
 }
 
+interface responseJsonProps {
+  itemId: string;
+  item_number: number;
+}
 /*
 generic type T can be any object type, e.g., ShortQuizProps, QuestionProps, UnitProps, etc.
 */
@@ -139,7 +143,7 @@ function GenericSortableTable<T extends genericItemType>({
   });
 
   const delete_row = async (itemId: string) => {
-    console.log("delete_row called with itemId:", itemId);
+    //console.log("delete_row called with itemId:", itemId);
     
     const response = await fetch(`${rootUrl}/api/${data_type}/${itemId}`, {
       method: 'DELETE',
@@ -177,12 +181,20 @@ function GenericSortableTable<T extends genericItemType>({
   const reset_item_numbers = () => {
     const item_ids = getColumnValues("itemId") as string[];
     const sorted_numbers: number[] = getColumnValues("item_number") as number[];
+    /*
+    if (data_type === 'video_segments') {
+      for (let i = 0; i < sorted_numbers.length; i++) {
+        sorted_numbers[i] = (i);
+      }
+    } else
+    */
     for (let i = 0; i < sorted_numbers.length; i++) {
       sorted_numbers[i] = (i + 1);
     }
 
   
    //parent_notify_reset_item_numbers?.(combined);
+   
     setData((prev) => {
       const updatedRows = prev.map((row, index) => ({
         ...row,
@@ -190,6 +202,7 @@ function GenericSortableTable<T extends genericItemType>({
       }));
       return updatedRows;
     });
+    
 
     const combined = item_ids.map((id, index) => ({
       itemId: id,
@@ -200,19 +213,26 @@ function GenericSortableTable<T extends genericItemType>({
 
   };
 
-  const call_api_reset_item_numbers = (new_numbers: {itemId: string, item_number: number}[]) => {
+  const call_api_reset_item_numbers = async (new_numbers: {itemId: string, item_number: number}[]) => {
  
     //console.log("call_api_reset_item_numbers new_numbers =", new_numbers)
     // use fetch api to post new_numbers to backend /api/questions/renumber',
-    const response = fetch(`${rootUrl}/api/${data_type}/renumber`, {
+    const response = await fetch(`${rootUrl}/api/${data_type}/renumber`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ id_number_pairs: new_numbers }),
     })
-    return response;
   
+    const data = await response.json();
+    console.log("API response data =", data);
+    /* [
+{
+    "itemId": "46",
+    "item_number": 0
+  }, ... ]
+    */
   }
 
   const getColumnValues = (columnId: string): unknown[] => {
@@ -260,7 +280,7 @@ function GenericSortableTable<T extends genericItemType>({
       </DndContext>
       <div className="bg-bgColor2 text-textColor2 p-3">
       <button
-        className="text-textColor1 bg-bgColor4 rounded-lg px-5 pt-3 mt-2"
+        className="text-textColor1 bg-bgColor4 rounded-lg p-3 mt-2"
         onClick={reset_item_numbers}
       >
         Renumber Item

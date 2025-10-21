@@ -13,9 +13,10 @@ import GenericSortableTable, { genericItemType } from './GenericSortableTable';
 
 import NewQuestion from './NewQuestion';
 import EditQuestion from './EditQuestion';
-import { YouTubePlayerRef } from '../components/YoutubeVideoPlayer';
+import YoutubeVideoPlayer, { YouTubePlayerRef } from '../components/YoutubeVideoPlayer';
 import { u, video } from 'framer-motion/client';
 import { stringify } from 'querystring';
+import { send } from 'process';
 
 interface ShortQuestionProps extends genericItemType {
   format: string
@@ -103,8 +104,7 @@ const youTubeVideoRef  = useRef<YouTubePlayerRef>(null);
   //a field within a row that on onblur event was triggered.
   // this field is updated via the onBlur event
   // and is used in the Update button onClick event to notify server using api calls
-  const updatedField = useRef<{id: string, row_index: number, column_id: string, value: string, video_segment_id?: string} | null>(null);
-
+  
    const [quizLink, setQuizLink] = useState<string>('');
 
    const [unitLink, setUnitLink] = useState<string>('');
@@ -236,6 +236,19 @@ const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
   );
 };
 
+const sendPutRequest = async (body: any, url: string) => {
+  //const method = 'PUT';
+  //const url = `${rootUrl}/api/questions/${info.row.original.itemId}`
+  await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body), //
+  });
+  //const data = await response.json();
+}
+
 const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
   () => [
     {
@@ -273,9 +286,28 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
          // ( onBlur works differently from onChange event where the input field is refreshed as you type)
       // when using onBlur, you need to click outside the input field for the change to be registered
       // in the table
-        const onBlur = () => {
-          updatedField.current = {id: info.row.original.itemId, row_index: rowIndex,  column_id: info.column.id, value: value as string};
-      
+        const onBlur = (e : any) => {  
+          const clickedElement = (e as FocusEvent).relatedTarget; // The element that was clicked
+          //console.log("Element that triggered onBlur:", clickedElement);
+
+          if (clickedElement) {
+            // console.log("Clicked element ID:", (clickedElement as HTMLButtonElement).id );
+            if ((clickedElement as HTMLButtonElement).id === `update_button_${info.row.original.itemId}`) {
+              //console.log("User clicked the Update button for the same row.");
+              (clickedElement as HTMLButtonElement).style.backgroundColor = '#3b82f6'; // Change color to original blue
+            }
+            //console.log("Clicked element class:", clickedElement.className);
+          } else {
+            console.log("No related target (e.g., clicked outside the document)");
+            return; // Exit the onBlur function early
+          }
+          const body = {
+            format: info.row.original.format, // Include `format`
+            content: value as string,
+          };
+
+          sendPutRequest(body, `${rootUrl}/api/questions/${info.row.original.itemId}`);
+
           setQuestions(prev => {
             const updatedQuestions = [...prev];
             updatedQuestions[rowIndex] = {
@@ -323,9 +355,28 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
          // ( onBlur works differently from onChange event where the input field is refreshed as you type)
       // when using onBlur, you need to click outside the input field for the change to be registered
       // in the table
-        const onBlur = () => {
-          updatedField.current = {id: info.row.original.itemId, row_index: rowIndex,  column_id: info.column.id, value: value as string};
-      
+        const onBlur = (e: any) => {
+          const clickedElement = (e as FocusEvent).relatedTarget; // The element that was clicked
+          //console.log("Element that triggered onBlur:", clickedElement);
+
+          if (clickedElement) {
+            // console.log("Clicked element ID:", (clickedElement as HTMLButtonElement).id );
+            if ((clickedElement as HTMLButtonElement).id === `update_button_${info.row.original.itemId}`) {
+              //console.log("User clicked the Update button for the same row.");
+              (clickedElement as HTMLButtonElement).style.backgroundColor = '#3b82f6'; // Change color to original blue
+            }
+            //console.log("Clicked element class:", clickedElement.className);
+          } else {
+            console.log("No related target (e.g., clicked outside the document)");
+            return; // Exit the onBlur function early
+          }
+          const body = {
+            format: info.row.original.format, // Include `format`
+            answer_key: value as string,
+          };
+
+          sendPutRequest(body, `${rootUrl}/api/questions/${info.row.original.itemId}`);
+
           setQuestions(prev => {
             const updatedQuestions = [...prev];
             updatedQuestions[rowIndex] = {
@@ -360,60 +411,19 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       }, // end cell info
 
     }, 
-    {
-      accessorKey: "videoSegmentId",
-      header: "Segment ID",
-      cell: info => {
-        const initialValue = info.getValue();
-        const rowIndex = info.row.index; // Get the row index
-        const [value, setValue] = useState(initialValue);
-        const inputRef = useRef<HTMLInputElement>(null);
-         // onBlur event causes the input field to be refreshed 
-         // ( onBlur works differently from onChange event where the input field is refreshed as you type)
-      // when using onBlur, you need to click outside the input field for the change to be registered
-      // in the table
-        const onBlur = () => {
-          updatedField.current = {id: info.row.original.itemId, row_index: rowIndex,  column_id: info.column.id, value: value as string};
-       
-          setQuestions(prev => {
-            const updatedQuestions = [...prev];
-            updatedQuestions[rowIndex] = {
-              ...updatedQuestions[rowIndex],
-              videoSegmentId: value as string, // Update the segment_number
-            };
-           //console.log(" ON BLUR updatedQuestions =", updatedQuestions)
-            return updatedQuestions;
-          });
-        // console.log(" onBlur, row original =", info.row.original)
-          //
-        };
   
-        return (
-          <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-12 mx-1'
-          ref={inputRef} // Attach the ref to the input field
-            value={value as string}
-            onChange={e => {
-              // use document.getElementById to get the update_row button on the same row
-              const updateButton = document.getElementById(`update_button_${info.row.original.itemId}`);
-
-              if (updateButton) {
-                updateButton.style.backgroundColor = 'red'; // Change color to red
-              }
-              //console.log(" onChange , row original =",info.row.original)
-
-              setValue(e.target.value)
-            } }
-            onBlur={onBlur}
-          />
-        );
-      }, // end cell info
-
-
-    }, 
     {
       accessorKey: "video_segment_number",
       header: "Segment Number",
       cell: info => {
+        // kpham IMPORTANT node in video_segment_number: This field is only for convenience in setting the videoSegmentId for this 
+        // question. When the onBlur event is triggered, the video_segment_number entered 
+        // will be used to look up the corresponding videoSegmentId (from videoSegments) state.
+        // Then the videoSegmentId field in questions table in database is updated accordingly.
+
+        // video_segment_number field is not persisted to the server, i.e, the questions table
+        // has no field with the name video_segment_number,
+
         //const initialValue = info.getValue();
         const initialValue = info.getValue(); // Fallback to an 
         const [value, setValue] = useState<string>(initialValue as string);
@@ -424,50 +434,57 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
          // ( onBlur works differently from onChange event where the input field is refreshed as you type)
       // when using onBlur, you need to click outside the input field for the change to be registered
       // in the table
-        const onBlur = (e: any) => {
-          /*
+        const onBlur = async (e: any) => {
+
           const clickedElement = (e as FocusEvent).relatedTarget; // The element that was clicked
-  console.log("Element that triggered onBlur:", clickedElement);
+          //console.log("Element that triggered onBlur:", clickedElement);
 
-  if (clickedElement) {
-     console.log("Clicked element ID:", (clickedElement as HTMLButtonElement).id );
-     //update_button_6288
-    //console.log("Clicked element class:", clickedElement.className);
-  } else {
-    console.log("No related target (e.g., clicked outside the document)");
-  }
-          */
-
-  updatedField.current = {
-    id: info.row.original.itemId,
-    row_index: rowIndex,
-    column_id: info.column.id,
-    value: value as string,
-  };
-
-          //updatedField.current = {id: info.row.original.itemId, row_index: rowIndex,  column_id: info.column.id, value: value as string};
-       
-          setQuestions(prev => {
-            const updatedQuestions = [...prev];
-              // search videoSegments to find the video_segment_id that matches value (as segment_number)
-            const matchingSegment = videoSegments.find(vs => vs.segment_number === parseInt(value as string));
-           // console.log(" onBlur: matchingSegment =", matchingSegment)
-            const video_segment_id = matchingSegment ? matchingSegment.id : undefined;
-            console.log(" onBlur: matching , video_segment_id for segment number value: ", value, " is", video_segment_id)
-           
-            if (video_segment_id && updatedField.current) {
-              updatedField.current.video_segment_id = video_segment_id;
-              // this will be used in Update onclick event
+          if (clickedElement) {
+            // console.log("Clicked element ID:", (clickedElement as HTMLButtonElement).id );
+            if ((clickedElement as HTMLButtonElement).id === `update_button_${info.row.original.itemId}`) {
+              //console.log("User clicked the Update button for the same row.");
+              (clickedElement as HTMLButtonElement).style.backgroundColor = '#3b82f6'; // Change color to original blue
             }
-            updatedQuestions[rowIndex] = {
-              ...updatedQuestions[rowIndex],
-              videoSegmentId: video_segment_id, // Update the segment_number
-            };
-            console.log(" ON BLUR updatedQuestions =", updatedQuestions)
-            return updatedQuestions;
+            //console.log("Clicked element class:", clickedElement.className);
+          } else {
+            console.log("No related target (e.g., clicked outside the document)");
+            return; // Exit the onBlur function early
+          }
+
+          //console.log(" onBlur , value =", value, " for row original =", info.row.original)
+
+          const matchingSegment = videoSegments.find(vs => vs.segment_number === parseInt(value as string));
+          const new_video_segment_id = matchingSegment ? matchingSegment.id : undefined;
+
+          /*  KEEP this part for debugging purposes (to work with column videoSegmentId if needed) */
+
+          // FIRSt , use getElementById to update the videoSegmentId field in this row
+          const videoSegmentIdElement = document.getElementById(`video_segment_id_${info.row.original.itemId}`);
+          if (videoSegmentIdElement) {
+            videoSegmentIdElement.textContent = new_video_segment_id || '';
+            // change the color of the videoSegmentIdElement to green to indicate change
+            videoSegmentIdElement.style.color = 'green';
+          }
+          
+          // THEN, update the videoSegmentId field in questions table in database
+          const body = {
+            format: info.row.original.format, // Include `format`
+            videoSegmentId: new_video_segment_id,
+          };
+
+          const method = 'PUT';
+          const url = `${rootUrl}/api/questions/${info.row.original.itemId}`
+          await fetch(url, {
+            method: method,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body), // exclude itemId , item_number, and format from the body
           });
+          //const data = await response.json();
+
         };  // end onBlur
-  
+
         return (
           <input className='bg-bgColor4 px-2 text-lg text-textColor1 rounded-md w-12 mx-1'
           ref={inputRef} // Attach the ref to the input field
@@ -488,6 +505,16 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
 
 
     }, 
+    /*  don't delete this column yet, may need it later for debugging purposes */
+    // see IMPORTANT node above for video_segment_number column
+    {
+      accessorKey: "videoSegmentId",
+      header: "Segment ID",
+      cell: (info) => <span id = {`video_segment_id_${info.row.original.itemId}`} >{String(info.getValue())}</span>
+      // this field is only for display purpose. It's not editable
+      // see IMPORTANT node for video_segment_number column below
+    }, 
+    
     {
       id: "update_row",
       header: "Update",
@@ -500,61 +527,6 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
           // then an onBlur event will be triggered first, before the onClick event of this button is fired.
          // since onBlur gets fired when user click anywhere outside the input field,
          // we have to make sure that the user has clicked on the Update button of the same row
-        //console.log(" Update column id ", updatedField.current?.column_id, " for row index ", updatedField.current?.row_index)
-          if (updatedField.current) {
-            const updated_column_id = updatedField.current?.column_id;  
-            const body = {
-              format: row.original.format, // Include `format`
-              ...(updated_column_id && {
-                [updated_column_id]: updatedField.current.value, //
-              }),
-            };
-            const method = 'PUT';
-            const url = `${rootUrl}/api/questions/${row.original.itemId}`
-            const response = await fetch(url, {
-              method: method,
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(body), // exclude itemId , item_number, and format from the body
-            });
-            const data = await response.json();
-            
-            console.log("Successfully updated question data return  " + data);
-            // if updated_column_id is videoSegmentId, then we need to update the video_segment_number in the questions state
-            // first search videoSegments to find the segment_number that matches updatedField.current.value
-            /*
-            if (updated_column_id === 'videoSegmentId') {
-              const matchingSegment = videoSegments.find(vs => vs.id === updatedField.current?.value);
-              const corresponding_segment_number = matchingSegment ? matchingSegment.segment_number : undefined;
-              console.log(" Update onClick: matching segment number for NEW videoSegmentId value: ", updatedField.current?.value, " is", corresponding_segment_number)
-              // now update the questions state
-              
-              setQuestions(prev => {
-                const updatedQuestions = [...prev];
-                const rowIndex = updatedField.current ? updatedField.current.row_index : -1;
-                if (rowIndex !== -1) {
-                  updatedQuestions[rowIndex] = {
-                    ...updatedQuestions[rowIndex],
-                    video_segment_number: corresponding_segment_number,
-                  };
-                }
-                //console.log("^^^^^^^^^^^^^ onClick Update button: updatedQuestions =", updatedQuestions)
-                return updatedQuestions;
-              });
-            }
-            */
-            const updateButton = document.getElementById(`update_button_${row.original.itemId}`);
-            if (updateButton) {
-              // rgb 59, 30, 246
-              updateButton.style.backgroundColor = '#3b82f6'; // Change color to original blue
-              // of the update_row button
-            }
-
-
-          }  // end if updatedField.current
-         /*  note: row original has stale data if user has changed any input field but not yet clicked Update button
-         */
           // if you click this button (or any other field) while an input field is focused, the onBlur event for that input field will be triggered first
           // this is why you don't need an onClick event 
         }}
@@ -682,7 +654,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
 
         };
 
-        console.log(" ********* New question to be added to the table =", new_question)
+       // console.log(" ********* New question to be added to the table =", new_question)
         // use splice method to insert the new question after the position of the current row item number
         
         // print out all the item numbers in the questions array for debugging
@@ -771,6 +743,13 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       { videoUrl &&
        <div>
      
+     
+        <YoutubeVideoPlayer
+          ref={youTubeVideoRef} 
+          video_url={videoUrl} 
+        />
+
+
         {videoSegments.length > 0 &&
           videoSegments.map((segment) => (
             <button key={segment.id} className='bg-bgColor2 text-textColor1 m-2 p-2 rounded-lg'
@@ -780,7 +759,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
                 }
               }}
             >
-              Play Segment {segment.segment_number} id: {segment.id}, ( {segment.start_time} - {segment.end_time} )
+              Play Segment {segment.segment_number} , ( {segment.start_time} - {segment.end_time} ), id: {segment.id}
             </button>
           ))
         }
@@ -826,7 +805,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
       )}
       
       </div>
-      <div className='flex flex-row gap-3 bg-bgColor1 text-textColor1 px-5 pb-10 mb-5'>
+      <div className='flex flex-row gap-3 bg-bgColor1 text-textColor1 px-5 p-3 mb-5'>
         <button className='text-textColor1 bg-bgColor1 rounded-lg'
           onClick={() => 
           {
@@ -843,32 +822,6 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
         >
           Create New Question
         </button>
-        <button className='text-textColor4 bg-bgColor4 rounded-lg p-3'
-          onClick={() => 
-          {
-            console.log(" All questions and their video segment ids:", questions);
-            const obj: VideoSegmentQuestionNumbers = {};
-             questions.forEach((question, index) => {
-              //console.log(" Question id =", question.itemId);
-              //console.log(" Video Segment Id =", question.videoSegmentId);
-              // seatch videoSegments to find the video segment id that matches the video_segment_number
-              const videoSegment = videoSegments.find(vs => vs.segment_number.toString() === question.videoSegmentId);
-              //console.log(" Matching video segment id =", videoSegment?.id);
-              if (videoSegment) {
-                if (!obj[videoSegment.id]) {
-                  obj[videoSegment.id] = [];
-                }
-                obj[videoSegment.id].push(question.itemId);
-              }
-             })
-             //console.log(" video segments: ", videoSegments)
-              // use video_segment_number as key to group question ids
-          }
-
-          }
-        >
-           Set Question numbers for Video Segments
-        </button>
         {isModalNewVisible && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <NewQuestion
@@ -881,10 +834,3 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
   )
       
 }
-
-/*
-   <YoutubeVideoPlayer
-          ref={youTubeVideoRef} 
-          video_url={videoUrl} 
-        />
-*/
