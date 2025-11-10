@@ -4,28 +4,45 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { createUnit, updateUnit } from '../services/list';
 import { useRootUrl } from '../../contexts/root_url';
+import { NewUnitModalContentProps } from './ListUnits';
 
-export default function NewUnit(props: any) {
+export interface UnitCloseModalProps  {
+    action: "edit" | "new" | "cancel",
+    id?: string
+    name: string,
+    unit_number: string,
+    subCategoryId: string,
+  }
+
+interface NewUnitProps {
+    modal_content: NewUnitModalContentProps;
+    onClose: (params: UnitCloseModalProps) => void;
+  }
+const NewUnit: React.FC<NewUnitProps> = ({ modal_content, onClose }) => {
+//export default function NewUnit(props: NewUnitProps) {
 
       const [name, setName] = useState<string>('')
       const [unitNumber, setUnitNumber] = useState<string | undefined>('')
       const [level, setLevel] = useState<string | undefined>('beginner')
-      const [subCategoryId, setSubCategoryId] = useState<string>()
+      //const [subCategoryId, setSubCategoryId] = useState<string>()
       
-      const navigate = useNavigate();
-      const params = useParams<{categoryId: string, sub_categoryId: string }>();
+      //const navigate = useNavigate();
+      //const params = useParams<{categoryId: string, sub_categoryId: string }>();
 
       const { rootUrl} = useRootUrl();
 
-      useEffect(() => {
-        setSubCategoryId(params.sub_categoryId)
-      }, [params.sub_categoryId])
-     
-const handleCancel = () => {
-    navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}`)
-}
+      const {subCategoryId} = modal_content
 
-const create_unit = () => {
+     const handleCancel = () => {
+        console.log(" NewUnit: handleCancel called")
+        onClose({ action: 'cancel'
+           , name: '',
+           unit_number: '',
+           subCategoryId: ''
+        })
+    }
+
+const create_unit = async () => {
     let unit_params = {
         name: name,
         unit_number: unitNumber,
@@ -33,18 +50,44 @@ const create_unit = () => {
         content: '',
         subCategoryId: subCategoryId
     }
-    createUnit(rootUrl, unit_params )
-    .then(response => {
-        //console.log("SUCCESS updating question")
-        //navigate("/live_quiz", { state: arg })
-        navigate(`/categories/${params.categoryId}/sub_categories/${params.sub_categoryId}`)
-        //ocalhost:5173/categories/1/sub_categories/7
-     })
-    .catch(error => {
-        console.log(error)
-    })
+   const response = await createUnit(rootUrl, unit_params )
+                     if (response) {
+                      
+                        // console.log("button cloze question created ok")
+                        
+                            onClose({ action: 'new',
+                              id: response.data.id.toString(),
+                              name: name,
+                              unit_number: unitNumber || '',
+                              subCategoryId: subCategoryId || ''
+                            })
+                              
+                     }
 }
   
+/*
+ const createUnit = async ({ name, quiz_number, video_url, unitId, video_segments }: CreateQuizProps) => {
+      console.log("createQuiz called with:", { name, quiz_number, video_url, unitId, video_segments });
+      const response = await fetch(`${rootUrl}/api/quizzes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: name,
+          quiz_number: quiz_number,
+          video_url: video_url,
+          unitId: unitId,
+          video_segments: video_segments
+        }),
+      });
+      return response.json();
+  
+      // Perform additional logic with the properties
+  };
+
+*/
+
         return (
             <div className='bg-bgColor1 text-textColor2'>
                 <div className='bg-bgColor1 text-textColor2 mb-2'>New Unit</div>
@@ -69,4 +112,5 @@ const create_unit = () => {
         )
 }
 
+export default NewUnit;
 //<button className='bg-green-400 m-3 p-1' onClick={update_question}>Save question</button>

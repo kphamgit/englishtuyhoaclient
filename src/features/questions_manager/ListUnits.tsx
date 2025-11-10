@@ -13,10 +13,21 @@ import { useRootUrl } from '../../contexts/root_url';
 import { useSortable } from '@dnd-kit/sortable';
 
 import GenericSortableTable, { genericItemType } from './GenericSortableTable';
+import NewUnit from './NewUnit';
+import EditUnit from './EditUnit';
 
 export interface MyNavLinkProps {
   name: string,
   pathname: string
+}
+
+export interface NewUnitModalContentProps {
+  subCategoryId: string;
+}
+
+export interface EditUnitModalContentProps {
+  unit_id: string;
+  unit_number: number;
 }
 
 
@@ -45,8 +56,12 @@ const { rootUrl } = useRootUrl();
   const categoryFilter = queryParams.get('category');
   //console.log(" List units categoryFilter = ", categoryFilter)
 
-  const subCategoryFilter = queryParams.get('sub_category');
- // console.log(" List units subCategoryFilter = ", subCategoryFilter)
+ 
+      const [isModalEditVisible, setIsModalEditVisible] = useState(false); // State for modal visibility
+        const [editModalContent, setEditModalContent] = useState<any | null>(null);
+       
+  const [isModalNewVisible, setIsModalNewVisible] = useState(false); // State for modal visibility
+   const [newModalContent, setNewModalContent] = useState<NewUnitModalContentProps | null>(null);
 
 const {data: sub_category} = useQuery({
   queryKey: ['sub_category', params.sub_categoryId],
@@ -89,7 +104,14 @@ useEffect(() => {
 //const { data: unit, loading, error } = useAxiosFetch<UnitProps>({ url: url, method: 'get' })
 //console.log("***** quizzes = ", unit?.quizzes)
 
-const [createNewQuiz, setCreateNewQuiz] = useState(false)
+const [createNewUnit, setCreateNewUnit] = useState(false)
+
+const editUnit = (unit_id: string, unit_number: number) => {
+  //console.log("createQuestion called with ^^^^^^^^^^^^^^ selectedFormat:", selectedFormat);
+
+  setEditModalContent({ unit_id: unit_id, unit_number: unit_number });
+  setIsModalEditVisible(true);
+}
 
 const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
   const { attributes, listeners } = useSortable({
@@ -143,11 +165,23 @@ const columns = useMemo<ColumnDef<ShortUnitProps>[]>(
       id: "edit",
       header: "Edit",
       cell: (info) => (
-        <Link className="italic text-blue-300" to={`edit_quiz/${info.row.original.itemId}`}>
+        <>
+       
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+          onClick={() => {
+            console.log("Edit unit:", info.row.original.itemId, info.row.original.item_number);
+              editUnit(info.row.original.itemId, info.row.original.item_number)
+            } 
+            
+          }
+        >
           Edit
-        </Link>
+        </button>
+        </>
       ),
     },
+   
     
   ],
   [sub_category] // No dependencies, so the columns are memoized once
@@ -162,33 +196,98 @@ App.tsx:90 No routes matched location "/categories/1/sub_categories/3/quizzes/7"
 //https://www.englishtuyhoa.com/categories/4/sub_categories/9/edit_quiz/120
 
      
-     const createUnit = async ({ name, quiz_number, video_url, unitId, video_segments }: CreateQuizProps) => {
-      console.log("createQuiz called with:", { name, quiz_number, video_url, unitId, video_segments });
-      const response = await fetch(`${rootUrl}/api/quizzes`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: name,
-          quiz_number: quiz_number,
-          video_url: video_url,
-          unitId: unitId,
-          video_segments: video_segments
-        }),
-      });
-      return response.json();
-  
-      // Perform additional logic with the properties
-  };
-
-  const rowDeleted = async (quiz_id: string) => {
+    
+  const rowDeleted = async (unit_id: string) => {
     // for the use of originals, see cloneQuestion function
     
     //const updatedQuestions = row.filter(q => q.itemId !== question_id);
-    setUnits(prev => prev.filter(vs => vs.itemId !== quiz_id));
+    setUnits(prev => prev.filter(vs => vs.itemId !== unit_id));
   };
 
+ const closeModal = (params: any) => {
+  if (params.action === "cancel") {
+    setIsModalNewVisible(false);
+    setIsModalEditVisible(false);
+    setNewModalContent(null);
+    setEditModalContent(null);
+    return;
+  }
+
+  if (params.action === "edit") {
+    // refresh the list of quizzes
+    setIsModalEditVisible(false);
+    setEditModalContent(null);
+    const updatedUnits = units.map(q => 
+      {
+        //console.log("q.itemId =", q.itemId, " editModalContent?.question_id =", editModalContent?.question_id)
+      if (q.itemId === editModalContent?.unit_id) {
+        return {
+          ...q,
+          item_number: params.unit_number,
+          name: params.name || q.name,
+        };
+      }
+      return q;
+    }); 
+    
+   // console.log("updatedQuestions =", updatedQuestions)
+    //setQuestions(updatedQuestions);
+    setUnits(updatedUnits.map(q => ({
+      ...q,
+      item_number: Number(q.item_number),
+      name: q.name,
+    })));
+  }
+
+  if (params.action === "new") {
+    // add the new quiz to the list of quizzes
+    setIsModalNewVisible(false);
+    setNewModalContent(null);
+    const new_unit: any = {
+      itemId: params.id!,
+      item_number: Number(params.unit_number!),
+      name: params.name,
+    }
+    //console.log("new_unit =", new_unit)
+    setUnits(prev => [...prev, new_unit]);
+  
+  }
+
+  /*
+      //console.log("closeModal called with params =", params)
+    
+      if (params.action === "edit") {
+        // refresh the list of quizzes
+        setIsModalEditVisible(false);
+        setEditModalContent(null);
+        const updatedQuizzes = quizzes.map(q => 
+          {
+            //console.log("q.itemId =", q.itemId, " editModalContent?.question_id =", editModalContent?.question_id)
+          if (q.itemId === editModalContent?.quiz_id) {
+            return {
+              ...q,
+              item_number: params.quiz_number,
+              name: params.name || q.name,
+              video_url: params.video_url || q.video_url,
+            };
+          }
+          return q;
+        }); 
+        
+       // console.log("updatedQuestions =", updatedQuestions)
+        //setQuestions(updatedQuestions);
+        setQuizzes(updatedQuizzes.map(q => ({
+          ...q,
+          item_number: Number(q.item_number),
+          name: q.name,
+        })));
+      }
+  
+      */
+  }
+
+
+  
   return (
     <>
       <div className='flex justify-between items-center mb-4'>
@@ -207,15 +306,36 @@ App.tsx:90 No routes matched location "/categories/1/sub_categories/3/quizzes/7"
         input_data={units} 
         columns={columns} 
         data_type='units'
+        parent_notify_delete_row={rowDeleted}
         />
 
+      {isModalEditVisible && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <EditUnit 
+           modal_content={editModalContent!} onClose={closeModal} />
+        </div>
+      )}
+
       <div className='bg-bgColor2 text-textColor2 p-3'>
-        <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
-          onClick={() => setCreateNewQuiz(!createNewQuiz)}
+      <button className='bg-bgColor4 text-textColor4 bg-2 rounded-lg w-40 p-2 m-2'
+          onClick={() => 
+          {
+            setNewModalContent({ 
+              subCategoryId: params.sub_categoryId || '',
+            });
+            setIsModalNewVisible(true)
+          }
+
+          }
         >
-          {createNewQuiz ? 'Cancel' : 'Create New Unit'}
+          Create New Unit
         </button>
-       
+        {isModalNewVisible && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <NewUnit
+              modal_content={newModalContent!} onClose={closeModal} />
+          </div>
+        )}
       </div>
       <Outlet />
     </>
@@ -223,5 +343,31 @@ App.tsx:90 No routes matched location "/categories/1/sub_categories/3/quizzes/7"
       
 }
 
-//
+/*
+    <div className='bg-bgColor2 text-textColor2 p-3'>
+        <button className='text-textColor1 bg-bgColor1 rounded-lg p-2 m-2'
+          onClick={() => setCreateNewUnit(!createNewUnit)}
+        >
+          {createNewUnit ? 'Cancel' : 'Create New Unit'}
+        </button>
+       
+      </div>
+*/
+
 // <DataTable columns={columns} data={data} />
+/*
+  <button className='bg-bgColor4 text-textColor4 bg-2 rounded-lg w-40 p-2 m-2'
+          onClick={() => 
+          {
+            setNewModalContent({ 
+              unitId: params.unitId || '',
+            });
+            setIsModalNewVisible(true)
+          }
+
+          }
+        >
+          Create New Quiz
+        </button>
+*/
+

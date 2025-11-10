@@ -6,7 +6,7 @@ import { EditQuizModalContentProps } from './ListQuizzes';
 import { QuizProps } from './types';
 import ListVideoSegments, { VideoSegmentProps } from './ListVideoSegments';
 import { QuizCloseModalProps } from './NewQuiz';
-import YoutubeVideoPlayer from '../components/YoutubeVideoPlayer';
+//import YoutubeVideoPlayer from '../components/YoutubeVideoPlayer';
 
 interface EditQuizProps {
     modal_content: EditQuizModalContentProps;
