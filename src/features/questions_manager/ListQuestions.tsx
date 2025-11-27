@@ -36,22 +36,18 @@ export interface CloseModalProps {
   answer_key?: string,
 }
 
-type VideoSegmentQuestionNumbers = {
-  [videoSegmentId: string]: string[]; // Key is a string, value is an array of numbers
-};
-
 const formatOptions = [
-  { value: "1", label: "Cloze" },
-  { value: "2", label: "Button Cloze Select" },
-  { value: "3", label: "Button Select" },
-  { value: "4", label: "Radio" },
-  { value: "5", label: "Checkbox" },
-  { value: "6", label: "Word Scramble" },
-  { value: "7", label: "Speech Recognition" },
-  { value: "8", label: "Word Select" },
-  { value: "9", label: "Recording" },
-  { value: "10", label: "Drop Down" },
-  { value: "11", label: "Letter Cloze" },
+  { value: "1", label: "Cloze (1)" },
+  { value: "2", label: "Button Cloze Select (2)" },
+  { value: "3", label: "Button Select (3)" },
+  { value: "4", label: "Radio (4)" },
+  { value: "5", label: "Checkbox (5)" },
+  { value: "6", label: "Word Scramble (6)" },
+  { value: "7", label: "Speech Recognition (7)" },
+  { value: "8", label: "Word Select (8)" },
+  { value: "9", label: "Recording (9)" },
+  { value: "10", label: "Drop Down (10)" },
+  { value: "11", label: "Letter Cloze (11)" },
 ];
 
 export interface NewModalContentProps {
@@ -766,21 +762,7 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
         </div>
       }
   
-    <div className='bg-bgColor2 text-textColor1 p-2 flex flex-row justify-center text-xl mt-3 mb-3'>
-    <select
-        id="formatDropdown"
-        className="bg-bgColor2 border border-gray-300 rounded p-2"
-        //value={selectedFormat.current}
-        //onChange={(e) => setSelectedFormat(e.target.value)} // Update state on selection
-        onChange={(e) => selectedFormat.current = e.target.value} // Update state on selection
-      >
-        {formatOptions.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </div>
+   
     
       <GenericSortableTable 
         input_data={questions} 
@@ -822,6 +804,24 @@ const columns = useMemo<ColumnDef<ShortQuestionProps>[]>(
         >
           Create New Question
         </button>
+
+        <div className='bg-bgColor2 text-textColor1 p-2 flex flex-row justify-center text-xl mt-3 mb-3'>
+    <select
+        id="formatDropdown"
+        className="bg-bgColor2 border border-gray-300 rounded p-2"
+        //value={selectedFormat.current}
+        //onChange={(e) => setSelectedFormat(e.target.value)} // Update state on selection
+        onChange={(e) => selectedFormat.current = e.target.value} // Update state on selection
+      >
+        {formatOptions.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </div>
+
+
         {isModalNewVisible && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <NewQuestion
